@@ -1,4 +1,4 @@
-# megagruve
+# Megagruve
 
 Minecraft ripoff written in c++
 
