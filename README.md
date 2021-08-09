@@ -1,6 +1,6 @@
 # megagruve
 
-Minecraft "clone" written in c++
+Minecraft ripoff written in c++
 
 Work in progress lol
 
