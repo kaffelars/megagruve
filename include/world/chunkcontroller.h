@@ -1,0 +1,59 @@
+#ifndef CHUNKCONTROLLER_H
+#define CHUNKCONTROLLER_H
+
+#include "chunk.h"
+#include "tiledata.h"
+#include "utils.h"
+#include "randfunc.h"
+#include "maincharcontroller.h"
+#include "camera.h"
+#include "settings.h"
+#include "voxelmodels.h"
+#include "voxelmodel.h"
+
+namespace chunkcontroller
+{
+    chunk& getchunk(chunkpos cpos);
+    void generatechunk(chunk& c);
+    void generatechunksides(chunk& c);
+    void generatechunksides(chunk& c, chunk& sidechunk, uint8_t side);
+    void decorate(chunk& c);
+
+    void meshwholechunk(chunk& c);
+    void meshchunkpart(chunk& c, uint8_t cpart);
+    void remeshchunk(chunk& c);
+
+    bool ischunkvisible(chunk& c);
+
+    bool chunkexists(chunkpos cpos);
+
+    chunkpos wpostocpos(wposition wpos);
+    chunkpos wtilepostocpos(wtilepos wtpos);
+    ctilepos wpostoctilepos(wposition wpos);
+    wtilepos wpostowtilepos(wposition wpos);
+    ctilepos wtilepostoctilepos(wtilepos wtpos);
+    wposition cpostowpos(chunkpos cpos);
+
+    bool withinchunkbounds(ctilepos cpos);
+
+    bool changewtile(wtilepos wtile, tileid newtileid);
+    void addsidestoupdatearound(chunkpos cpos, ctilepos ctpos);
+    void updatesides();
+    void changetiles();
+    void addtiletochange(wtilepos wtile, tileid newtileid);
+    void breaktile(wtilepos wtile);
+
+    tileid gettileid(wtilepos wtpos);
+
+    void updatechunks();
+    int loadedchunksnum();
+
+    void renderchunks(direction dir, wposition maincharposition);
+    int32_t getchunksrendered();
+
+    extern std::atomic<uint32_t> threadcounter;
+
+    void renderchunk(chunkpos cpos);
+};
+
+#endif // CHUNKCONTROLLER_H
