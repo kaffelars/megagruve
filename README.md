@@ -10,6 +10,9 @@ Work in progress lol
 
 Using:
 [SDL2](https://www.libsdl.org/)
+
 [GLM](https://github.com/g-truc/glm)
+
 [Dear ImGui](https://github.com/ocornut/imgui)
+
 [pugixml](https://pugixml.org/)
