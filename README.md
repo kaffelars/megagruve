@@ -9,10 +9,7 @@ Work in progress lol
 ![screenshot](https://github.com/kaffelars/megagruve/blob/main/screenshots/screenshot1.png)
 
 Using:
-[SDL2](https://www.libsdl.org/)
-
-[GLM](https://github.com/g-truc/glm)
-
-[Dear ImGui](https://github.com/ocornut/imgui)
-
-[pugixml](https://pugixml.org/)
+* [SDL2](https://www.libsdl.org/)
+* [GLM](https://github.com/g-truc/glm)
+* [Dear ImGui](https://github.com/ocornut/imgui)
+* [pugixml](https://pugixml.org/)
