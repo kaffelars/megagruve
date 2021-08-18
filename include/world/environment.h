@@ -16,7 +16,10 @@ namespace environment
     rgbcolor getfogcolor();
     rgbcolor getsuncolor();
 
+    void changecloudcover(float change);
+
     float getcloudcover();
+    void toggletimemoving();
 };
 
 #endif // ENVIRONMENT_H

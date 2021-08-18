@@ -8,15 +8,21 @@ class statnumbers
         statnumbers();
         virtual ~statnumbers();
 
-        int32_t maxhp {0};
-        int32_t attack {0};
-        int32_t defense {0};
-        float movespeed {0.0f};
-        float usespeed {0.0f};
+        enum stat
+        {
+            STAT_MAXHP, STAT_ATTACK, STAT_DEFENSE, STAT_MOVESPEED, STAT_USESPEED
+        };
+
+        void setstat(stat stattoset, float value);
+        void changestat(stat stattochange, float valuetoadd);
+        float getstat(stat stattoget);
+
+        float statvalues[5] {0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
 
     protected:
 
     private:
+
 };
 
 statnumbers operator+(const statnumbers& a, const statnumbers& b);

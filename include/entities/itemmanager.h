@@ -10,7 +10,7 @@ namespace itemmanager
 {
     enum itemtypes
     {
-        I_BLOCK, I_TOOL, I_USABLE, I_INERT
+        I_BLOCK, I_DIG, I_USABLE, I_CONSUMABLE, I_INERT, I_PLACEABLEOBJECT
     };
 
     struct item
@@ -18,14 +18,14 @@ namespace itemmanager
         std::string name;
         std::string description;
 
-        uint32_t speed;
+        uint32_t speed; //millisekunder mellom hver use
         uint32_t duration;
 
         uint32_t maxstack {32};
 
         itemtypes itemtype;
 
-        std::vector<std::shared_ptr<effect>> useeffects; //memory leak! oh no
+        std::vector<std::shared_ptr<effect>> useeffects; //hmm
 
         maincharcontroller::smode selectionmode; //selection mode når item er selected
 

@@ -2,20 +2,21 @@
 #define MAINCHAR_H
 
 #include "physicsobject.h"
-#include "entityvitals.h"
 #include "boundingbox.h"
 #include "camera.h"
 #include "utils.h"
 #include "timekeeper.h"
 #include "inventory.h"
+#include "lifeform.h"
 
-class mainchar
+class mainchar : public lifeform
 {
     public:
         mainchar();
         virtual ~mainchar();
 
-        entityvitals evitals {20, 0};
+        //entityvitals evitals {20, 0};
+
         physicsobject pobject {
             wposition{50.5f, 78.0f, 0.5f},
             velocity{0.0f, 0.0f, 0.0f},

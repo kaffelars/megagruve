@@ -4,6 +4,7 @@
 
 #include "inventory.h"
 
+
 namespace maincharcontroller
 {
     enum smode
@@ -17,15 +18,24 @@ namespace maincharcontroller
     void updatecamera();
     void movement();
     void toggleflying();
-    void inputactions();
+    void update();
     wtilepos gettilehover();
     void initialize();
     void renderselection();
     void setselectionmode(smode selmode);
+    void movechar(hdirection dir);
+
+    void renderdestroyblock();
+
+    void useselecteditem();
+    void changeselectiondelta(int selectiondelta);
+    void changeselection(int selection);
 
     int32_t getactionbarselection();
     int32_t getcurrenthealth();
     int32_t getmaxhealth();
+
+    wtilepos gettilehoverentityposition();//for test
 
     inventory& getmcharinventory();
 

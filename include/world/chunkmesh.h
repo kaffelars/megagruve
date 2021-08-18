@@ -13,7 +13,7 @@ class chunkmesh
         bool isempty();
         void cleanbuffers();
         void cleanall();
-        void addvertex(vpos pos, vnorm norm, uvpos uv, textureid tid, uint8_t sunlight, rgbcolor255 light);
+        void addvertex(vpos pos, vnorm norm, uvpos uv, textureid tid, uint8_t sunlight, rgbcolor255 light, uint8_t glow, uint8_t ambocc);
 
         void render();
 

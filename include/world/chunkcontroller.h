@@ -16,7 +16,7 @@ namespace chunkcontroller
     chunk& getchunk(chunkpos cpos);
     void generatechunk(chunk& c);
     void generatechunksides(chunk& c);
-    void generatechunksides(chunk& c, chunk& sidechunk, uint8_t side);
+    //void generatechunksides(chunk& c, chunk& sidechunk, uint8_t side);
     void decorate(chunk& c);
 
     void meshwholechunk(chunk& c);
@@ -33,6 +33,8 @@ namespace chunkcontroller
     wtilepos wpostowtilepos(wposition wpos);
     ctilepos wtilepostoctilepos(wtilepos wtpos);
     wposition cpostowpos(chunkpos cpos);
+    bool wtileposwithinworldbounds(wtilepos wtpos);
+    wtilepos cposctilepostowtilepos(chunkpos cpos, ctilepos ctpos);
 
     bool withinchunkbounds(ctilepos cpos);
 
@@ -42,6 +44,8 @@ namespace chunkcontroller
     void changetiles();
     void addtiletochange(wtilepos wtile, tileid newtileid);
     void breaktile(wtilepos wtile);
+
+    void updatesunlight(chunk& c, ctilepos ctpos, bool initial);
 
     tileid gettileid(wtilepos wtpos);
 

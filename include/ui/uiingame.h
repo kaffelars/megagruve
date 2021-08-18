@@ -6,7 +6,9 @@
 namespace uiingame
 {
     void rendergameui();
+    void initialize();
 
+    void updateactionbaritems(bool updatebar);
 }
 
 

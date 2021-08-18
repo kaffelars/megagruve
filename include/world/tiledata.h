@@ -14,13 +14,16 @@ namespace tiledata
 
     enum blockshape
     {
-        SHAPE_BLOCK, SHAPE_X, SHAPE_CACTUS, SHAPE_STAIRS, SHAPE_SLAB, SHAPE_WATER, SHAPE_CUSTOM
+        SHAPE_BLOCK, SHAPE_X, SHAPE_CACTUS, SHAPE_STAIRS, SHAPE_SLAB, SHAPE_WATER, SHAPE_NONE, SHAPE_CUSTOM
     };
 
     enum tilesides
     {
         SIDE_XM = 1, SIDE_XP = 2, SIDE_YM = 4, SIDE_YP = 8, SIDE_ZM = 16, SIDE_ZP = 32
     };
+
+    const tilesides sideflags[6] = {SIDE_XM, SIDE_XP, SIDE_YM, SIDE_YP, SIDE_ZM, SIDE_ZP};
+    const tilesides oppositesideflags[6] = {SIDE_XP, SIDE_XM, SIDE_YP, SIDE_YM, SIDE_ZP, SIDE_ZM};
 
     struct tileinfo
     {
@@ -29,17 +32,21 @@ namespace tiledata
         tiletype ttype;
         blockshape defaultshape;
         uint8_t hardness;
+        uint8_t glow;
         std::string sidetextures[6] {"", "", "", "", "", ""};
         uint32_t sidetextureids[6] {0,0,0,0,0,0};
     };
 
     void initializetileshapes();
-    void addblock(ctilepos cpos, tileid id, uint32_t bshape, uint8_t tilesides, uint8_t sunlight, rgbcolor255 light, chunkmesh& cmesh);
+    void addblock(ctilepos cpos, tileid id, uint32_t bshape, uint8_t tilesides, uint8_t sunlight, rgbcolor255 light, uint8_t glow, uint8_t ambocc, chunkmesh& cmesh);
+    void addside(ctilepos cpos, tileid id, uint32_t bshape, uint8_t tileside, uint8_t sunlight, rgbcolor255 light, uint8_t glow, uint8_t ambocc[4], chunkmesh& cmesh);
 
     uint32_t gettileid(std::string tilename);
     //tileinfo& gettileinfo(uint32_t id);
     tiletype gettiletype(tileid tile);
     blockshape gettileshape(tileid tile);
+
+    bool isinitialized();
 
     std::string gettilename(tileid tid);
     const std::vector<tileinfo>& gettileinfolist();
@@ -48,6 +55,7 @@ namespace tiledata
 
     bool isempty(tileid tile);
     bool istransparent(tileid tile);
+    bool isambocc(tileid tile);
 
     void initialize();
 

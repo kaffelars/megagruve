@@ -13,7 +13,7 @@ class chunk
 
         enum ctags
         {
-            C_START, C_GENERATING, C_GENERATED, C_READYTOMESH, C_MESHING, C_MESHED, C_READY, C_REMESHING, C_REMESHED
+            C_START, C_GENERATING, C_GENERATED, C_MESHING, C_MESHED, C_READY, C_REMESHING, C_REMESHED
         };
 
         struct tlight
@@ -29,6 +29,7 @@ class chunk
 
         inline uint32_t get2dcoord(chtilepos tpos);
         inline uint32_t get3dcoord(ctilepos tpos);
+        uint32_t gettilecoord(ctilepos tpos);
 
         uint8_t getactivemesh(uint8_t meshnum);
         uint8_t getinactivemesh(uint8_t meshnum);
@@ -38,9 +39,6 @@ class chunk
         void setonevbo(uint8_t meshnum);
         void setremeshedvbos();
 
-        bool sidesgenerated[6] {false, false, true, true, false, false};
-
-        bool allsidesgenerated();
         bool safetodelete();
 
         dimensions cdims;
@@ -59,8 +57,10 @@ class chunk
 
         uint8_t getsides(ctilepos tpos);
         void setsides(ctilepos tpos, uint8_t sideval);
+        void setside(ctilepos tpos, tiledata::tilesides side, bool addside);
 
         void addtile(tileid value);
+        void addside();
         void addside(ctilepos tpos, tiledata::tilesides side);
         void addhighest(ytile value);
         ytile gethighest(chtilepos thpos);
@@ -74,6 +74,8 @@ class chunk
         void render();
         void deletechunk();
 
+        std::vector<uint8_t> tilesides;
+
     protected:
 
     private:
@@ -83,7 +85,7 @@ class chunk
         bool activemesh;
 
         std::vector<tileid> tileids;
-        std::vector<uint8_t> tilesides;
+        //std::vector<uint8_t> tilesides;
         std::vector<uint8_t> highesttile;
         std::vector<tlight> tilelight;
 

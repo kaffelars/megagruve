@@ -17,6 +17,7 @@
 #include <bitset>
 
 #include <string>
+#include <functional>
 
 #include <atomic>
 #include <thread>

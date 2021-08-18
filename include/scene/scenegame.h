@@ -22,6 +22,7 @@ class scenegame : public scene
 
         void shutdownworld();
         void toggleescbox();
+        void setkeys();
 
         void render();
         void show();

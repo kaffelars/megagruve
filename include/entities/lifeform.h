@@ -14,7 +14,9 @@ class lifeform : public entity
 
 
         virtual wposition getposition();//return physicsobject::getposition(););
-        int32_t hp;
+        float hp {1};
+
+        void setstats(float hp, float maxhp, float attack, float defense, float movespeed, float usespeed);
 
         statnumbers basestats; //endres kun av permanente statsendringer
         statnumbers actualstats; //modifies av statuseffects når de settes eller forsvinner

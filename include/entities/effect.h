@@ -46,6 +46,25 @@ class attackeffect:public effect
         int32_t attacktype;
 };
 
+class changeweathereffect:public effect
+{
+	public:
+        changeweathereffect(float weatherchange);
+        virtual ~changeweathereffect() = default;
+        bool activate(entity* user, entity* target);
+    private:
+        float change;
+};
+
+class toggletime:public effect
+{
+	public:
+        toggletime();
+        virtual ~toggletime() = default;
+        bool activate(entity* user, entity* target);
+    private:
+};
+
 class changeblockeffect:public effect
 {
 	public:
