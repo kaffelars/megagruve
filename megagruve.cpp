@@ -14,9 +14,7 @@
 #include "voxelmodels.h"
 #include "maincharcontroller.h"
 #include "itemmanager.h"
-
-
-
+#include "uiingame.h"
 
 int main( int argc, char* args[] )
 {
@@ -28,6 +26,7 @@ int main( int argc, char* args[] )
     texturemanager::initialize();
     tiledata::initialize();
     itemmanager::initialize();
+    uiingame::initialize();
 
     voxelmodels::initialize();
 
