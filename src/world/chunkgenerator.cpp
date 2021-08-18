@@ -16,9 +16,9 @@ void chunkcontroller::generatechunk(chunk& c)
 
     for (ytile y = 0; y < chunkheight; y++)
     {
-        for (htile z = 0; z < chunkwidth; z++)
+        for (htile z = -1; z < chunkwidth+1; z++)
         {
-            for (htile x = 0; x < chunkwidth; x++)
+            for (htile x = -1; x < chunkwidth+1; x++)
             {
                 int tile = 5;
 
@@ -90,10 +90,11 @@ void chunkcontroller::generatechunk(chunk& c)
 
                 //}
                 c.addtile(tile);
-                c.addlight();
             }
         }
     }
+
+    //std::cout << c.tileids.size() << "wee"; //295936 korrekt
 
     //highest
     for (htile z = 0; z < chunkwidth; z++)
@@ -119,7 +120,18 @@ void chunkcontroller::generatechunk(chunk& c)
         }
     }
 
+    for (int a = 0; a < chunkwidth * chunkwidth * chunkheight; a++)
+        c.addlight();
+
     decorate(c);
+
+    for (htile z = 0; z < chunkwidth; z++)
+    {
+        for (htile x = 0; x < chunkwidth; x++)
+        {
+            c.setsunlight(ctilepos(x,0,z), 255);
+        }
+    }
 
     //generate sunlight et al
     bool hset = false;
@@ -127,27 +139,7 @@ void chunkcontroller::generatechunk(chunk& c)
     {
         for (htile x = 0; x < chunkwidth; x++)
         {
-            uint8_t sunlight = 255;
-
-            for (ytile y = 0; y < chunkheight; y++)
-            {
-                ctilepos tpos = ctilepos(x,y,z);
-                tileid tid = c.gettile(tpos);
-
-                if (tiledata::gettiletype(tid) == tiledata::T_SOLID)
-                    sunlight = 0;
-                if (tiledata::gettiletype(tid) == tiledata::T_TRANSPARENT)
-                    sunlight -= 16;
-                if (tiledata::gettiletype(tid) == tiledata::T_DISCARD)
-                    sunlight -= 32;
-                if (tiledata::gettiletype(tid) == tiledata::T_OBJECT)
-                    sunlight -= 16;
-
-                if (sunlight <0) sunlight = 0;
-
-                c.setsunlight(tpos, sunlight);
-
-            }
+            updatesunlight(c, ctilepos{x, 1, z}, true);
         }
     }
     //
@@ -155,9 +147,52 @@ void chunkcontroller::generatechunk(chunk& c)
 
     generatechunksides(c);
 
+
     threadcounter --;
 
     c.settag(chunk::C_GENERATED);
+}
+
+void chunkcontroller::updatesunlight(chunk& c, ctilepos ctpos, bool initial) //dette funker bare av og til
+{
+    //chunkexists guard? neh
+    //messy stuff
+    if (ctpos.y <= 0) return;
+    ctilepos currentpos = ctilepos{ctpos.x,ctpos.y-1, ctpos.z};
+    int32_t sunlight = c.getsunlight(currentpos);
+    if (sunlight == 0) return;
+
+    uint8_t oldsunlight = c.getsunlight(currentpos);
+
+    while (oldsunlight > 0)
+    {
+        tileid tid = c.gettile(currentpos);
+
+        //duplicated no good
+        if (tiledata::gettiletype(tid) == tiledata::T_SOLID)
+            sunlight = 0;
+        if (tiledata::gettiletype(tid) == tiledata::T_TRANSPARENT || tiledata::gettiletype(tid) == tiledata::T_WATER)
+            sunlight -= 16;
+        if (tiledata::gettiletype(tid) == tiledata::T_DISCARD)
+            sunlight -= 32;
+        if (tiledata::gettiletype(tid) == tiledata::T_OBJECT)
+            sunlight -= 16;
+
+        if (sunlight < 0) sunlight = 0;
+
+        if (initial)
+            oldsunlight = sunlight;
+        else
+            oldsunlight = c.getsunlight(currentpos);
+
+        c.setsunlight(currentpos, sunlight);
+
+        c.setremeshy(currentpos.y);
+
+        currentpos.y++;
+    }
+
+
 }
 
 void chunkcontroller::decorate(chunk& c)
@@ -240,107 +275,49 @@ void chunkcontroller::decorate(chunk& c)
 
 void chunkcontroller::generatechunksides(chunk& c)
 {
-    dimensions dims = c.cdims;
     int tile = 0;
     int neighbour = 0;
 
-    for (int y = 0; y < dims.y; y++)
+    for (int y = 0; y < chunkwidth*chunkwidth*chunkheight; y++)
     {
-        for (int z = 0; z < dims.z; z++)
+        c.addside();
+    }
+
+    for (int y = 0; y < chunkheight; y++)
+    {
+        for (int z = 0; z < chunkwidth; z++)
         {
-            for (int x = 0; x < dims.x; x++)
+            for (int x = 0; x < chunkwidth; x++)
             {
                 ctilepos tilepos = ctilepos{x,y,z};
                 tile = c.gettile(tilepos);
                 if (!tiledata::isempty(tile))
                 {
-                    if (x > 0)
-                    {
-                        neighbour = c.gettile(ctilepos{x-1,y,z});
-                        if (tiledata::renderside(tile, neighbour, 0)) c.addside(tilepos, tiledata::SIDE_XM);
-                    }
-                    if (x < dims.x-1)
-                    {
-                        neighbour = c.gettile(ctilepos{x+1,y,z});
-                        if (tiledata::renderside(tile, neighbour, 1)) c.addside(tilepos, tiledata::SIDE_XP);
-                    }
+                    neighbour = c.gettile(ctilepos{x-1,y,z});
+                    if (tiledata::renderside(tile, neighbour, 0)) c.addside(tilepos, tiledata::SIDE_XM);
+
+                    neighbour = c.gettile(ctilepos{x+1,y,z});
+                    if (tiledata::renderside(tile, neighbour, 1)) c.addside(tilepos, tiledata::SIDE_XP);
+
                     if (y > 0)
                     {
                         neighbour = c.gettile(ctilepos{x,y-1,z});
                         if (tiledata::renderside(tile, neighbour,2)) c.addside(tilepos, tiledata::SIDE_YM);
                     }
-                    if (y < dims.y-1)
+                    if (y < chunkheight-1)
                     {
                         neighbour = c.gettile(ctilepos{x,y+1,z});
                         if (tiledata::renderside(tile, neighbour,3)) c.addside(tilepos, tiledata::SIDE_YP);
                     }
 
-                    if (z > 0)
-                    {
-                        neighbour = c.gettile(ctilepos{x,y,z-1});
-                        if (tiledata::renderside(tile, neighbour, 4)) c.addside(tilepos, tiledata::SIDE_ZM);
-                    }
-                    if (z < dims.z-1)
-                    {
-                        neighbour = c.gettile(ctilepos{x,y,z+1});
-                        if (tiledata::renderside(tile, neighbour,5)) c.addside(tilepos, tiledata::SIDE_ZP);
-                    }
+                    neighbour = c.gettile(ctilepos{x,y,z-1});
+                    if (tiledata::renderside(tile, neighbour, 4)) c.addside(tilepos, tiledata::SIDE_ZM);
 
+                    neighbour = c.gettile(ctilepos{x,y,z+1});
+                    if (tiledata::renderside(tile, neighbour,5)) c.addside(tilepos, tiledata::SIDE_ZP);
 
                 }
             }
         }
     }
-}
-
-void chunkcontroller::generatechunksides(chunk& c, chunk& sidechunk, uint8_t side) //side c
-{
-    dimensions dims = c.cdims;
-    int hrange = dims.x; //x er default
-    if (side == 4 || side == 5) hrange = dims.z; //zm eller zp
-
-    int sside = 0; //side on neighbour chunk
-
-    for (int y =0; y < dims.y; y++)
-    {
-        for (int a = 0; a < hrange; a++)
-        {
-            ctilepos ct;
-            ctilepos st;
-            switch (side)
-            {
-            case 0://xm
-                ct = ctilepos{0,y,a};
-                st = ctilepos{dims.x-1,y,a};
-                sside = 1;
-                break;
-            case 1://xp
-                ct = ctilepos{dims.x-1,y,a};
-                st = ctilepos{0,y,a};
-                sside = 0;
-                break;
-            case 4://zm
-                ct = ctilepos{a,y,0};
-                st = ctilepos{a,y,dims.z-1};
-                sside = 5;
-                break;
-            case 5://zp
-                ct = ctilepos{a,y,dims.z-1};
-                st = ctilepos{a,y,0};
-                sside = 4;
-                break;
-            }
-            int ctile = c.gettile(ct);
-            int stile = sidechunk.gettile(st);
-
-            if (tiledata::renderside(ctile, stile, side)) c.addside(ct, sides[side]);
-            if (tiledata::renderside(stile, ctile, sside)) sidechunk.addside(st, sides[sside]);
-        }
-    }
-
-    c.sidesgenerated[side] = true;
-    sidechunk.sidesgenerated[sside] = true;
-
-    if (c.allsidesgenerated()) c.settag(chunk::C_READYTOMESH);
-    if (sidechunk.allsidesgenerated()) sidechunk.settag(chunk::C_READYTOMESH);
 }

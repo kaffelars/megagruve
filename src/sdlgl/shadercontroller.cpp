@@ -34,8 +34,8 @@ void shadercontroller::initialize()
 {
     std::cout << "setting up shaders\r\n";
 
-    addshader(SH_MAIN, "main", {"pv", "vpos"});
-    addshader(SH_SCENE, "scene", {"gbuf_rgb", "gbuf_pos", "gbuf_norm", "sundir", "sunlight", "suncolor", "fogcolor", "campos"}); //"tiles",
+    addshader(SH_MAIN, "main", {"pv", "vpos", "sundir", "sunlight", "suncolor", "fogcolor", "campos"});
+    addshader(SH_SCENE, "scene", {"gbuf_rgb", "gbuf_pos", "gbuf_norm"}); //"tiles",
     addshader(SH_SKY, "sky", {"sundir", "skycolor", "pv", "campos", "fogcolor", "suncolor", "cloudcover"});
     addshader(SH_PP, "postprocessing", {});
     addshader(SH_LINE, "line", {"pv", "vpos", "rgb"});

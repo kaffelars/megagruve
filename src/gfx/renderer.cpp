@@ -4,6 +4,7 @@
 namespace renderer
 {
     glm::vec4 mousedata = glm::vec4(0);
+    hposition renderoffset = hposition{0.0f, 0.0f};
 }
 
 glm::vec4& renderer::getmousedata()
@@ -27,12 +28,23 @@ void renderer::rendergame()
     glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
     glStencilMask(0xFF);
 
+    direction sundir = environment::getsundir();//environment.getsundir();
+    rgbcolor suncolor = environment::getsuncolor();//environment.getsuncolor();
+    rgbcolor fogcolor = environment::getfogcolor();//environment.getfogcolor();
+    wposition campos = maincharcontroller::getmaincharposition();
+
     shadercontroller::activateshader(shadercontroller::SH_MAIN);
     glUniformMatrix4fv(shadercontroller::getuniformid("pv"), 1, GL_FALSE, &(camera::getpvmatrix()[0][0]));
+    glUniform3f(shadercontroller::getuniformid("sundir"), sundir.x, sundir.y, sundir.z);
+    glUniform3f(shadercontroller::getuniformid("fogcolor"), fogcolor.x, fogcolor.y, fogcolor.z);
+    glUniform3f(shadercontroller::getuniformid("suncolor"), suncolor.x, suncolor.y, suncolor.z);
+    glUniform3f(shadercontroller::getuniformid("campos"), campos.x, campos.y, campos.z);
 
     texturemanager::bindtiletextures(0);
 
     chunkcontroller::renderchunks(maincharcontroller::getviewdir(), maincharcontroller::getmaincharposition());
+
+    maincharcontroller::renderdestroyblock();
 
 
     //tar 0.4 ms ... ------------------
@@ -61,20 +73,13 @@ void renderer::rendergame()
 
 
 
-    direction sundir = environment::getsundir();//environment.getsundir();
-    rgbcolor suncolor = environment::getsuncolor();//environment.getsuncolor();
-    rgbcolor fogcolor = environment::getfogcolor();//environment.getfogcolor();
-    wposition campos = maincharcontroller::getmaincharposition();
+
 
     glStencilFunc(GL_EQUAL, 1, 0xFF);
     glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
 
     shadercontroller::activateshader(shadercontroller::SH_SCENE);
 
-    glUniform3f(shadercontroller::getuniformid("sundir"), sundir.x, sundir.y, sundir.z);
-    glUniform3f(shadercontroller::getuniformid("fogcolor"), fogcolor.x, fogcolor.y, fogcolor.z);
-    glUniform3f(shadercontroller::getuniformid("suncolor"), suncolor.x, suncolor.y, suncolor.z);
-    glUniform3f(shadercontroller::getuniformid("campos"), campos.x, campos.y, campos.z);
     glUniform1i(shadercontroller::getuniformid("gbuf_rgb"), 0);
     glUniform1i(shadercontroller::getuniformid("gbuf_pos"), 1);
     glUniform1i(shadercontroller::getuniformid("gbuf_norm"), 2);

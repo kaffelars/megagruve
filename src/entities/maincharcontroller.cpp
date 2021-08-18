@@ -6,6 +6,11 @@
 #include "utils.h"
 #include "renderer.h"
 #include "chunkcontroller.h"
+#include "itemmanager.h"
+#include "effect.h"
+#include "uiingame.h"
+#include "entity.h"
+#include "chunkmesh.h"
 
 namespace maincharcontroller
 {
@@ -16,9 +21,21 @@ namespace maincharcontroller
     vaocontainer selection;
     smode selectionmode = SEL_BLOCK;
 
+    hdirection hmovement = glm::vec2(0.0f);
+
     int32_t actionbarselection = 0;
 
-    //blockentity tilehoverentity;
+    blockentity tilehoverentity (wtilepos(0, 0, 0));
+
+    int32_t itemusecooldown[10] = {0,0,0,0,0,0,0,0,0,0};
+
+    chunkmesh destructorblock[4];
+}
+
+void maincharcontroller::movechar(hdirection dir)
+{
+    hmovement += dir;
+    hmovement = glm::clamp(hmovement, -1.0f, 1.0f);
 }
 
 inventory& maincharcontroller::getmcharinventory()
@@ -28,11 +45,11 @@ inventory& maincharcontroller::getmcharinventory()
 
 int32_t maincharcontroller::getcurrenthealth()
 {
-    return mchar.evitals.hp;
+    return mchar.lifeform::hp;
 }
 int32_t maincharcontroller::getmaxhealth()
 {
-    return mchar.evitals.maxhp;
+    return mchar.lifeform::actualstats.getstat(statnumbers::STAT_MAXHP);
 }
 
 int32_t maincharcontroller::getactionbarselection()
@@ -66,6 +83,35 @@ void maincharcontroller::renderselection()
     }
 }
 
+void maincharcontroller::renderdestroyblock()
+{
+    int32_t hoverid = tilehoverentity.getid();
+    if (!tiledata::isempty(hoverid))
+    {
+        float hp = tilehoverentity.getcurrenthealth();
+        float maxhp = tiledata::gettileinfo(hoverid).hardness;
+
+        float destroyed = hp / maxhp;
+
+        if (destroyed < 0.95f)
+        {
+            wposition wpos = tilehoverentity.getposition();
+            glUniform3f(shadercontroller::getuniformid("vpos"), wpos.x, wpos.y, wpos.z);
+
+            destructorblock[0].render();
+
+            if (destroyed > 0.7f)
+                destructorblock[0].render();
+            else if (destroyed > 0.45f)
+                destructorblock[1].render();
+            else if (destroyed > 0.2f)
+                destructorblock[2].render();
+            else
+                destructorblock[3].render();
+        }
+    }
+}
+
 void maincharcontroller::initialize()
 {
     selection.initialize(1,vaocontainer::typo::LINES,3);
@@ -87,6 +133,14 @@ void maincharcontroller::initialize()
 
     selection.setvbos();
 
+    mchar.lifeform::setstats(25.0f, 30.0f, 1.0f, 1.0f, 0.7f, 1.0f);
+
+    for (int a = 0; a < 4; a++)
+    {
+        tiledata::addblock(ctilepos(0,0,0), tiledata::gettileid("t_destroy"+std::to_string(a+1)), tiledata::SHAPE_BLOCK, 255, 128, rgbcolor255(0,0,0), 0, 0, destructorblock[a]);
+        destructorblock[a].setvbos();
+    }
+
     mchar.fillinv();
 }
 
@@ -98,6 +152,11 @@ void maincharcontroller::toggleflying()
 wtilepos maincharcontroller::gettilehover()
 {
     return tilehover;
+}
+
+wtilepos maincharcontroller::gettilehoverentityposition()
+{
+    return tilehoverentity.getposition();
 }
 
 direction maincharcontroller::getviewdir()
@@ -120,56 +179,120 @@ void maincharcontroller::updatecamera()
     mchar.updatecamera();
 }
 
-void maincharcontroller::inputactions()
+void maincharcontroller::changeselection(int selection)
 {
+    actionbarselection = selection;
+    utils::clamp(actionbarselection, 0, 9);
+
+    inventory::invitem& iitem = mchar.mcharinv.getinvitem(actionbarselection);
+    if (iitem.quantity > 0)
+    {
+        itemmanager::item& iteminfo = itemmanager::getitem(iitem.itemid);
+        selectionmode = iteminfo.selectionmode;
+    }
+
+}
+
+void maincharcontroller::changeselectiondelta(int selectiondelta)
+{
+    changeselection(actionbarselection+selectiondelta);
+}
+
+void maincharcontroller::useselecteditem()
+{
+    inventory::invitem& iitem = mchar.mcharinv.getinvitem(actionbarselection);
+
+    if (itemusecooldown[actionbarselection] == 0 && iitem.quantity > 0)
+    {
+        itemmanager::item& iteminfo = itemmanager::getitem(iitem.itemid);
+
+        entity* user = nullptr;
+        entity* target = nullptr;
+
+        if (iteminfo.itemtype == itemmanager::I_CONSUMABLE || iteminfo.itemtype == itemmanager::I_USABLE)
+        {
+            user = &mchar;
+            target = &mchar;
+        }
+        if (iteminfo.itemtype == itemmanager::I_BLOCK || iteminfo.itemtype == itemmanager::I_PLACEABLEOBJECT)
+        {
+            user = &mchar;
+            target = &tilehoverentity;
+        }
+        if (iteminfo.itemtype == itemmanager::I_DIG)
+        {
+            user = &mchar;
+            target = &tilehoverentity; //kan være dyr elns sjekk mousedata id
+        }
+
+        bool activated = false;
+
+        for (std::shared_ptr<effect> e : iteminfo.useeffects)
+        {
+            activated = e->activate(user, target);
+        }
+
+        if (activated)
+        {
+            itemusecooldown[actionbarselection] = iteminfo.speed;
+
+            if (iteminfo.itemtype == itemmanager::I_BLOCK)
+            {
+                //tilehoverentity.resethealth(); //funker ikke fordi block blir updated på et senere tidspunkt
+            }
+
+            if ((iteminfo.itemtype == itemmanager::I_CONSUMABLE || iteminfo.itemtype == itemmanager::I_BLOCK))
+            {
+                iitem.quantity -= 1;
+                uiingame::updateactionbaritems(true); //litt krøkkete å ha denne her? ha heller en func i uiingame som detekterer action bar changes
+            }
+        }
+    }
+}
+
+void maincharcontroller::update()
+{
+    for (int a = 0; a < 10; a++)
+    {
+        itemusecooldown[a] -= timekeeper::getdeltatime();
+        if (itemusecooldown[a] < 0) itemusecooldown[a] = 0;
+    }
+
+    mchar.lifeform::update();
+
     glm::vec4 mdata = renderer::getmousedata();
     if (getselectionmode() == SEL_BLOCK)
         tilehover = chunkcontroller::wpostowtilepos(wposition(mdata.x, mdata.y, mdata.z) + (getviewdir() / 10.0f)); //negativ viewdir hvis lufttile skal selectes (SEL_AIR)
     else
         tilehover = chunkcontroller::wpostowtilepos(wposition(mdata.x, mdata.y, mdata.z) - (getviewdir() / 10.0f));
-    //tilehover = wposition(mdata.x, mdata.y, mdata.z)+ (getviewdir() / 10.0f);
+
 
     if (tilehover != oldtilehover)
     {
-        //hvis hover over ny tile
         oldtilehover = tilehover;
-
-        //tilehoverentity = blockentity()
+        if (chunkcontroller::wtileposwithinworldbounds(tilehover))
+            tilehoverentity.setposition(tilehover);
     }
 
-    if (inputmanager::waskeyclicked(inputmanager::KEY_SELECT))
-    {
-        chunkcontroller::addtiletochange(tilehover, tiledata::gettileid("t_flag"));
-    }
-
-    if (inputmanager::waskeyclicked(inputmanager::KEY_MISC))
-    {
-        if (getselectionmode() == SEL_BLOCK)
-            setselectionmode(SEL_AIR);
-        else
-            setselectionmode(SEL_BLOCK);
-    }
-
-    if (inputmanager::waskeyclicked(inputmanager::KEY_ZOOMIN)) actionbarselection --;
-    if (inputmanager::waskeyclicked(inputmanager::KEY_ZOOMOUT)) actionbarselection ++;
-    utils::clamp(actionbarselection, 0, 9);
+    movement();
+    updatecamera();
 }
 
 void maincharcontroller::movement()
 {
-    hdirection hmovement = glm::vec2(0.0f);
+    if (hmovement != hdirection(0.0f, 0.0f))
+    {
+        hmovement = glm::normalize(hmovement);
 
-    if (inputmanager::iskeyheld(inputmanager::KEY_LEFT)) hmovement.x += 1.0f;
-    if (inputmanager::iskeyheld(inputmanager::KEY_RIGHT)) hmovement.x -= 1.0f;
-    if (inputmanager::iskeyheld(inputmanager::KEY_UP)) hmovement.y += 1.0f;//z
-    if (inputmanager::iskeyheld(inputmanager::KEY_DOWN)) hmovement.y -= 1.0f;//z
-
-    if (flying)
-        mchar.moveflying(hmovement);
-    else
-        mchar.movehoriz(hmovement);
+        if (flying)
+            mchar.moveflying(hmovement);
+        else
+            mchar.movehoriz(hmovement);
+    }
 
     mchar.pobject.updateposition();
 
     mchar.rotateview(inputmanager::getmousedelta());
+
+    hmovement = hdirection(0.0f,0.0f);
 }

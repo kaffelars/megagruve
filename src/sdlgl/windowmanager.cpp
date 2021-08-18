@@ -84,7 +84,7 @@ bool windowmanager::setupopengl()
     glEnable(GL_DEPTH_TEST);
 
     //glDepthFunc(GL_LEQUAL);
-    glDepthFunc(GL_LESS);
+    glDepthFunc(GL_LEQUAL);
 
     glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
     glEnable(GL_PROGRAM_POINT_SIZE);

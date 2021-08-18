@@ -93,6 +93,11 @@ uint32_t chunk::get3dcoord(ctilepos tpos)
     return tpos.x + chunkwidth*(tpos.z + tpos.y*chunkwidth);
 }
 
+uint32_t chunk::gettilecoord(ctilepos tpos)
+{
+    return (tpos.x+1) + (chunkwidth+2)*((tpos.z+1) + tpos.y*(chunkwidth+2));
+}
+
 void chunk::setsunlight(ctilepos tpos, uint8_t value)
 {
     tilelight[get3dcoord(tpos)].sunlight = value / 16;
@@ -130,11 +135,11 @@ void chunk::setonevbo(uint8_t meshnum)
 
 tileid chunk::gettile(ctilepos tpos)
 {
-    return tileids[get3dcoord(tpos)];
+    return tileids[gettilecoord(tpos)];
 }
 void chunk::settile(ctilepos tpos, tileid value)
 {
-    tileids[get3dcoord(tpos)] = value;
+    tileids[gettilecoord(tpos)] = value;
 }
 uint8_t chunk::getsides(ctilepos tpos)
 {
@@ -151,9 +156,27 @@ void chunk::addside(ctilepos tpos, tiledata::tilesides side)
     setsides(tpos, sidez);
 }
 
+void chunk::setside(ctilepos tpos, tiledata::tilesides side, bool toggleon)
+{
+    if (toggleon)
+    {
+        addside(tpos, side);
+    }
+    else
+    {
+        int sidez = getsides(tpos);
+        sidez &= ~side;
+        setsides(tpos, sidez);
+    }
+}
+
 void chunk::addtile(tileid value)
 {
     tileids.push_back(value);
+}
+
+void chunk::addside()
+{
     tilesides.push_back(0);
 }
 
@@ -170,14 +193,6 @@ uint8_t chunk::getinactivemesh(uint8_t meshnum)
 void chunk::toggleactivemesh(uint8_t meshnum)
 {
     activecmesh[meshnum] = !activecmesh[meshnum];
-}
-
-bool chunk::allsidesgenerated()
-{
-    for (int a = 0; a < 6; a++)
-        if (!sidesgenerated[a]) return false;
-
-    return true;
 }
 
 void chunk::sethighest(chtilepos thpos, ytile y)
@@ -197,7 +212,7 @@ void chunk::addhighest(ytile value)
 
 bool chunk::safetodelete()
 {
-    if (gettag() == C_START || gettag()==C_READY || gettag()==C_READYTOMESH) return true; //burde være noenlunde trygt
+    if (gettag() == C_START || gettag()==C_READY) return true; //burde være noenlunde trygt
     return false;
 }
 

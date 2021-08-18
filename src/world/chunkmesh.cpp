@@ -11,12 +11,12 @@ chunkmesh::~chunkmesh()
     //dtor
 }
 
-void chunkmesh::addvertex(vpos pos, vnorm norm, uvpos uv, textureid tid, uint8_t sunlight, rgbcolor255 light)
+void chunkmesh::addvertex(vpos pos, vnorm norm, uvpos uv, textureid tid, uint8_t sunlight, rgbcolor255 light, uint8_t glow, uint8_t ambocc)
 {
     float uvtex = utils::packu2f(uv.x*255.0f, uv.y*255.0f, tid);
     float packednorm = utils::packnormal(norm.x, norm.y, norm.z);
     float packedlight = utils::packu2f(light.x, light.y, light.z);
-    float packeddiv = utils::packu2f(sunlight, 0,0);
+    float packeddiv = utils::packu2f(sunlight, ambocc, glow);
 
     vertexes[0].push_back(pos.x);
     vertexes[0].push_back(pos.y);

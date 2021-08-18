@@ -15,12 +15,17 @@ mainchar::~mainchar()
 void mainchar::fillinv()
 {
     mcharinv.additem("i_ironpickaxe", 1);
-    mcharinv.additem("i_ironaxe", 1);
+    mcharinv.additem("i_timetotem", 1);
     mcharinv.additem("i_apple", 5);
-    mcharinv.additem("i_cactus", 64);
-    mcharinv.additem("i_planks", 32);
-    mcharinv.additem("i_flag", 6);
-    mcharinv.additem("i_dirt", 77);
+    mcharinv.additem("i_greenwand", 1);
+    mcharinv.additem("i_planks", 64);
+    mcharinv.additem("i_flag", 32);
+    mcharinv.additem("i_redwand", 1);
+    mcharinv.additem("i_glowstone", 65);
+    mcharinv.additem("i_stone", 99);
+    mcharinv.additem("i_bookcase", 77);
+
+
 }
 
 wposition mainchar::geteyeposition()

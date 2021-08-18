@@ -13,7 +13,8 @@ namespace uiingame
 {
     void updatehearts(bool screensizeupdated);
     void updateactionbar(bool screensizeupdated);
-    void updateactionbaritems(bool screensizeupdated);
+
+    void additemicon(vaocontainer& vaoc, float xpos, float ypos, uint32_t textureid, uint32_t quantity, float iconsize);
 
     int oldhearts = 0;
     int oldmaxhearts = 0;
@@ -27,6 +28,43 @@ namespace uiingame
     int screensizex = settings::getscreenx();
     int screensizey = settings::getscreeny();
 
+    std::vector<uint32_t> numbertotexid;
+
+}
+
+void uiingame::initialize()
+{
+    for (int a = 0; a < 10; a++)
+    {
+        uint32_t texid = texturemanager::geticontexturenumber(std::to_string(a), texturemanager::ICONS_MEDIUM);
+        numbertotexid.push_back(texid);
+    }
+}
+
+void uiingame::additemicon(vaocontainer& vaoc, float xpos, float ypos, uint32_t textureid, uint32_t quantity, float iconsize)
+{
+    vaoc.addvalues(0, xpos, ypos, textureid, iconsize);
+    if (quantity > 1)
+    {
+        int8_t digits[3] {-1, -1, -1};
+        digits[2] = quantity % 10;
+        if (quantity > 9)
+        {
+            digits[1] = quantity / 10 %10;
+        }
+        if (quantity > 99) {
+            digits[0] = quantity / 100 %10;
+        }
+
+        float numbericonsize = iconsize / 3.0f;
+
+        for (int a = 0; a < 3; a++)
+        {
+            if (digits[a] != -1)
+                vaoc.addvalues(0, (xpos+numbericonsize*(a-1)), ypos+numbericonsize*1.1f, numbertotexid[digits[a]], numbericonsize);
+        }
+
+    }
 }
 
 void uiingame::updatehearts(bool screensizeupdated)
@@ -103,15 +141,16 @@ void uiingame::updateactionbar(bool screensizeupdated)
     }
 }
 
-void uiingame::updateactionbaritems(bool screensizeupdated)
+void uiingame::updateactionbaritems(bool updatebar)
 {
-    if (screensizeupdated || actionbaritems.isempty())
+    if (updatebar || actionbaritems.isempty())
     {
         actionbaritems.cleanvbos();
 
         actionbaritems.initialize(1, vaocontainer::typo::POINTS, 4);
 
         std::vector<uint32_t> itemtextures; //temp for testing, fyll via maincharctrl
+        std::vector<uint32_t> quantity;
 
         inventory& mcharinv = maincharcontroller::getmcharinventory();
 
@@ -121,10 +160,12 @@ void uiingame::updateactionbaritems(bool screensizeupdated)
             {
                 uint32_t itemid = mcharinv.getinvitem(a).itemid;
                 itemtextures.push_back(itemmanager::getitem(itemid).textureid);
+                quantity.push_back(mcharinv.getinvitem(a).quantity);
             }
             else
             {
                 itemtextures.push_back(0);
+                quantity.push_back(0);
             }
         }
 
@@ -142,7 +183,8 @@ void uiingame::updateactionbaritems(bool screensizeupdated)
         for (int a = 0; a < 10; a++)
         {
             if (itemtextures[a] != 0)
-                actionbaritems.addvalues(0, startbar + (float)a*(aiconsize + aspacer), ypos, itemtextures[a] ,iconsize);
+                //actionbaritems.addvalues(0, startbar + (float)a*(aiconsize + aspacer), ypos, itemtextures[a] ,iconsize);
+                additemicon(actionbaritems, startbar + (float)a*(aiconsize + aspacer), ypos, itemtextures[a], quantity[a], iconsize);
         }
 
         actionbaritems.setvbos();

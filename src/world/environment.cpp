@@ -14,10 +14,17 @@ namespace environment
     float currenttime = 9.0f; //0 - 24
     float timespeed = 1.0f;
 
+    bool timemoving = true;
+
     float cloudposition = 0.0f;
     float cloudcover = 0.2f;
 
     float wind = 0.1f;
+}
+
+void environment::toggletimemoving()
+{
+    timemoving = !timemoving;
 }
 
 float environment::getcurrenttime()
@@ -25,8 +32,16 @@ float environment::getcurrenttime()
     return currenttime;
 }
 
+void environment::changecloudcover(float change)
+{
+    cloudcover += change;
+    utils::clamp(cloudcover, 0.0f, 1.0f);
+}
+
 void environment::updatetime()
 {
+    if (!timemoving) return;
+
     currenttime += timekeeper::gettimefactor() * 0.001f * timespeed;
 
     if (currenttime > 24.0f) currenttime -= 24.0f;
@@ -98,11 +113,13 @@ rgbcolor environment::getskycolor()
 
 rgbcolor environment::getfogcolor()
 {
-    rgbcolor skycolor = getskycolor();
+    /*rgbcolor skycolor = getskycolor();
 
     skycolor.r = skycolor.r*5.0f;
     skycolor.g = skycolor.g*3.0f;
-    skycolor.b = skycolor.b*1.5f;
+    skycolor.b = skycolor.b*1.5f;*/
+
+    rgbcolor skycolor = getsuncolor();
 
     return skycolor;
 }

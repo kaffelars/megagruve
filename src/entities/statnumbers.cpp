@@ -12,14 +12,26 @@ statnumbers::~statnumbers()
     //dtor
 }
 
+void statnumbers::changestat(stat stattochange, float valuetoadd)
+{
+    statvalues[stattochange] += valuetoadd;
+}
+
+void statnumbers::setstat(stat stattoset, float value)
+{
+    statvalues[stattoset] = value;
+}
+
+float statnumbers::getstat(stat stattoget)
+{
+    return statvalues[stattoget];
+}
 
 statnumbers operator+(const statnumbers& a, const statnumbers& b)
 {
     statnumbers s;
-    s.maxhp = a.maxhp + b.maxhp;
-    s.attack = a.attack + b.attack;
-    s.defense = a.defense + b.defense;
-    s.movespeed = a.movespeed + b.movespeed;
-    s.usespeed = a.usespeed + b.usespeed;
+    for (int i = 0; i < 5; i++)
+        s.statvalues[i] = a.statvalues[i] + b.statvalues[i];
+
 	return s;
 }

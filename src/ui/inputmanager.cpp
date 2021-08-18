@@ -4,48 +4,226 @@
 
 namespace inputmanager
 {
-    std::vector<b_key> bound_keys;
-    std::unordered_map<SDL_Scancode, keyinfo> keys;
-    std::unordered_map<int, keyinfo> buttons;
     glm::ivec2 cursorpos;
     glm::ivec2 deltamove;
     glm::ivec2 mousetrappos;
-    keyinfo mousescroll;
     //glm::ivec2 inputmanager::cursorposold;
     bool mousehidden = false;
 
     uint8_t currentmodifiers = 0;
 
-    int recordpress = 0;
-    b_key recordedpress;
+    bool keyfunctionsactive = false;
 
-    std::vector<SDL_Scancode> clickedkeys;//holder hvilke keys som ble clicked forrige frame
-    std::vector<int> clickedbuttons;
+    int recordpress = 0;
+    //b_key recordedpress;
+
+    uint8_t getmodifiers();
+
+    //ny
+    void addkey(keytype ktype, keys_enum keyenum, int32_t keypress, key_mods kmod, std::string description);
+    uint32_t getkeyid(keytype ktype, int32_t keypress, key_mods kmod);
+    void processkey(keytype ktype, int32_t keypress, key_mods kmod, keystatus kstatus);
+    uint32_t getkeyidfromenum(keys_enum keyenum);
+    std::vector<uint32_t> heldkeys;
+    std::vector<keydata> keymap;
+    std::unordered_map<uint32_t, uint32_t> keyidtokeymap;
+    std::unordered_map<uint32_t, uint32_t> keyenumtokeymap;
+}
+
+uint32_t inputmanager::getkeyid(keytype ktype, int32_t keypress, key_mods kmod)
+{
+    union keyk
+    {
+        struct ss
+        {
+            uint8_t scancode; //hvorfor ikke bare ha ktype og keypress og kmods
+            uint8_t button;
+            uint8_t scroll;
+            uint8_t kmods;
+        } s;
+
+        uint32_t i;
+    };
+
+    keyk k;
+    k.s.scancode = 0;
+    k.s.button = 0;
+    k.s.scroll = 0;
+    k.s.kmods = kmod;
+
+    switch (ktype)
+    {
+    case KEYTYPE_KEYBOARD:
+        k.s.scancode = keypress;
+        break;
+    case KEYTYPE_MOUSEBUTTON:
+        k.s.button = keypress;
+        break;
+    case KEYTYPE_MOUSESCROLL:
+        if (keypress == 1)
+            k.s.scroll = 1;
+        else if (keypress == -1)
+            k.s.scroll = 2;
+        break;
+    }
+
+    return k.i;
+}
+
+void inputmanager::processheldkeys()
+{
+    for (uint32_t k_id : heldkeys)
+    {
+        keydata& key = keymap[k_id];
+        if (keyfunctionsactive && key.keyfunction[KE_HELD])
+            key.keyfunction[KE_HELD]();
+    }
+}
+
+void inputmanager::processkey(keytype ktype, int32_t keypress, key_mods kmod, keystatus kstatus)
+{
+    uint32_t kid = getkeyid(ktype, keypress, kmod);
+
+    if (keyidtokeymap.find(kid) == keyidtokeymap.end()) return;
+
+    uint32_t k_id = keyidtokeymap.at(kid);
+    keydata& key = keymap[k_id];
+
+    if (kstatus == KS_DOWN)
+    {
+        key.clicked = false;
+        if (key.held == false)
+        {
+            key.clicked = true;
+            if (keyfunctionsactive && key.keyfunction[KE_CLICKED])
+                key.keyfunction[KE_CLICKED]();
+        }
+        heldkeys.push_back(k_id);
+        key.held = true;
+
+    }
+
+    if (kstatus == KS_UP)
+    {
+        heldkeys.erase(std::remove(heldkeys.begin(), heldkeys.end(), k_id), heldkeys.end());
+        key.held = false;
+        key.clicked = false;
+        if (keyfunctionsactive && key.keyfunction[KE_RELEASED])
+            key.keyfunction[KE_RELEASED]();
+    }
+}
+
+void inputmanager::processevent(SDL_Event& e)
+{
+    switch (e.type)
+    {
+    case SDL_KEYDOWN:
+        {
+            SDL_Scancode s_key = e.key.keysym.scancode;
+            processkey(KEYTYPE_KEYBOARD, s_key, mod_none, KS_DOWN);
+            break;
+        }
+    case SDL_KEYUP:
+        {
+            SDL_Scancode s_key = e.key.keysym.scancode;
+            processkey(KEYTYPE_KEYBOARD, s_key, mod_none, KS_UP);
+            break;
+        }
+    case SDL_MOUSEBUTTONDOWN:
+        {
+            int button = e.button.button;
+            processkey(KEYTYPE_MOUSEBUTTON, button, mod_none, KS_DOWN);
+            break;
+        }
+    case SDL_MOUSEBUTTONUP:
+        {
+            int button = e.button.button;
+            processkey(KEYTYPE_MOUSEBUTTON, button, mod_none, KS_UP);
+            break;
+        }
+    case SDL_MOUSEWHEEL:
+        {
+            if (e.wheel.y > 0)
+                processkey(KEYTYPE_MOUSESCROLL, 1, mod_none, KS_DOWN);
+            if (e.wheel.y < 0)
+                processkey(KEYTYPE_MOUSESCROLL, -1, mod_none, KS_DOWN);
+            break;
+        }
+    default:
+        break;
+    }
+
+    processkey(KEYTYPE_MOUSESCROLL, 1, mod_none, KS_UP);
+    processkey(KEYTYPE_MOUSESCROLL, -1, mod_none, KS_UP);
+}
+
+void inputmanager::addkey(keytype ktype, keys_enum keyenum, int32_t keypress, key_mods kmod, std::string description)
+{
+    keymap.emplace_back(keydata(description, ktype));
+    uint32_t id = keymap.size()-1;
+
+    uint32_t kid = getkeyid(ktype, keypress, kmod);
+
+    keyidtokeymap.insert(std::pair(kid, id));
+    keyenumtokeymap.insert(std::pair(keyenum, id));
+}
+
+uint32_t inputmanager::getkeyidfromenum(keys_enum keyenum)
+{
+    if (keyenumtokeymap.find(keyenum) == keyenumtokeymap.end()) return 0;
+    return keyenumtokeymap.at(keyenum);
+}
+
+void inputmanager::setkeyfunction(keys_enum keyenum, std::function<void()> kclick, keyevent kevent)
+{
+    uint32_t keyid = getkeyidfromenum(keyenum);
+    keymap[keyid].setkeyclick(kclick, kevent);
+}
+
+void inputmanager::clearallkeyfunctions()
+{
+    for (keydata& k : keymap)
+    {
+        k.clearkeyclicks();
+    }
+}
+
+void inputmanager::pausekeyfunctions()
+{
+    keyfunctionsactive = false;
+}
+
+void inputmanager::resumekeyfunctions()
+{
+    keyfunctionsactive = true;
 }
 
 void inputmanager::initialize()
 {
     std::cout << "initializing keys... "; //obs, lag så de kan endres
-    inputmanager::bound_keys.clear(); //to make sure no double shenanigans
+    addkey(KEYTYPE_KEYBOARD, KEY_ESCAPE, SDL_SCANCODE_ESCAPE, mod_none, "escape");
+    addkey(KEYTYPE_KEYBOARD, KEY_1, SDL_SCANCODE_1, mod_none, "selection 1");
+    addkey(KEYTYPE_KEYBOARD, KEY_2, SDL_SCANCODE_2, mod_none, "selection 2");
+    addkey(KEYTYPE_KEYBOARD, KEY_3, SDL_SCANCODE_3, mod_none, "selection 3");
+    addkey(KEYTYPE_KEYBOARD, KEY_4, SDL_SCANCODE_4, mod_none, "selection 4");
+    addkey(KEYTYPE_KEYBOARD, KEY_5, SDL_SCANCODE_5, mod_none, "selection 5");
+    addkey(KEYTYPE_KEYBOARD, KEY_6, SDL_SCANCODE_6, mod_none, "selection 6");
+    addkey(KEYTYPE_KEYBOARD, KEY_7, SDL_SCANCODE_7, mod_none, "selection 7");
+    addkey(KEYTYPE_KEYBOARD, KEY_8, SDL_SCANCODE_8, mod_none, "selection 8");
+    addkey(KEYTYPE_KEYBOARD, KEY_9, SDL_SCANCODE_9, mod_none, "selection 9");
+    addkey(KEYTYPE_KEYBOARD, KEY_0, SDL_SCANCODE_0, mod_none, "selection 10");
 
-    for (int a = 0; a < KEY_LAST; a++)
-        inputmanager::bound_keys.emplace_back(b_key());
+    addkey(KEYTYPE_MOUSESCROLL, KEY_ZOOMIN, 1, mod_none, "zoom in");
+    addkey(KEYTYPE_MOUSESCROLL, KEY_ZOOMOUT, -1, mod_none, "zoom out");
 
-    inputmanager::bound_keys[KEY_UP].initialize_k(SDL_SCANCODE_W, 0, "up");
-    inputmanager::bound_keys[KEY_DOWN].initialize_k(SDL_SCANCODE_S, 0, "down");
-    inputmanager::bound_keys[KEY_LEFT].initialize_k(SDL_SCANCODE_A, 0, "left");
-    inputmanager::bound_keys[KEY_RIGHT].initialize_k(SDL_SCANCODE_D, 0, "right");
+    addkey(KEYTYPE_MOUSEBUTTON, KEY_SELECT, SDL_BUTTON_LEFT, mod_none, "select");
 
-    inputmanager::bound_keys[KEY_ROTATECAM].initialize_mb(SDL_BUTTON_RIGHT, 0, "rotate cam");
-    inputmanager::bound_keys[KEY_SELECT].initialize_mb(SDL_BUTTON_LEFT, 0, "select object");
-    inputmanager::bound_keys[KEY_MISC].initialize_k(SDL_SCANCODE_C, 0, "misc");
-    inputmanager::bound_keys[KEY_ZOOMUP].initialize_ms(1, inputmanager::mod_shift, "zoom up");
-    inputmanager::bound_keys[KEY_ZOOMDOWN].initialize_ms(-1, inputmanager::mod_shift, "zoom down");
+    addkey(KEYTYPE_KEYBOARD, KEY_UP, SDL_SCANCODE_W, mod_none, "up");
+    addkey(KEYTYPE_KEYBOARD, KEY_DOWN, SDL_SCANCODE_S, mod_none, "down");
+    addkey(KEYTYPE_KEYBOARD, KEY_LEFT, SDL_SCANCODE_A, mod_none, "left");
+    addkey(KEYTYPE_KEYBOARD, KEY_RIGHT, SDL_SCANCODE_D, mod_none, "right");
 
-    inputmanager::bound_keys[KEY_ZOOMIN].initialize_ms(1, 0, "zoom in");
-    inputmanager::bound_keys[KEY_ZOOMOUT].initialize_ms(-1, 0, "zoom out");
 
-    inputmanager::bound_keys[KEY_ESCAPE].initialize_k(SDL_SCANCODE_ESCAPE, 0, "escape");
 
     std::cout << "done\n";
 }
@@ -99,93 +277,6 @@ glm::ivec2 inputmanager::getmousedelta()
     return inputmanager::deltamove;
 }
 
-void inputmanager::refresh()
-{
-    //kjøres på starten av hver frame før input sjekkes
-
-    inputmanager::mousescroll.value = 0;
-
-    for (SDL_Scancode s : clickedkeys) //disse keys ble clicked forrige frame
-    {
-        inputmanager::keys[s].clicked = false;
-    }
-
-    clickedkeys.clear();
-
-    for (int b : clickedbuttons)
-    {
-        inputmanager::buttons[b].clicked = false;
-    }
-
-    clickedbuttons.clear();
-}
-
-bool inputmanager::iskeyheld(int keyid) //enum key
-{
-    keytype k = inputmanager::bound_keys[keyid].ktype;
-    bool mainkey = false;
-    uint8_t mods = 0;
-
-    if (k == KEYTYPE_KEYBOARD)
-    {
-        SDL_Scancode s_key = inputmanager::bound_keys[keyid].key;
-        mods = inputmanager::bound_keys[keyid].key_modifiers;
-
-        mainkey = inputmanager::keys[s_key].held;
-    }
-    if (k == KEYTYPE_MOUSEBUTTON)
-    {
-        int button = inputmanager::bound_keys[keyid].mouse;
-        mods = inputmanager::bound_keys[keyid].key_modifiers;
-
-        mainkey = inputmanager::buttons[button].held;
-    }
-    if (k == KEYTYPE_MOUSESCROLL)
-    {
-        int scroll = inputmanager::bound_keys[keyid].mouse;
-        mods = inputmanager::bound_keys[keyid].key_modifiers;
-        mainkey = (inputmanager::mousescroll.value == scroll); //vil dette alltid funke? kan scroll være over +/-1?
-    }
-
-    uint8_t curmods = getmodifiers();
-
-    return (mainkey && (!mods || (curmods & mods)));
-}
-
-std::string inputmanager::getkeyname(b_key& bkey)
-{
-    std::string keyname = "";
-
-    if (bkey.ktype == KEYTYPE_KEYBOARD)
-    {
-        const char* ckeyname = SDL_GetKeyName(bkey.getkeycode()); //memory leak? nei
-
-        keyname = ckeyname;
-    }
-    else
-    {
-        if (bkey.ktype == KEYTYPE_MOUSEBUTTON)
-        {
-            keyname = "mouse button " + std::to_string(bkey.mouse);//todo
-        }
-        if (bkey.ktype == KEYTYPE_MOUSESCROLL)
-        {
-            if (bkey.mouse > 0.0f)
-            {
-                keyname = "mouse scroll up";
-            }
-            else
-            {
-                keyname = "mouse scroll down";
-            }
-        }
-    }
-
-    if (bkey.key_modifiers & key_mods::mod_ctrl) keyname = "ctrl + " + keyname;
-    if (bkey.key_modifiers & key_mods::mod_shift) keyname = "shift + " + keyname;
-
-    return keyname;
-}
 
 void inputmanager::recordnextpress()
 {
@@ -194,7 +285,7 @@ void inputmanager::recordnextpress()
 
 uint8_t inputmanager::getmodifiers()
 {
-    uint8_t mods = 0;
+    /*uint8_t mods = 0;
 
     if (inputmanager::keys[SDL_SCANCODE_LCTRL].held || inputmanager::keys[SDL_SCANCODE_RCTRL].held)
     {
@@ -206,136 +297,6 @@ uint8_t inputmanager::getmodifiers()
         mods = mods | mod_shift;
     }
 
-    return mods;
-}
-
-bool inputmanager::waskeyclicked(int keyid) //enum key
-{
-    bool mainkey = false;
-    keytype k = inputmanager::bound_keys[keyid].ktype;
-    uint8_t mods = 0;
-
-    if (k == KEYTYPE_KEYBOARD)
-    {
-        SDL_Scancode s_key = inputmanager::bound_keys[keyid].key;
-        mods = inputmanager::bound_keys[keyid].key_modifiers;
-
-        mainkey = inputmanager::keys[s_key].clicked;
-    }
-    if (k == KEYTYPE_MOUSEBUTTON)
-    {
-        int button = inputmanager::bound_keys[keyid].mouse;
-        mods = inputmanager::bound_keys[keyid].key_modifiers;
-
-        mainkey = inputmanager::buttons[button].clicked;
-    }
-    if (k == KEYTYPE_MOUSESCROLL)
-    {
-        int scroll = inputmanager::bound_keys[keyid].mouse;
-        mods = inputmanager::bound_keys[keyid].key_modifiers;
-        mainkey = (inputmanager::mousescroll.value == scroll);
-    }
-
-    uint8_t curmods = getmodifiers();
-
-    return (mainkey && ((curmods == mods) || (curmods & mods)));
-}
-
-int inputmanager::getkeyvalue(int keyid) //returner 1 hvis key held for annet enn scroll
-{
-    keytype k = inputmanager::bound_keys[keyid].ktype;
-
-    if (k == KEYTYPE_MOUSESCROLL)
-    {
-        return inputmanager::mousescroll.value;
-    }
-    else
-    {
-        inputmanager::iskeyheld(keyid);
-    }
-
+    return mods;*/
     return 0;
-}
-
-bool inputmanager::isscancodemodifier(SDL_Scancode scan)
-{
-    if (scan == SDL_SCANCODE_LCTRL || scan == SDL_SCANCODE_RCTRL || scan == SDL_SCANCODE_LSHIFT || scan == SDL_SCANCODE_RSHIFT)
-    {
-        return true;
-    }
-
-    return false;
-}
-
-
-void inputmanager::processevent(SDL_Event& e)
-{
-    if (e.type == SDL_KEYDOWN)
-    {
-        SDL_Scancode s_key = e.key.keysym.scancode;
-        bool held = inputmanager::keys[s_key].held;
-        if (held == false) //clicked
-        {
-            inputmanager::keys[s_key].clicked = true;
-            clickedkeys.push_back(s_key);
-        }
-        inputmanager::keys[s_key].held = true;
-
-        if (recordpress == 1 && isscancodemodifier(s_key) == false)
-        {
-            recordedpress.ktype = KEYTYPE_KEYBOARD;
-            recordedpress.key = s_key;
-            recordedpress.key_modifiers = getmodifiers();//obs
-            recordpress = 2;
-        }
-    }
-
-    if (e.type == SDL_KEYUP)
-    {
-        SDL_Scancode s_key = e.key.keysym.scancode;
-        inputmanager::keys[s_key].held = false;
-    }
-
-    //if (!uicontroller::uimouse()) //denne blir fuckaroni med f.eks. keybinds
-    //{
-        if (e.type == SDL_MOUSEBUTTONDOWN)
-        {
-            int button = e.button.button;
-            bool held = inputmanager::buttons[button].held;
-            if (held == false) //clicked
-            {
-                inputmanager::buttons[button].clicked = true;
-                clickedbuttons.push_back(button);
-            }
-            inputmanager::buttons[button].held = true;
-
-            if (recordpress == 1)
-            {
-                recordedpress.ktype = KEYTYPE_MOUSEBUTTON;
-                recordedpress.mouse = button;
-                recordedpress.key_modifiers = getmodifiers();//obs
-                recordpress = 2;
-            }
-        }
-
-        if (e.type == SDL_MOUSEWHEEL)
-        {
-            inputmanager::mousescroll.value = e.wheel.y;
-
-            if (recordpress == 1)
-            {
-                recordedpress.ktype = KEYTYPE_MOUSESCROLL;
-                recordedpress.mouse = e.wheel.y;
-                recordedpress.key_modifiers = getmodifiers();//obs
-                recordpress = 2;
-            }
-        }
-    //}
-
-    if (e.type == SDL_MOUSEBUTTONUP)
-    {
-        int button = e.button.button;
-        inputmanager::buttons[button].held = false;
-    }
-
 }

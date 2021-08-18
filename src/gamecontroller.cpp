@@ -31,7 +31,6 @@ void gamecontroller::gameloop()
     {
         //--------- inputs og events ----------
         inputmanager::logcursorpos();//putt i refresh? neh
-        inputmanager::refresh();
 
         //sdl events
         while (SDL_PollEvent(&e))
@@ -44,6 +43,8 @@ void gamecontroller::gameloop()
             if (e.type == SDL_QUIT)
                 scenec::quitgame();
         }
+
+        inputmanager::processheldkeys();
 
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplSDL2_NewFrame(windowmanager::sdlwindow);

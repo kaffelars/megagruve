@@ -123,7 +123,7 @@ void scenesettings::keybinds()
 
 
 
-    for (inputmanager::b_key b : inputmanager::bound_keys)
+    /*for (inputmanager::b_key b : inputmanager::bound_keys)
     {
         uielement::text(b.key_function.c_str(), glm::vec2(25.0f, 25.0f + index * 30.0f));
 
@@ -157,7 +157,7 @@ void scenesettings::keybinds()
         else inputmanager::bound_keys[waitingforkeypress].mouse = inputmanager::recordedpress.mouse;
 
         waitingforkeypress = -1;
-    }
+    }*/
 
 }
 

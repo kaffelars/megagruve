@@ -13,15 +13,26 @@ lifeform::~lifeform()
     //dtor
 }
 
+void lifeform::setstats(float shp, float maxhp, float attack, float defense, float movespeed, float usespeed)
+{
+    basestats.setstat(statnumbers::STAT_MAXHP, maxhp);
+    hp = shp;
+    if (hp == 0.0f) hp = maxhp;
+    basestats.setstat(statnumbers::STAT_ATTACK, attack);
+    basestats.setstat(statnumbers::STAT_DEFENSE, defense);
+    basestats.setstat(statnumbers::STAT_MOVESPEED, movespeed);
+    basestats.setstat(statnumbers::STAT_USESPEED, usespeed);
+}
+
 wposition lifeform::getposition()
 {
-    //fjern denne func, la physicsobj ordne biffen
+    //return physicsobject::getposition();
 }
 
 void lifeform::heal(uint32_t healamount)
 {
     hp += healamount;
-    if (hp > actualstats.maxhp) hp = actualstats.maxhp;
+    if (hp > actualstats.getstat(statnumbers::STAT_MAXHP)) hp = actualstats.getstat(statnumbers::STAT_MAXHP);
 }
 
 void lifeform::takedamage(int32_t attackstrength, int32_t attacktype, entity& source)
@@ -45,5 +56,5 @@ void lifeform::update()
 		s.update();
     }
 
-    if (hp > actualstats.maxhp) hp = actualstats.maxhp;
+    if (hp > actualstats.getstat(statnumbers::STAT_MAXHP)) hp = actualstats.getstat(statnumbers::STAT_MAXHP);
 }

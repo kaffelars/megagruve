@@ -18,7 +18,9 @@ namespace texturemanager
 
     std::unordered_map<std::string, uint32_t> iconnametoid[3];
 
-    std::vector<std::string> tiletexturenames = {"debug", "water", "dirt", "grass", "grassydirt", "stone", "rock", "sand", "flag", "leaves", "blue", "log", "logtop", "grasstuft1", "grasstuft2", "planks", "cactus_side", "cactus_top", "littlegrass", "bookshelf", "flower1", "flower2", "flower3"};
+    std::vector<std::string> tiletexturenames = {"debug", "water", "dirt", "grass", "grassydirt", "stone", "rock", "sand", "flag", "leaves", "blue", "log",
+    "logtop", "grasstuft1", "grasstuft2", "planks", "cactus_side", "cactus_top", "littlegrass", "bookcase", "flower1", "flower2", "flower3",
+    "chest_top", "chest_bottom", "chest_side", "chest_front", "chest_inside", "destroy1", "destroy2", "destroy3", "destroy4", "glowstone"};
 }
 
 
@@ -48,7 +50,7 @@ void texturemanager::loadicontextures()
     int sizes[3] = {10, 16, 24};
     std::vector<std::string> filenames[3]= {
     {"debug", "redheart", "halfheart", "halfblackheart", "blackheart", "yellowheart", "greenheart", "blueheart", "silverheart", "shield"},
-    {"debug", "iron_pickaxe", "iron_axe", "apple"},
+    {"debug", "iron_pickaxe", "iron_axe", "apple", "lightbulb", "green_wand", "red_wand", "totem"},
     {"debug", "border", "selectedborder"}
     };
 
@@ -128,9 +130,9 @@ void texturemanager::loadicontextures()
 
                 uint8_t* pixels = (uint8_t*)tileimg -> pixels;
 
-                for (int ex = 0; ex < tileres; ex++)
+                for (float ex = 0; ex < tileres; ex++)
                 {
-                    for (int ey = 0; ey < tileres; ey++)
+                    for (float ey = 0; ey < tileres; ey++)
                     {
                         //helt random - fix
                         /*int tx = (ex / 2.3f) + 1;
@@ -138,7 +140,7 @@ void texturemanager::loadicontextures()
                         int ux = (ex / 2.15f) + (ey / 2.15f)+1;
                         int uy = 4-(ex/5) + (ey/3);*/
 
-                        int tx = ex / 2;
+                        /*int tx = ex / 2; //ikke bra
                         int ty = (ex / 4) + (tileres / 4) + (ey / 2);
                         int ux = (ex / 2) + (ey / 2);
                         int uy = (ey / 4) - (ex / 4) + (tileres / 4);
@@ -154,6 +156,14 @@ void texturemanager::loadicontextures()
                             processedpic[3 + 4*(tx + tileres * ty)] = pixels[4*(ex + tileres * ey)+3];
                             processedpic[3+4*((tileres - tx - 1) + tileres * ty)] = pixels[3+4*(ex + tileres * ey)];
                             processedpic[3+4*(ux + tileres * uy)] = pixels[3+4*(ex + tileres * ey)];
+                        }*/
+
+                        float tx = ex;
+                        float ty = ey;
+
+                        for (int b = 0; b < 4; b++)
+                        {
+                            processedpic[b + 4*((int)tx + tileres * (int)ty)] = pixels[4*((int)ex + tileres * (int)ey)+b];
                         }
                     }
                 }
