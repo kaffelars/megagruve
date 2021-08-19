@@ -8,6 +8,8 @@ Work in progress lol (crashes randomly)
 
 ![screenshot](https://github.com/kaffelars/megagruve/blob/main/screenshots/screenshot2.png)
 
+![screenshot](https://github.com/kaffelars/megagruve/blob/main/screenshots/screenshot1.png)
+
 ![screenshot](https://github.com/kaffelars/megagruve/blob/main/screenshots/screenshot3.png)
 
 Using:
