@@ -18,9 +18,9 @@ namespace texturemanager
 
     std::unordered_map<std::string, uint32_t> iconnametoid[3];
 
-    std::vector<std::string> tiletexturenames = {"debug", "water", "dirt", "grass", "grassydirt", "stone", "rock", "sand", "flag", "leaves", "blue", "log",
+    std::vector<std::string> tiletexturenames = {"debug", "water", "dirt", "grass", "grass2", "grassydirt", "stone", "rock", "sand", "flag", "leaves", "blue", "log",
     "logtop", "grasstuft1", "grasstuft2", "planks", "cactus_side", "cactus_top", "littlegrass", "bookcase", "flower1", "flower2", "flower3",
-    "chest_top", "chest_bottom", "chest_side", "chest_front", "chest_inside", "destroy1", "destroy2", "destroy3", "destroy4", "glowstone"};
+    "chest_top", "chest_bottom", "chest_side", "chest_front", "chest_inside", "destroy1", "destroy2", "destroy3", "destroy4", "glowstone", "snow", "gravel", "ice"};
 }
 
 
@@ -43,6 +43,30 @@ void texturemanager::bindiconstexture(iconsizes iconsize,int texid)
 }
 
 //fix bedre oppsett på code'n
+
+void texturemanager::getbiometint(std::vector<rgbcolor255>& rgb)
+{
+    rgb.clear();
+
+    std::string filo = "data/gfx/biometint.png";
+    SDL_Surface* tileimg = IMG_Load(filo.c_str());
+    uint8_t* pixels = (uint8_t*)tileimg -> pixels;
+
+    for (int x = 0; x < 256; x++)
+    {
+        for (int y = 0; y < 256; y++)
+        {
+            uint8_t r = pixels[4*((int)x + 256 * (int)y)+0];
+            uint8_t g = pixels[4*((int)x + 256 * (int)y)+1];
+            uint8_t b = pixels[4*((int)x + 256 * (int)y)+2];
+
+            rgb.push_back(rgbcolor255{r,g,b});
+        }
+    }
+
+
+    SDL_FreeSurface(tileimg);
+}
 
 void texturemanager::loadicontextures()
 {
@@ -275,8 +299,8 @@ void texturemanager::loadcloudtexture()
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);//GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);//GL_NEAREST);
 }
 
 uint32_t texturemanager::gettiletexturenumber(std::string texturename)

@@ -9,6 +9,22 @@ chunkpos chunkcontroller::wpostocpos(wposition wpos)
     return c;
 }
 
+bool chunkcontroller::withinchunkbounds(ctilepos cpos)
+{
+    if (cpos.x < 0 || cpos.x > chunkwidth-1) return false;
+    if (cpos.y < 0 || cpos.y > chunkheight-1) return false;
+    if (cpos.z < 0 || cpos.z > chunkwidth-1) return false;
+    return true;
+}
+
+bool chunkcontroller::withinextendedchunkbounds(ctilepos cpos)
+{
+    if (cpos.x < -1 || cpos.x > chunkwidth) return false;
+    if (cpos.y < -1 || cpos.y > chunkheight) return false;
+    if (cpos.z < -1 || cpos.z > chunkwidth) return false;
+    return true;
+}
+
 wtilepos chunkcontroller::cposctilepostowtilepos(chunkpos cpos, ctilepos ctpos)
 {
     return wtilepos{cpos.x * chunkwidth + ctpos.x, ctpos.y, ctpos.z + cpos.y * chunkwidth};

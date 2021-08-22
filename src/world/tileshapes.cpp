@@ -263,7 +263,7 @@ void tiledata::initializetileshapes()
     tileshapes.push_back(cactus);
 }
 
-void tiledata::addside(ctilepos cpos, tileid id, uint32_t bshape, uint8_t tileside, uint8_t sunlight, rgbcolor255 light, uint8_t glow, uint8_t ambocc[4], chunkmesh& cmesh)
+void tiledata::addside(ctilepos cpos, tileid id, uint32_t bshape, uint8_t tileside, uint8_t sunlight, rgbcolor255 light, uint8_t glow, uint8_t ambocc[4], rgbcolor255 tint[4], chunkmesh& cmesh)
 {
     int index = 0;
     for (int a = 0; a < 4; a++)
@@ -284,12 +284,12 @@ void tiledata::addside(ctilepos cpos, tileid id, uint32_t bshape, uint8_t tilesi
         if (tileshapes[bshape].uv[tileside][index] == uvpos{1,0}) corner = 1;
         if (tileshapes[bshape].uv[tileside][index] == uvpos{1,1}) corner = 2;
         if (tileshapes[bshape].uv[tileside][index] == uvpos{0,1}) corner = 3;
-        cmesh.addvertex(vpos{cpos.x + v.x, cpos.y + v.y, cpos.z + v.z}, sidenormals[tileside], tileshapes[bshape].uv[tileside][index], texid, sunlight, light, glow, ambocc[corner]);
+        cmesh.addvertex(vpos{cpos.x + v.x, cpos.y + v.y, cpos.z + v.z}, sidenormals[tileside], tileshapes[bshape].uv[tileside][index], texid, sunlight, light, glow, ambocc[corner], tint[corner]);
         index ++;
     }
 }
 
-void tiledata::addblock(ctilepos cpos, tileid id, uint32_t bshape, uint8_t tilesides, uint8_t sunlight, rgbcolor255 light, uint8_t glow, uint8_t ambocc, chunkmesh& cmesh)
+void tiledata::addblock(ctilepos cpos, tileid id, uint32_t bshape, uint8_t tilesides, uint8_t sunlight, rgbcolor255 light, uint8_t glow, uint8_t ambocc, rgbcolor255 tint, chunkmesh& cmesh)
 {
     if (!tileshapes[bshape].onlyanyways)
     {
@@ -301,7 +301,7 @@ void tiledata::addblock(ctilepos cpos, tileid id, uint32_t bshape, uint8_t tiles
                 for (vpos& v : tileshapes[bshape].vertexes[a])
                 {
                     uint32_t texid = gettileinfo(id).sidetextureids[a];
-                    cmesh.addvertex(vpos{cpos.x + v.x, cpos.y + v.y, cpos.z + v.z}, sidenormals[a], tileshapes[bshape].uv[a][index], texid, sunlight, light, glow, 0);
+                    cmesh.addvertex(vpos{cpos.x + v.x, cpos.y + v.y, cpos.z + v.z}, sidenormals[a], tileshapes[bshape].uv[a][index], texid, sunlight, light, glow, 0, tint);
                     index ++;
                 }
             }
@@ -313,7 +313,7 @@ void tiledata::addblock(ctilepos cpos, tileid id, uint32_t bshape, uint8_t tiles
         for (vpos& v : tileshapes[bshape].vertexes[6])
         {
             uint32_t texid = gettileinfo(id).sidetextureids[0];
-            cmesh.addvertex(vpos{cpos.x + v.x, cpos.y + v.y, cpos.z + v.z}, tileshapes[bshape].normals[index], tileshapes[bshape].uv[6][index], texid, sunlight, light, glow, 0);
+            cmesh.addvertex(vpos{cpos.x + v.x, cpos.y + v.y, cpos.z + v.z}, tileshapes[bshape].normals[index], tileshapes[bshape].uv[6][index], texid, sunlight, light, glow, 0, tint);
             index ++;
         }
     }

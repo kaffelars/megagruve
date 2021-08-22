@@ -74,7 +74,7 @@ namespace utils
             }
             closedir (dir);
         } else {
-            std::cout << "error dir open shiztnd i utils::getfolders\n";
+            std::cout << "error dir open shiz i utils::getfolders\n";
             return false;
         }
 

@@ -1,6 +1,9 @@
 #include "consts.h"
 #include "chunkcontroller.h"
 
+
+#include "biomecontroller.h"
+
 namespace chunkcontroller
 {
     uint32_t cpostoid(chunkpos cpos);
@@ -16,30 +19,41 @@ namespace chunkcontroller
     std::vector<chunkpos> loadedchunks; //loop heller bare gjennom elementene i unordered map
     int32_t chunksrendered = 0;
 
-    struct updateside
+
+
+    struct cchangetile
     {
-        chunkpos maincpos;
-        ctilepos maintpos;
-
-        uint8_t side;
-
-        chunkpos nbourcpos;
-        ctilepos nbourtpos;
-    };
-
-    struct changetile
-    {
-        wtilepos wpos;
+        chunkpos cpos;
+        ctilepos ctpos;
         tileid tid;
     };
 
-    int32_t counter = 0;
+    std::vector<cchangetile> ctilestochange;
+    std::vector<cchangetile> ctilestochangequeue;
 
-    std::vector<updateside> sidestoupdate; //sides som skal updates (på sidene)
+    struct cdecorate
+    {
+        uint32_t voxelmodelid;
+        chunkpos cpos;
+        ctilepos ctpos;
+    };
 
-    std::vector<changetile> tilestochange; //tiles som skal changes
+    std::vector<cdecorate> decorations;
+    std::mutex decoratemutex;
 
+    struct waterrender
+    {
+        chunk* c;
+    };
 
+    std::vector<waterrender> waterrenders;
+}
+
+void chunkcontroller::adddecoration(chunkpos cpos, ctilepos ctpos, uint32_t voxelmodelid)
+{
+    decoratemutex.lock();
+    decorations.push_back(cdecorate{voxelmodelid, cpos, ctpos});
+    decoratemutex.unlock();
 }
 
 chunk& chunkcontroller::getchunk(chunkpos cpos)
@@ -59,10 +73,9 @@ int32_t chunkcontroller::getchunksrendered()
 
 void chunkcontroller::renderchunks(direction dir, wposition maincharposition)
 {
-    counter++;
-    if (counter > 1000000000) counter = 0;
-
     chunkpos centerchunk = wpostocpos(maincharposition);
+
+    waterrenders.clear();
 
     chunksrendered = 0;
 
@@ -101,8 +114,6 @@ void chunkcontroller::renderchunks(direction dir, wposition maincharposition)
 void chunkcontroller::updatechunks()
 {
     changetiles();
-
-    updatesides(); //(tries to) updates sides that couldn't be updated in changetiles
 
     //sletter chunks out of range
     glm::vec3 charpos = maincharcontroller::getmaincharposition();
@@ -167,6 +178,14 @@ bool chunkcontroller::ischunkvisible(chunk& c) //not good when looking down
     return false;
 }
 
+void chunkcontroller::renderwater()
+{
+    for (waterrender& w : waterrenders)
+    {
+        w.c->renderwater();
+    }
+}
+
 void chunkcontroller::renderchunk(chunkpos cpos)
 {
     if (!chunkexists(cpos))
@@ -174,8 +193,6 @@ void chunkcontroller::renderchunk(chunkpos cpos)
 
     chunk& c = getchunk(cpos);
     chunk::ctags ctag = c.gettag();
-
-    c.counter = counter;
 
     if (threadcounter < maxthreads && ctag == chunk::C_READY && c.needsremesh())
     {
@@ -200,6 +217,7 @@ void chunkcontroller::renderchunk(chunkpos cpos)
         {
             chunksrendered++;
             c.render();
+            waterrenders.emplace_back(waterrender{&c});
         }
     }
     else
@@ -233,29 +251,36 @@ void chunkcontroller::renderchunk(chunkpos cpos)
     }
 }
 
-bool chunkcontroller::withinchunkbounds(ctilepos cpos)
-{
-    if (cpos.x < 0 || cpos.x > chunkwidth-1) return false;
-    if (cpos.y < 0 || cpos.y > chunkheight-1) return false;
-    if (cpos.z < 0 || cpos.z > chunkwidth-1) return false;
-    return true;
-}
 
 void chunkcontroller::addtiletochange(wtilepos wtile, tileid newtileid)
 {
-    tilestochange.emplace_back(changetile{wtile, newtileid});
+    chunkpos cpos = wpostocpos(wtile);
+    ctilepos ctpos = wtilepostoctilepos(wtile);
+    addctiletochange(cpos, ctpos, newtileid);
+}
+
+void chunkcontroller::addctiletochange(chunkpos cpos, ctilepos ctpos, tileid newtileid)
+{
+    ctilestochangequeue.emplace_back(cchangetile{cpos, ctpos, newtileid});
 }
 
 void chunkcontroller::changetiles()
 {
-    if (tilestochange.empty()) return;
-
-    auto vit = tilestochange.begin();
-    while (vit != tilestochange.end())
+    for (cchangetile& c: ctilestochangequeue)
     {
-        if (changewtile((*vit).wpos, (*vit).tid))
+        ctilestochange.push_back(c);
+    }
+    ctilestochangequeue.clear();
+
+
+    if (ctilestochange.empty()) return;
+
+    auto vit = ctilestochange.begin();
+    while (vit != ctilestochange.end())
+    {
+        if (changectile((*vit).cpos, (*vit).ctpos, (*vit).tid))
         {
-            vit = tilestochange.erase(vit);
+            vit = ctilestochange.erase(vit);
         }
         else
         {
@@ -264,24 +289,30 @@ void chunkcontroller::changetiles()
     }
 }
 
-bool chunkcontroller::changewtile(wtilepos wtile, tileid newtileid)
+bool chunkcontroller::changectile(chunkpos cpos, ctilepos ctpos, tileid newtileid)
 {
-    chunkpos cpos = wpostocpos(wtile);
     if (!chunkexists(cpos)) return false;
     chunk& c = getchunk(cpos);
     if (c.gettag() == chunk::C_READY)
     {
-        ctilepos ctpos = wtilepostoctilepos(wtile);
         tileid oldtile = c.gettile(ctpos);
         c.settile(ctpos, newtileid);
-        //std::cout << wtile.x << " " << wtile.y << " " << wtile.z << "\n";
-        //std::cout << ctpos.x << " " << ctpos.y << " " << ctpos.z << "\n";
-        c.setremeshy(ctpos.y);
+
+        if (withinchunkbounds(ctpos))
+            c.setremeshy(ctpos.y);
 
         if (tiledata::gettiletype(oldtile) != tiledata::gettiletype(newtileid)) //check if side updates = necessary
         {
             updatesunlight(c, ctpos, false);
-            addsidestoupdatearound(cpos, ctpos);
+            updatesidesaround(c, ctpos);
+        }
+
+        if (withinchunkbounds(ctpos))
+        {
+            if (ctpos.x == 0) addctiletochange(chunkpos{cpos.x-1, cpos.y}, ctilepos{chunkwidth, ctpos.y, ctpos.z}, newtileid);
+            if (ctpos.x == chunkwidth-1) addctiletochange(chunkpos{cpos.x+1, cpos.y}, ctilepos{-1, ctpos.y, ctpos.z}, newtileid);
+            if (ctpos.z == 0) addctiletochange(chunkpos{cpos.x, cpos.y-1}, ctilepos{ctpos.x, ctpos.y, chunkwidth}, newtileid);
+            if (ctpos.z == chunkwidth-1) addctiletochange(chunkpos{cpos.x, cpos.y+1}, ctilepos{ctpos.x, ctpos.y, -1}, newtileid);
         }
 
         return true;
@@ -292,83 +323,41 @@ bool chunkcontroller::changewtile(wtilepos wtile, tileid newtileid)
     }
 }
 
-void chunkcontroller::breaktile(wtilepos wtile)
+void chunkcontroller::updatesidesaround(chunk& c, ctilepos ctpos)
 {
-    //drop stuff?
-    addtiletochange(wtile, 0);
-}
-
-void chunkcontroller::addsidestoupdatearound(chunkpos cpos, ctilepos ctpos) //adding sides to update to side update queue around tile provided
-{
-    //sidestoupdate.push_back({cpos, ctpos});//main tile
-
-    chunk& c = getchunk(cpos);
     tileid tid = c.gettile(ctpos);
 
     for (int a = 0; a < 6; a++)
     {
         ctilepos neighbour = ctpos + sideoffsets[a];
-        if (withinchunkbounds(neighbour))
+        if (withinextendedchunkbounds(neighbour))
         {
             tileid ntid = c.gettile(neighbour);
             if (tiledata::renderside(tid, ntid, tiledata::sideflags[a])) c.setside(ctpos, tiledata::sideflags[a], true);
             else c.setside(ctpos, tiledata::sideflags[a], false);
-            if (tiledata::renderside(ntid, tid, tiledata::oppositesideflags[a])) c.setside(neighbour, tiledata::oppositesideflags[a], true);
-            else c.setside(neighbour, tiledata::oppositesideflags[a], false);
-
-            c.setremeshy(ctpos.y);
-        }
-        else
-        {
-            if (neighbour.y >= 0 && neighbour.y < chunkheight)
+            if (withinchunkbounds(neighbour))
             {
-                wtilepos wtpos = cposctilepostowtilepos(cpos, ctpos) + sideoffsets[a];
-                sidestoupdate.emplace_back(updateside{.maincpos=cpos, .maintpos=ctpos, .side=a, .nbourcpos=wtilepostocpos(wtpos), .nbourtpos=wtilepostoctilepos(wtpos)});
+                if (tiledata::renderside(ntid, tid, tiledata::oppositesideflags[a])) c.setside(neighbour, tiledata::oppositesideflags[a], true);
+                else c.setside(neighbour, tiledata::oppositesideflags[a], false);
             }
+            c.setremeshy(ctpos.y);
         }
     }
 }
 
-
-
-void chunkcontroller::updatesides() //fucked?
+void chunkcontroller::breaktile(wtilepos wtile)
 {
-    if (sidestoupdate.empty()) return;
+    //drop stuff?
+    addtiletochange(wtile, 0);
 
-    auto vit = sidestoupdate.begin();
-    while (vit != sidestoupdate.end())
+    if (wtile.y > 0)
     {
-        bool erased =false;
-        if (chunkexists(vit->maincpos) && chunkexists(vit->nbourcpos))
+        wtile.y--;
+        tileid tid = gettileid(wtile);
+        if (tiledata::needssupport(tid))
         {
-            chunk& c = getchunk(vit->maincpos);
-            chunk& n = getchunk(vit->nbourcpos);
-            if (c.gettag() == chunk::C_READY && n.gettag() == chunk::C_READY)
-            {
-                tileid ctid = c.gettile(vit->maintpos);
-                tileid ntid = c.gettile(vit->nbourtpos);
-
-                /*std::cout << vit->maintpos.x << " " << vit->maintpos.y << " " << vit->maintpos.z << "\n";
-                std::cout << vit->nbourtpos.x << " " << vit->nbourtpos.y << " " << vit->nbourtpos.z << " s\n";
-
-                std::cout << vit->maincpos.x << " " << vit->maincpos.y << "\n";
-                std::cout << vit->nbourcpos.x << " " << vit->nbourcpos.y << " s\n";*/
-
-                uint8_t side = vit->side;
-
-                if (tiledata::renderside(ctid, ntid, tiledata::sideflags[side])) c.setside(vit->maintpos, tiledata::sideflags[side], true);
-                else c.setside(vit->maintpos, tiledata::sideflags[side], false);
-                if (tiledata::renderside(ntid, ctid, tiledata::oppositesideflags[side])) n.setside(vit->nbourtpos, tiledata::oppositesideflags[side], true);
-                else n.setside(vit->nbourtpos, tiledata::oppositesideflags[side], false);
-
-                c.setremeshy(vit->maintpos.y);
-                n.setremeshy(vit->nbourtpos.y);
-
-                vit = sidestoupdate.erase(vit);
-                erased  =true;
-            }
+            breaktile(wtile);
         }
-        if (!erased) ++vit;
     }
 }
 
@@ -404,23 +393,9 @@ bool chunkcontroller::removechunk(chunkpos cpos)
         auto position = std::find(loadedchunks.begin(), loadedchunks.end(), cpos);
         if (position != loadedchunks.end())
             loadedchunks.erase(position);
-        //sjekk om den blir updated i annen thread elns
+
         return true;
     }
 
-    /*if (chunks.find(id) != chunks.end()) //chunk exists in map
-    {
-        //deletos
-        if (getchunk(cpos).safetodelete())
-        {
-            chunks.erase(id); //any memory leaks?
-
-            auto position = std::find(loadedchunks.begin(), loadedchunks.end(), cpos);
-            if (position != loadedchunks.end())
-                loadedchunks.erase(position);
-            //sjekk om den blir updated i annen thread elns
-            return true;
-        }
-    }*/
     return false;
 }

@@ -13,6 +13,43 @@ void chunkcontroller::generatechunk(chunk& c)
     cposoffset.x *= chunkwidth;
     cposoffset.y *= chunkwidth;
 
+    //biomes
+    for (int32_t a = 0; a < (chunkwidth+1)*(chunkwidth+1); a++)
+        c.addbiome();
+
+    for (htile z = -1; z < chunkwidth+1; z++)
+    {
+        for (htile x = -1; x < chunkwidth+1; x++)
+        {
+            uint8_t temp = 127;
+            uint8_t humid = 127;
+
+            float tempnoise = (randfunc::noise(x + cposoffset.x +123, -321, z + cposoffset.y-3452, 793.3f)) * 175.0f;
+            float humidnoise = (randfunc::noise(x + cposoffset.x +564, 221, z + cposoffset.y+391, 813.3f)) * 175.0f;
+
+            utils::clamp(tempnoise, -127.0f, 128.0f);
+            utils::clamp(humidnoise, -127.0f, 128.0f);
+
+            temp += tempnoise;
+            humid += humidnoise;
+
+            c.setbiome(chunk::biomedata{temp, humid}, chtilepos{x,z});
+        }
+    }
+
+    tileid tid_grass = tiledata::gettileid("t_grass");
+    tileid tid_grass2 = tiledata::gettileid("t_grass2");
+
+    tileid tid_dirt = tiledata::gettileid("t_dirt");
+
+    tileid tid_sand = tiledata::gettileid("t_sand");
+    tileid tid_rock = tiledata::gettileid("t_rock");
+
+    tileid tid_snow = tiledata::gettileid("t_snow");
+    tileid tid_gravel = tiledata::gettileid("t_gravel");
+
+    tileid tid_ice = tiledata::gettileid("t_ice");
+
 
     for (ytile y = 0; y < chunkheight; y++)
     {
@@ -20,7 +57,7 @@ void chunkcontroller::generatechunk(chunk& c)
         {
             for (htile x = -1; x < chunkwidth+1; x++)
             {
-                int tile = 5;
+                int tile = tid_rock;
 
                 if (y < 190) tile = 0;
 
@@ -63,30 +100,64 @@ void chunkcontroller::generatechunk(chunk& c)
 
                     tile = 0;
 
-                    if (noise > 0.8f) tile = 2;
-                    if (tile == 2 && magnitude > 0.7f && y < 80)
+                    if (noise > 0.8f) tile = tid_dirt;
+                    if (tile == tid_dirt && magnitude > 0.7f && y < 80)
                     {
                         float spots = (randfunc::noise(w.x+4532, w.y+1234, w.z-6453, 17.0f));
                         if (spots > 0.2f)
                         {
-                            tile = 5;
+                            tile = tid_rock;
                         }
                     }
 
+                    chunk::biomedata biome = c.getbiome(chtilepos(x,z));
 
-                    if (tile == 2 && y > 0)
+                    if (tile == tid_dirt && y > 0)
                     {
-                        //grassify
-                        if (c.gettile(ctilepos(x,y-1,z)) == 0)
+                        if (biome.humidity < 75 && biome.temperature > 190)
                         {
-                            tile = 3;
+                            tile = tid_sand;
                         }
+                        else if (biome.temperature < 50)
+                        {
+                            if (biome.humidity > 70)
+                            {
+                                if (c.gettile(ctilepos(x,y-1,z)) == 0)
+                                    tile = tid_snow;
+                            }
+                            else
+                            {
+                                float spots = (randfunc::noise(w.x+321, w.y+5324, w.z+213, 1.21f));
+                                if (spots > 0.9f) tile = tid_snow;
+                                else tile = tid_gravel;
+                            }
+                        }
+                        else
+                        {
+                            //grassify
+                            if (c.gettile(ctilepos(x,y-1,z)) == 0)
+                            {
+                                float spots = (randfunc::noise(w.x+7734, w.y+3231, w.z+3121, 1.3f));
+                                if (spots < 0.0f) tile = tid_grass;
+                                else tile = tid_grass2;
+                            }
+                        }
+                    }
 
+                    if (y < 190 && y > 150 && tile == 0)
+                    {
+                        if (biome.temperature < 50 && c.gettile(ctilepos(x,y-1,z)) == 0)
+                        {
+                            tile = tid_ice;
+                        }
+                        else
+                        {
+                            tile = 1;
+                        }
                     }
                 }
 
-                if (y < 190 && y > 150 && tile == 0)
-                    tile = 1;
+
 
                 //}
                 c.addtile(tile);
@@ -120,24 +191,23 @@ void chunkcontroller::generatechunk(chunk& c)
         }
     }
 
-    for (int a = 0; a < chunkwidth * chunkwidth * chunkheight; a++)
+    for (int a = 0; a < (chunkwidth+2) * (chunkwidth+2) * chunkheight; a++)
         c.addlight();
 
     decorate(c);
 
-    for (htile z = 0; z < chunkwidth; z++)
+    for (htile z = -1; z < chunkwidth+1; z++)
     {
-        for (htile x = 0; x < chunkwidth; x++)
+        for (htile x = -1; x < chunkwidth+1; x++)
         {
             c.setsunlight(ctilepos(x,0,z), 255);
         }
     }
 
     //generate sunlight et al
-    bool hset = false;
-    for (htile z = 0; z < chunkwidth; z++)
+    for (htile z = -1; z < chunkwidth+1; z++)
     {
-        for (htile x = 0; x < chunkwidth; x++)
+        for (htile x = -1; x < chunkwidth+1; x++)
         {
             updatesunlight(c, ctilepos{x, 1, z}, true);
         }
@@ -187,7 +257,7 @@ void chunkcontroller::updatesunlight(chunk& c, ctilepos ctpos, bool initial) //d
 
         c.setsunlight(currentpos, sunlight);
 
-        c.setremeshy(currentpos.y);
+        if (!initial) c.setremeshy(currentpos.y);
 
         currentpos.y++;
     }
@@ -198,6 +268,11 @@ void chunkcontroller::updatesunlight(chunk& c, ctilepos ctpos, bool initial) //d
 void chunkcontroller::decorate(chunk& c)
 {
     float numtrees = (randfunc::noise(c.cpos.x-6123, c.cpos.y+1124, 0.5f) + 1.0f)*2.0f;
+
+    int tid_grass = tiledata::gettileid("t_grass");
+    int tid_grass2 = tiledata::gettileid("t_grass2");
+    int tid_sand = tiledata::gettileid("t_sand");
+    int tid_snow = tiledata::gettileid("t_snow");
 
     for (int a = 0; a < numtrees; a++)
     {
@@ -213,33 +288,30 @@ void chunkcontroller::decorate(chunk& c)
 
         for (y = 0; y < chunkheight; y++)
         {
-            if (c.gettile(ctilepos(x,y,z)) == 3)//gress
+            tileid tid = c.gettile(ctilepos(x,y,z));
+            if (tid == tid_grass || tid == tid_grass2 || tid == tid_sand || tid == tid_snow)//gress
             {
                 break;
             }
         }
 
-
-        voxelmodel& v = voxelmodels::getvoxelmodel("vox_tree");
-
-        ctilepos offset = ctilepos(
-                                   x - (v.centerbottomtile.x),
-                                   y - v.centerbottomtile.y-1,
-                                   z - (v.centerbottomtile.z)
-                                   );
-
-        for (voxelmodel::point& vp : v.points)
+        if (y < 200)
         {
-            ctilepos cpos = ctilepos(offset.x + vp.tilepos.x, offset.y + vp.tilepos.y, offset.z + vp.tilepos.z);
-            if (withinchunkbounds(cpos))
-            {
-                tileid t = c.gettile(cpos);
-                if (t == 0)
-                {
-                    c.settile(cpos, vp.tid);
-                }
-            }
+            chunk::biomedata biome = c.getbiome(chtilepos(x,z));
+
+            uint32_t voxelmodelid = 0;
+
+            if (biome.temperature > 190 && biome.humidity < 75)
+                voxelmodelid = 1;
+            else if (biome.temperature > 180 && biome.humidity > 165)
+                voxelmodelid = 2;
+            else if (biome.humidity > 50)
+                voxelmodelid = 0;
+
+            addvoxelmodel(c, ctilepos(x,y,z), voxelmodelid, true);
         }
+
+
     }
 
     //grass etc
@@ -253,20 +325,61 @@ void chunkcontroller::decorate(chunk& c)
     {
         for (htile x = 0; x < chunkwidth; x++)
         {
-            ytile maxy = c.gethighest(chtilepos(x,z));
-            if (maxy > 1 && c.gettile(ctilepos(x,maxy,z)) == grass && c.gettile(ctilepos(x,maxy-1,z)) == 0)
+            chunk::biomedata biome = c.getbiome(chtilepos(x,z));
+
+            if (biome.temperature > 70 && biome.temperature < 160 && biome.humidity > 70)
             {
-                int rint = utils::randint(0, 100);
-                if (rint < 20)
-                    c.settile(ctilepos{x, maxy-1, z}, grasstile1);
-                if (rint > 80)
-                    c.settile(ctilepos{x, maxy-1, z}, grasstile2);
-                if (rint == 44)
-                    c.settile(ctilepos{x, maxy-1, z}, flower1);
-                if (rint == 45)
-                    c.settile(ctilepos{x, maxy-1, z}, flower2);
-                if (rint == 46)
-                    c.settile(ctilepos{x, maxy-1, z}, flower3);
+                ytile maxy = c.gethighest(chtilepos(x,z));
+                if (maxy > 1 && c.gettile(ctilepos(x,maxy,z)) == grass && c.gettile(ctilepos(x,maxy-1,z)) == 0)
+                {
+                    int rint = utils::randint(0, 100);
+                    if (rint < 20)
+                        c.settile(ctilepos{x, maxy-1, z}, grasstile1);
+                    if (rint > 80)
+                        c.settile(ctilepos{x, maxy-1, z}, grasstile2);
+                    if (rint == 44)
+                        c.settile(ctilepos{x, maxy-1, z}, flower1);
+                    if (rint == 45)
+                        c.settile(ctilepos{x, maxy-1, z}, flower2);
+                    if (rint == 46)
+                        c.settile(ctilepos{x, maxy-1, z}, flower3);
+                }
+            }
+            else
+            {
+                ytile maxy = c.gethighest(chtilepos(x,z));
+                if (maxy > 1 && c.gettile(ctilepos(x,maxy,z)) == grass && c.gettile(ctilepos(x,maxy-1,z)) == 0)
+                {
+                    int rint = utils::randint(0, 100);
+                    if (rint < 10)
+                        c.settile(ctilepos{x, maxy-1, z}, grasstile1);
+                    if (rint > 90)
+                        c.settile(ctilepos{x, maxy-1, z}, grasstile2);
+                }
+            }
+        }
+    }
+}
+
+void chunkcontroller::addvoxelmodel(chunk& c, ctilepos ctpos, uint32_t voxelmodelid, bool cgenerator)
+{
+    voxelmodel& v = voxelmodels::getvoxelmodel(voxelmodelid);
+
+    ctilepos offset = ctilepos(
+                               ctpos.x - (v.centerbottomtile.x),
+                               ctpos.y - v.centerbottomtile.y-1,
+                               ctpos.z - (v.centerbottomtile.z)
+                               );
+
+    for (voxelmodel::point& vp : v.points)
+    {
+        ctilepos cpos = ctilepos(offset.x + vp.tilepos.x, offset.y + vp.tilepos.y, offset.z + vp.tilepos.z);
+        if (withinextendedchunkbounds(cpos))
+        {
+            tileid t = c.gettile(cpos);
+            if (t == 0)
+            {
+                c.settile(cpos, vp.tid);
             }
         }
     }

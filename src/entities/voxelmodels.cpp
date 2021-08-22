@@ -15,91 +15,25 @@ void voxelmodels::initialize()
     tileid leavesid = tiledata::gettileid("t_leaves");
     tileid logid = tiledata::gettileid("t_log");
 
-    v.addpoint(ctilepos(3, 1, 3), logid);
-    v.addpoint(ctilepos(3, 2, 3), logid);
-    v.addpoint(ctilepos(3, 3, 3), logid);
-    v.addpoint(ctilepos(3, 4, 3), logid);
-    v.addpoint(ctilepos(3, 5, 3), logid);
-    v.addpoint(ctilepos(3, 6, 3), logid);
+    for (int a = 1; a < 7; a++)
+    v.addpoint(ctilepos(3, a, 3), logid);
 
     v.centerbottomtile = ctilepos(3,6,3);
 
     v.addpoint(ctilepos(3, 0, 3), leavesid);
-    v.addpoint(ctilepos(2, 0, 3), leavesid);
-    v.addpoint(ctilepos(3, 0, 2), leavesid);
-    v.addpoint(ctilepos(4, 0, 3), leavesid);
-    v.addpoint(ctilepos(3, 0, 4), leavesid);
 
-    v.addpoint(ctilepos(2, 1, 1), leavesid);
-    v.addpoint(ctilepos(3, 1, 1), leavesid);
-    v.addpoint(ctilepos(4, 1, 1), leavesid);
-
-    v.addpoint(ctilepos(1, 1, 2), leavesid);
-    v.addpoint(ctilepos(2, 1, 2), leavesid);
-    v.addpoint(ctilepos(3, 1, 2), leavesid);
-    v.addpoint(ctilepos(4, 1, 2), leavesid);
-    v.addpoint(ctilepos(5, 1, 2), leavesid);
-
-    v.addpoint(ctilepos(1, 1, 3), leavesid);
-    v.addpoint(ctilepos(2, 1, 3), leavesid);
-    v.addpoint(ctilepos(4, 1, 3), leavesid);
-    v.addpoint(ctilepos(5, 1, 3), leavesid);
-
-    v.addpoint(ctilepos(1, 1, 4), leavesid);
-    v.addpoint(ctilepos(2, 1, 4), leavesid);
-    v.addpoint(ctilepos(3, 1, 4), leavesid);
-    v.addpoint(ctilepos(4, 1, 4), leavesid);
-    v.addpoint(ctilepos(5, 1, 4), leavesid);
-
-    v.addpoint(ctilepos(2, 1, 5), leavesid);
-    v.addpoint(ctilepos(3, 1, 5), leavesid);
-    v.addpoint(ctilepos(4, 1, 5), leavesid);
-
-    v.addpoint(ctilepos(1, 2, 1), leavesid);
-    v.addpoint(ctilepos(2, 2, 1), leavesid);
-    v.addpoint(ctilepos(3, 2, 1), leavesid);
-    v.addpoint(ctilepos(4, 2, 1), leavesid);
-    v.addpoint(ctilepos(5, 2, 1), leavesid);
-
-    v.addpoint(ctilepos(1, 2, 2), leavesid);
-    v.addpoint(ctilepos(2, 2, 2), leavesid);
-    v.addpoint(ctilepos(3, 2, 2), leavesid);
-    v.addpoint(ctilepos(4, 2, 2), leavesid);
-    v.addpoint(ctilepos(5, 2, 2), leavesid);
-
-    v.addpoint(ctilepos(1, 2, 3), leavesid);
-    v.addpoint(ctilepos(2, 2, 3), leavesid);
-    v.addpoint(ctilepos(4, 2, 3), leavesid);
-    v.addpoint(ctilepos(5, 2, 3), leavesid);
-
-    v.addpoint(ctilepos(1, 2, 4), leavesid);
-    v.addpoint(ctilepos(2, 2, 4), leavesid);
-    v.addpoint(ctilepos(3, 2, 4), leavesid);
-    v.addpoint(ctilepos(4, 2, 4), leavesid);
-    v.addpoint(ctilepos(5, 2, 4), leavesid);
-
-    v.addpoint(ctilepos(1, 2, 5), leavesid);
-    v.addpoint(ctilepos(2, 2, 5), leavesid);
-    v.addpoint(ctilepos(3, 2, 5), leavesid);
-    v.addpoint(ctilepos(4, 2, 5), leavesid);
-    v.addpoint(ctilepos(5, 2, 5), leavesid);
-
-
-    v.addpoint(ctilepos(2, 2, 0), leavesid);
-    v.addpoint(ctilepos(3, 2, 0), leavesid);
-    v.addpoint(ctilepos(4, 2, 0), leavesid);
-
-    v.addpoint(ctilepos(2, 2, 6), leavesid);
-    v.addpoint(ctilepos(3, 2, 6), leavesid);
-    v.addpoint(ctilepos(4, 2, 6), leavesid);
-
-    v.addpoint(ctilepos(0, 2, 2), leavesid);
-    v.addpoint(ctilepos(0, 2, 3), leavesid);
-    v.addpoint(ctilepos(0, 2, 4), leavesid);
-
-    v.addpoint(ctilepos(6, 2, 2), leavesid);
-    v.addpoint(ctilepos(6, 2, 3), leavesid);
-    v.addpoint(ctilepos(6, 2, 4), leavesid);
+    for (int y = 0; y < 3; y++)
+    {
+        for (int z = 0; z < 7; z++)
+        {
+            for (int x = 0; x < 7; x++)
+            {
+                float dist = glm::distance(glm::vec3(x, y, z), glm::vec3(3,2,3));
+                if (!(x == z && x == 3) && dist < 2.5f && utils::randint(0, 10) < 8)
+                    v.addpoint(ctilepos(x, y, z), leavesid);
+            }
+        }
+    }
 
 
     models.push_back(v);
@@ -121,6 +55,38 @@ void voxelmodels::initialize()
     models.push_back(c);
     id = models.size()-1;
     modelidtoid.insert(std::make_pair("vox_cactus", id));
+
+
+    voxelmodel tt;
+
+    for (int a = 1; a < 17; a++)
+    {
+        tt.addpoint(ctilepos(5, a, 5), logid);
+    }
+    tt.addpoint(ctilepos(5, 0, 5), leavesid);
+
+    for (int y = 0; y < 8; y++)
+    {
+        for (int z = 0; z < 11; z++)
+        {
+            for (int x = 0; x < 11; x++)
+            {
+                float dist = glm::distance(glm::vec3(x, y, z), glm::vec3(5,5,5));
+                if (!(x == z && x == 5) && dist < 6.5f && utils::randint(0, 10) < 7)
+                    tt.addpoint(ctilepos(x, y, z), leavesid);
+            }
+        }
+    }
+    tt.centerbottomtile = ctilepos(5,14,5);
+
+    models.push_back(tt);
+    id = models.size()-1;
+    modelidtoid.insert(std::make_pair("vox_talltree", id));
+}
+
+voxelmodel& voxelmodels::getvoxelmodel(uint32_t id)
+{
+    return models[id];
 }
 
 voxelmodel& voxelmodels::getvoxelmodel(std::string id)

@@ -21,6 +21,9 @@ void chunk::deletechunk()
     {
         cmesh[a][0].cleanbuffers();
         cmesh[a][1].cleanbuffers();
+
+        wmesh[a][0].cleanbuffers();
+        wmesh[a][1].cleanbuffers();
     }
 }
 
@@ -93,6 +96,11 @@ uint32_t chunk::get3dcoord(ctilepos tpos)
     return tpos.x + chunkwidth*(tpos.z + tpos.y*chunkwidth);
 }
 
+uint32_t chunk::getbiomecoord(chtilepos thpos)
+{
+    return (thpos.x+1) + (chunkwidth+2)*((thpos.y+1));
+}
+
 uint32_t chunk::gettilecoord(ctilepos tpos)
 {
     return (tpos.x+1) + (chunkwidth+2)*((tpos.z+1) + tpos.y*(chunkwidth+2));
@@ -100,12 +108,12 @@ uint32_t chunk::gettilecoord(ctilepos tpos)
 
 void chunk::setsunlight(ctilepos tpos, uint8_t value)
 {
-    tilelight[get3dcoord(tpos)].sunlight = value / 16;
+    tilelight[gettilecoord(tpos)].sunlight = value / 16;
 }
 
 uint8_t chunk::getsunlight(ctilepos tpos)
 {
-    return tilelight[get3dcoord(tpos)].sunlight * 17; //for å mappe til 0 - 255
+    return tilelight[gettilecoord(tpos)].sunlight * 17; //for å mappe til 0 - 255
 }
 
 void chunk::setallvbos()
@@ -131,6 +139,24 @@ void chunk::setonevbo(uint8_t meshnum)
     toggleactivemesh(meshnum);
     cmesh[meshnum][getactivemesh(meshnum)].setvbos();
     cmesh[meshnum][!getactivemesh(meshnum)].cleanall();
+
+    wmesh[meshnum][getactivemesh(meshnum)].setvbos();
+    wmesh[meshnum][!getactivemesh(meshnum)].cleanall();
+}
+
+void chunk::setbiome(biomedata b, chtilepos chpos)
+{
+    biomes[getbiomecoord(chpos)] = b;
+}
+
+chunk::biomedata chunk::getbiome(chtilepos chpos)
+{
+    return biomes[getbiomecoord(chpos)];
+}
+
+void chunk::addbiome()
+{
+    biomes.push_back(biomedata{0,0});
 }
 
 tileid chunk::gettile(ctilepos tpos)
@@ -220,8 +246,22 @@ void chunk::render()
 {
     for (int a =0; a < chunkmeshynum; a++)
     {
-        glUniform3f(shadercontroller::getuniformid("vpos"), cpos.x*cdims.x, 0.0f, cpos.y*cdims.z); //y er 0 fordi ypos blir meshet inn
-        cmesh[a][getactivemesh(a)].render();
+        if (!cmesh[a][getactivemesh(a)].isempty())
+        {
+            glUniform3f(shadercontroller::getuniformid("vpos"), cpos.x*cdims.x, 0.0f, cpos.y*cdims.z); //y er 0 fordi ypos blir meshet inn
+            cmesh[a][getactivemesh(a)].render();
+        }
+    }
+}
 
+void chunk::renderwater()
+{
+    for (int a =0; a < chunkmeshynum; a++)
+    {
+        if (!wmesh[a][getactivemesh(a)].isempty())
+        {
+            glUniform3f(shadercontroller::getuniformid("vpos"), cpos.x*cdims.x, 0.0f, cpos.y*cdims.z); //y er 0 fordi ypos blir meshet inn
+            wmesh[a][getactivemesh(a)].render();
+        }
     }
 }

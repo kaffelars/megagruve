@@ -137,7 +137,7 @@ void maincharcontroller::initialize()
 
     for (int a = 0; a < 4; a++)
     {
-        tiledata::addblock(ctilepos(0,0,0), tiledata::gettileid("t_destroy"+std::to_string(a+1)), tiledata::SHAPE_BLOCK, 255, 128, rgbcolor255(0,0,0), 0, 0, destructorblock[a]);
+        tiledata::addblock(ctilepos(0,0,0), tiledata::gettileid("t_destroy"+std::to_string(a+1)), tiledata::SHAPE_BLOCK, 255, 128, rgbcolor255(0,0,0), 0, 0, rgbcolor255(255,255,255), destructorblock[a]);
         destructorblock[a].setvbos();
     }
 
@@ -222,7 +222,7 @@ void maincharcontroller::useselecteditem()
         if (iteminfo.itemtype == itemmanager::I_DIG)
         {
             user = &mchar;
-            target = &tilehoverentity; //kan være dyr elns sjekk mousedata id
+            target = &tilehoverentity; //
         }
 
         bool activated = false;

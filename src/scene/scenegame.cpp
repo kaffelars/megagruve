@@ -71,7 +71,7 @@ void scenegame::render()
 {
     renderer::rendergame();
 
-    uielement::beginwindow("infobox", glm::vec2(1.0f), glm::vec2(190.0f, 170.0f));
+    uielement::beginwindow("infobox", glm::vec2(1.0f), glm::vec2(190.0f, 180.0f));
 
     wposition mcpos = maincharcontroller::getmaincharposition();
     std::stringstream infotext;
@@ -94,6 +94,15 @@ void scenegame::render()
     tileid tid = chunkcontroller::gettileid(selectedtile);
     infotext << "tilename: " << tiledata::gettilename(tid) << "\n";
 
+    if (chunkcontroller::chunkexists(cpos))
+    {
+        chunk& c = chunkcontroller::getchunk(cpos);
+        if (c.gettag()==chunk::C_READY)
+        {
+            chunk::biomedata biome = c.getbiome(chtilepos{ctpos.x, ctpos.z});
+            infotext << "temp: " << int(biome.temperature) << " humid: " << int(biome.humidity) << "\n";
+        }
+    }
     infotext << "loaded: " << chunkcontroller::loadedchunksnum() << "\nrendered: " << chunkcontroller::getchunksrendered();
 
     uielement::text(infotext.str(), glm::vec2(10.0f, 0.0f));
