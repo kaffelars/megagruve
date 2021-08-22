@@ -33,13 +33,15 @@ namespace tiledata
         blockshape defaultshape;
         uint8_t hardness;
         uint8_t glow;
+        bool needssupport;
+        bool biometint;
         std::string sidetextures[6] {"", "", "", "", "", ""};
         uint32_t sidetextureids[6] {0,0,0,0,0,0};
     };
 
     void initializetileshapes();
-    void addblock(ctilepos cpos, tileid id, uint32_t bshape, uint8_t tilesides, uint8_t sunlight, rgbcolor255 light, uint8_t glow, uint8_t ambocc, chunkmesh& cmesh);
-    void addside(ctilepos cpos, tileid id, uint32_t bshape, uint8_t tileside, uint8_t sunlight, rgbcolor255 light, uint8_t glow, uint8_t ambocc[4], chunkmesh& cmesh);
+    void addblock(ctilepos cpos, tileid id, uint32_t bshape, uint8_t tilesides, uint8_t sunlight, rgbcolor255 light, uint8_t glow, uint8_t ambocc, rgbcolor255 tint, chunkmesh& cmesh);
+    void addside(ctilepos cpos, tileid id, uint32_t bshape, uint8_t tileside, uint8_t sunlight, rgbcolor255 light, uint8_t glow, uint8_t ambocc[4], rgbcolor255 tint[4], chunkmesh& cmesh);
 
     uint32_t gettileid(std::string tilename);
     //tileinfo& gettileinfo(uint32_t id);
@@ -56,6 +58,7 @@ namespace tiledata
     bool isempty(tileid tile);
     bool istransparent(tileid tile);
     bool isambocc(tileid tile);
+    bool needssupport(tileid tile);
 
     void initialize();
 

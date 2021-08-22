@@ -21,6 +21,8 @@ namespace texturemanager
     void bindcloudtexture(int texid=0);
     void bindiconstexture(iconsizes iconsize, int texid=0);
 
+    void getbiometint(std::vector<rgbcolor255>& rgb);
+
     uint32_t gettiletexturenumber(std::string texturename);
     uint32_t geticontexturenumber(std::string texturename, iconsizes iconsize);
 };

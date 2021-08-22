@@ -18,6 +18,8 @@ namespace chunkcontroller
     void generatechunksides(chunk& c);
     //void generatechunksides(chunk& c, chunk& sidechunk, uint8_t side);
     void decorate(chunk& c);
+    void adddecoration(chunkpos cpos, ctilepos ctpos, uint32_t voxelmodelid);
+    void addvoxelmodel(chunk& c, ctilepos ctpos, uint32_t voxelmodelid, bool cgenerator);
 
     void meshwholechunk(chunk& c);
     void meshchunkpart(chunk& c, uint8_t cpart);
@@ -37,10 +39,12 @@ namespace chunkcontroller
     wtilepos cposctilepostowtilepos(chunkpos cpos, ctilepos ctpos);
 
     bool withinchunkbounds(ctilepos cpos);
+    bool withinextendedchunkbounds(ctilepos cpos);
 
-    bool changewtile(wtilepos wtile, tileid newtileid);
-    void addsidestoupdatearound(chunkpos cpos, ctilepos ctpos);
-    void updatesides();
+    void addctiletochange(chunkpos cpos, ctilepos ctpos, tileid newtileid);
+    bool changectile(chunkpos cpos, ctilepos ctile, tileid newtileid);
+    void updatesidesaround(chunk& c, ctilepos cpos);
+
     void changetiles();
     void addtiletochange(wtilepos wtile, tileid newtileid);
     void breaktile(wtilepos wtile);
@@ -58,6 +62,7 @@ namespace chunkcontroller
     extern std::atomic<uint32_t> threadcounter;
 
     void renderchunk(chunkpos cpos);
+    void renderwater();
 };
 
 #endif // CHUNKCONTROLLER_H

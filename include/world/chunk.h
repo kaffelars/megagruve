@@ -22,14 +22,22 @@ class chunk
             uint8_t light : 4;
         };
 
+        struct biomedata
+        {
+            uint8_t temperature;
+            uint8_t humidity;
+        };
+
         int32_t counter{0};
 
         chunkpos cpos;
         chunkmesh cmesh[chunkmeshynum][2];
+        chunkmesh wmesh[chunkmeshynum][2];
 
         inline uint32_t get2dcoord(chtilepos tpos);
         inline uint32_t get3dcoord(ctilepos tpos);
         uint32_t gettilecoord(ctilepos tpos);
+        uint32_t getbiomecoord(chtilepos thpos);
 
         uint8_t getactivemesh(uint8_t meshnum);
         uint8_t getinactivemesh(uint8_t meshnum);
@@ -66,15 +74,22 @@ class chunk
         ytile gethighest(chtilepos thpos);
         void sethighest(chtilepos thpos, ytile y);
 
+        void setbiome(biomedata b, chtilepos chpos);
+        biomedata getbiome(chtilepos chpos);
+        void addbiome();
+
         void addlight();
 
         void setsunlight(ctilepos tpos, uint8_t value);
         uint8_t getsunlight(ctilepos tpos);
 
         void render();
+        void renderwater();
         void deletechunk();
 
         std::vector<uint8_t> tilesides;
+
+
 
     protected:
 
@@ -83,6 +98,8 @@ class chunk
         std::mutex remeshmutex;//brukes ved remesh
         std::shared_mutex lock; //https://en.cppreference.com/w/cpp/thread/shared_mutex
         bool activemesh;
+
+        std::vector<biomedata> biomes;
 
         std::vector<tileid> tileids;
         //std::vector<uint8_t> tilesides;

@@ -32,5 +32,5 @@ using hdirection = glm::vec2; //2d direction
 using rgbcolor = glm::vec3; //rgb 0-1
 using rgbcolor255 = glm::ivec3; //rgb 0 -255
 
-using ytile = int; //y tile pos
-using htile = int; //x,z tile pos
+using ytile = int32_t; //y tile pos
+using htile = int32_t; //x,z tile pos
