@@ -40,6 +40,7 @@ void shadercontroller::initialize()
     addshader(SH_PP, "postprocessing", {});
     addshader(SH_LINE, "line", {"pv", "vpos", "rgb"});
     addshader(SH_ICONS, "icon", {"screensize"});
+    addshader(SH_WATER, "water", {"gbuf_rgb", "gbuf_pos", "gbuf_norm", "tex", "timer", "pv", "vpos", "sundir", "sunlight", "suncolor", "fogcolor", "campos"});
 
     std::cout << "shaders set up \r\n";
 

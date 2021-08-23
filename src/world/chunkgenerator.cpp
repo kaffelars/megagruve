@@ -241,8 +241,10 @@ void chunkcontroller::updatesunlight(chunk& c, ctilepos ctpos, bool initial) //d
         //duplicated no good
         if (tiledata::gettiletype(tid) == tiledata::T_SOLID)
             sunlight = 0;
-        if (tiledata::gettiletype(tid) == tiledata::T_TRANSPARENT || tiledata::gettiletype(tid) == tiledata::T_WATER)
+        if (tiledata::gettiletype(tid) == tiledata::T_TRANSPARENT)
             sunlight -= 16;
+        if (tiledata::gettiletype(tid) == tiledata::T_WATER)
+            sunlight -= 64;
         if (tiledata::gettiletype(tid) == tiledata::T_DISCARD)
             sunlight -= 32;
         if (tiledata::gettiletype(tid) == tiledata::T_OBJECT)
