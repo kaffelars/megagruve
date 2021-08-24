@@ -29,7 +29,7 @@ wposition lifeform::getposition()
     //return physicsobject::getposition();
 }
 
-void lifeform::heal(uint32_t healamount)
+void lifeform::heal(int32_t healamount)
 {
     hp += healamount;
     if (hp > actualstats.getstat(statnumbers::STAT_MAXHP)) hp = actualstats.getstat(statnumbers::STAT_MAXHP);

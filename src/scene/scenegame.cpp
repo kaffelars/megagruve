@@ -1,6 +1,9 @@
 #include "consts.h"
 #include "scenegame.h"
 
+#include "chunkcoords.h"
+#include "uiingame.h"
+
 scenegame::scenegame()
 {
 
@@ -41,6 +44,8 @@ void scenegame::setkeys()
 
     inputmanager::setkeyfunction(inputmanager::KEY_SELECT, [&](){maincharcontroller::useselecteditem();}, inputmanager::KE_CLICKED);
     inputmanager::setkeyfunction(inputmanager::KEY_SELECT, [&](){maincharcontroller::useselecteditem();}, inputmanager::KE_HELD);
+
+    inputmanager::setkeyfunction(inputmanager::KEY_INV, [&](){toggleinventory();}, inputmanager::KE_CLICKED);
 }
 
 void scenegame::show()
@@ -85,8 +90,8 @@ void scenegame::render()
 
     infotext << "ctilepos: " << wtpos.x << " " << wtpos.y << " " << wtpos.z << "\n";
 
-    chunkpos cpos = chunkcontroller::wpostocpos(wtpos);
-    ctilepos ctpos = chunkcontroller::wpostoctilepos(wtpos);
+    chunkpos cpos = chunkcoords::wpostocpos(wtpos);
+    ctilepos ctpos = chunkcoords::wpostoctilepos(wtpos);
 
     infotext << "chunk: " << cpos.x << " " << cpos.y << "\n";
     infotext << "ctpos: " << ctpos.x << " " << ctpos.y << " " << ctpos.z << "\n";
@@ -122,6 +127,10 @@ void scenegame::toggleescbox()
 
     if (showingescbox)
     {
+        if (showinginventory)
+        {
+            toggleinventory();
+        }
         inputmanager::pausekeyfunctions();
         inputmanager::showmouse();
     }
@@ -133,13 +142,32 @@ void scenegame::toggleescbox()
 
 }
 
+void scenegame::toggleinventory()
+{
+    showinginventory = !showinginventory;
+
+    if (showinginventory)
+    {
+        inputmanager::setkeyfunction(inputmanager::KEY_SELECT, [&](){uiingame::click();}, inputmanager::KE_CLICKED);
+        inputmanager::setkeyfunction(inputmanager::KEY_SELECT, [&](){}, inputmanager::KE_HELD);
+        uiingame::toggleinventory();
+        inputmanager::showmouse();
+        //inputmanager::setkeyfunction(inputmanager::KEY_SELECT, [&](){maincharcontroller::useselecteditem();}, inputmanager::KE_CLICKED);
+        //inputmanager::setkeyfunction(inputmanager::KEY_SELECT, [&](){maincharcontroller::useselecteditem();}, inputmanager::KE_HELD);
+    }
+    else
+    {
+        setkeys();
+        uiingame::toggleinventory();
+        inputmanager::hidemouse();
+        //inputmanager::resumekeyfunctions();
+        //inputmanager::setkeyfunction(inputmanager::KEY_SELECT, [&](){maincharcontroller::useselecteditem();}, inputmanager::KE_CLICKED);
+        //inputmanager::setkeyfunction(inputmanager::KEY_SELECT, [&](){maincharcontroller::useselecteditem();}, inputmanager::KE_HELD);
+    }
+}
+
 void scenegame::update()
 {
-    /*if (inputmanager::waskeyclicked(inputmanager::KEY_ESCAPE))
-    {
-        toggleescbox();
-    }*/
-
     if (showingescbox)
     {
         escbox::selection sel = escbox::showescbox();
@@ -161,6 +189,10 @@ void scenegame::update()
         {
             scenec::changeactivescene(scenec::S_SETTINGS);
         }
+    }
+    else if (showinginventory)
+    {
+
     }
     else
     {

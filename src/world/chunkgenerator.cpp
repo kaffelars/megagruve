@@ -1,6 +1,8 @@
 #include "consts.h"
 #include "chunkcontroller.h"
 
+#include "chunkcoords.h"
+
 namespace chunkcontroller
 {
     tiledata::tilesides sides[6] = {tiledata::SIDE_XM, tiledata::SIDE_XP, tiledata::SIDE_YM, tiledata::SIDE_YP, tiledata::SIDE_ZM, tiledata::SIDE_ZP};
@@ -111,6 +113,11 @@ void chunkcontroller::generatechunk(chunk& c)
                     }
 
                     chunk::biomedata biome = c.getbiome(chtilepos(x,z));
+
+                    if (tile == tid_dirt && (y > 149 && y < 153) && biome.humidity > 50 && biome.temperature > 50)
+                    {
+                        tile = tid_sand;
+                    }
 
                     if (tile == tid_dirt && y > 0)
                     {
@@ -376,7 +383,7 @@ void chunkcontroller::addvoxelmodel(chunk& c, ctilepos ctpos, uint32_t voxelmode
     for (voxelmodel::point& vp : v.points)
     {
         ctilepos cpos = ctilepos(offset.x + vp.tilepos.x, offset.y + vp.tilepos.y, offset.z + vp.tilepos.z);
-        if (withinextendedchunkbounds(cpos))
+        if (chunkcoords::withinextendedchunkbounds(cpos))
         {
             tileid t = c.gettile(cpos);
             if (t == 0)

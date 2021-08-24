@@ -263,19 +263,9 @@ void tiledata::initializetileshapes()
     tileshapes.push_back(cactus);
 }
 
-void tiledata::addside(ctilepos cpos, tileid id, uint32_t bshape, uint8_t tileside, uint8_t sunlight, rgbcolor255 light, uint8_t glow, uint8_t ambocc[4], rgbcolor255 tint[4], chunkmesh& cmesh)
+void tiledata::addside(ctilepos cpos, tileid id, uint32_t bshape, uint8_t tileside, uint8_t sunlight[4], rgbcolor255 light[4], uint8_t glow, uint8_t ambocc[4], rgbcolor255 tint[4], chunkmesh& cmesh)
 {
     int index = 0;
-    for (int a = 0; a < 4; a++)
-    {
-        if (ambocc[a] <= 4)
-            ambocc[a] = 0;
-
-        if (ambocc[a] < 8)
-            ambocc[a] *= 32;
-        else
-            ambocc[a] = 255;
-    }
 
     for (vpos& v : tileshapes[bshape].vertexes[tileside])
     {
@@ -284,7 +274,7 @@ void tiledata::addside(ctilepos cpos, tileid id, uint32_t bshape, uint8_t tilesi
         if (tileshapes[bshape].uv[tileside][index] == uvpos{1,0}) corner = 1;
         if (tileshapes[bshape].uv[tileside][index] == uvpos{1,1}) corner = 2;
         if (tileshapes[bshape].uv[tileside][index] == uvpos{0,1}) corner = 3;
-        cmesh.addvertex(vpos{cpos.x + v.x, cpos.y + v.y, cpos.z + v.z}, sidenormals[tileside], tileshapes[bshape].uv[tileside][index], texid, sunlight, light, glow, ambocc[corner], tint[corner]);
+        cmesh.addvertex(vpos{cpos.x + v.x, cpos.y + v.y, cpos.z + v.z}, sidenormals[tileside], tileshapes[bshape].uv[tileside][index], texid, sunlight[corner], light[corner], glow, ambocc[corner], tint[corner]);
         index ++;
     }
 }

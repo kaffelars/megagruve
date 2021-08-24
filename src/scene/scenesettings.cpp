@@ -74,14 +74,20 @@ void scenesettings::render()
 
 void scenesettings::game()
 {
-    std::string selections[15] = {"test1", "test2", "test3", "test4", "test5", "test6", "test7", "test8", "test9", "test99", "test09", "test80", "test70", "tes60t", "t56est"};
-
-    static bool burt[15] = {true, true, true, false, false, true, true, false, true, false, true, true, true, true, true};
-
-    for (int a = 0; a < 15; a++)
+    uielement::text("Render block placement helper box: ", glm::vec2(65.0f, 25.0f));
+    bool bbox = settings::getisetting(settings::SET_BBOX);
+    uielement::checkbox(bbox, glm::vec2(20.0f, 25.0f));
+    if (bbox != settings::getisetting(settings::SET_BBOX))
     {
-        uielement::text(selections[a].c_str(), glm::vec2(60.0f, 25.0f + a * 30.0f));
-        uielement::checkbox(burt[a], glm::vec2(20.0f, 25.0f + a * 30.0f));
+        settings::setisetting(settings::SET_BBOX, bbox);
+    }
+
+    uielement::text("Render mining helper box: ", glm::vec2(65.0f, 55.0f));
+    bool mbox = settings::getisetting(settings::SET_MBOX);
+    uielement::checkbox(mbox, glm::vec2(20.0f, 55.0f));
+    if (mbox != settings::getisetting(settings::SET_MBOX))
+    {
+        settings::setisetting(settings::SET_MBOX, mbox);
     }
 }
 

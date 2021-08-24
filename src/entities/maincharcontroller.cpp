@@ -11,6 +11,9 @@
 #include "uiingame.h"
 #include "entity.h"
 #include "chunkmesh.h"
+#include "settings.h"
+
+#include "chunkcoords.h"
 
 namespace maincharcontroller
 {
@@ -74,12 +77,20 @@ void maincharcontroller::renderselection()
     if (selpos.y != 0)
     {
         glUniform3f(shadercontroller::getuniformid("vpos"), selpos.x, selpos.y, selpos.z);
-        if (getselectionmode() == SEL_BLOCK)
-            glUniform3f(shadercontroller::getuniformid("rgb"), 0.8f, 0.7f, 0.7f);
-        else
-            glUniform3f(shadercontroller::getuniformid("rgb"), 0.8f, 0.8f, 1.0f);
 
-        selection.render();
+        if (settings::getisetting(settings::SET_MBOX) && getselectionmode() == SEL_BLOCK)
+        {
+            glUniform3f(shadercontroller::getuniformid("rgb"), 0.8f, 0.7f, 0.7f);
+            selection.render();
+        }
+        else if (settings::getisetting(settings::SET_BBOX) && getselectionmode() == SEL_AIR)
+        {
+            glUniform3f(shadercontroller::getuniformid("rgb"), 0.8f, 0.8f, 1.0f);
+            selection.render();
+        }
+
+
+
     }
 }
 
@@ -262,15 +273,15 @@ void maincharcontroller::update()
 
     glm::vec4 mdata = renderer::getmousedata();
     if (getselectionmode() == SEL_BLOCK)
-        tilehover = chunkcontroller::wpostowtilepos(wposition(mdata.x, mdata.y, mdata.z) + (getviewdir() / 10.0f)); //negativ viewdir hvis lufttile skal selectes (SEL_AIR)
+        tilehover = chunkcoords::wpostowtilepos(wposition(mdata.x, mdata.y, mdata.z) + (getviewdir() / 10.0f)); //negativ viewdir hvis lufttile skal selectes (SEL_AIR)
     else
-        tilehover = chunkcontroller::wpostowtilepos(wposition(mdata.x, mdata.y, mdata.z) - (getviewdir() / 10.0f));
+        tilehover = chunkcoords::wpostowtilepos(wposition(mdata.x, mdata.y, mdata.z) - (getviewdir() / 10.0f));
 
 
     if (tilehover != oldtilehover)
     {
         oldtilehover = tilehover;
-        if (chunkcontroller::wtileposwithinworldbounds(tilehover))
+        if (chunkcoords::wtileposwithinworldbounds(tilehover))
             tilehoverentity.setposition(tilehover);
     }
 

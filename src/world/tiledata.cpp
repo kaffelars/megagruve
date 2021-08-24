@@ -120,7 +120,7 @@ bool tiledata::istransparent(tileid tile)
 
 bool tiledata::isambocc(tileid tile)
 {
-    if (gettileinfo(tile).defaultshape == SHAPE_BLOCK && gettileinfo(tile).ttype != T_WATER) return true;
+    if (gettileinfo(tile).defaultshape == SHAPE_BLOCK && gettileinfo(tile).ttype != T_WATER && gettileinfo(tile).glow < 127) return true;
     else return false;
 }
 

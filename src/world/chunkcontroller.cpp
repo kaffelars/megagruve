@@ -1,6 +1,7 @@
 #include "consts.h"
 #include "chunkcontroller.h"
 
+#include "chunkcoords.h"
 
 #include "biomecontroller.h"
 
@@ -73,7 +74,7 @@ int32_t chunkcontroller::getchunksrendered()
 
 void chunkcontroller::renderchunks(direction dir, wposition maincharposition)
 {
-    chunkpos centerchunk = wpostocpos(maincharposition);
+    chunkpos centerchunk = chunkcoords::wpostocpos(maincharposition);
 
     waterrenders.clear();
 
@@ -140,14 +141,14 @@ int chunkcontroller::loadedchunksnum()
 
 tileid chunkcontroller::gettileid(wtilepos wtpos)
 {
-    chunkpos cpos = wpostocpos(wtpos);
+    chunkpos cpos = chunkcoords::wpostocpos(wtpos);
     if (chunkexists(cpos))
     {
         chunk& c = getchunk(cpos);
         chunk::ctags ctag = c.gettag();
         if (ctag == chunk::C_READY || ctag == chunk::C_REMESHING)
         {
-            ctilepos ctpos = wpostoctilepos(wtpos);
+            ctilepos ctpos = chunkcoords::wpostoctilepos(wtpos);
             return c.gettile(ctpos);
         }
     }
@@ -158,7 +159,7 @@ tileid chunkcontroller::gettileid(wtilepos wtpos)
 bool chunkcontroller::ischunkvisible(chunk& c) //not good when looking down
 {
     wposition mcharpos = maincharcontroller::getmaincharposition();
-    chunkpos curchunk = wpostocpos(mcharpos);
+    chunkpos curchunk = chunkcoords::wpostocpos(mcharpos);
     if (c.cpos == curchunk) return true;
 
     hposition cpos[4];
@@ -254,8 +255,8 @@ void chunkcontroller::renderchunk(chunkpos cpos)
 
 void chunkcontroller::addtiletochange(wtilepos wtile, tileid newtileid)
 {
-    chunkpos cpos = wpostocpos(wtile);
-    ctilepos ctpos = wtilepostoctilepos(wtile);
+    chunkpos cpos = chunkcoords::wpostocpos(wtile);
+    ctilepos ctpos = chunkcoords::wtilepostoctilepos(wtile);
     addctiletochange(cpos, ctpos, newtileid);
 }
 
@@ -298,7 +299,7 @@ bool chunkcontroller::changectile(chunkpos cpos, ctilepos ctpos, tileid newtilei
         tileid oldtile = c.gettile(ctpos);
         c.settile(ctpos, newtileid);
 
-        if (withinchunkbounds(ctpos))
+        if (chunkcoords::withinchunkbounds(ctpos))
             c.setremeshy(ctpos.y);
 
         if (tiledata::gettiletype(oldtile) != tiledata::gettiletype(newtileid)) //check if side updates = necessary
@@ -307,7 +308,7 @@ bool chunkcontroller::changectile(chunkpos cpos, ctilepos ctpos, tileid newtilei
             updatesidesaround(c, ctpos);
         }
 
-        if (withinchunkbounds(ctpos))
+        if (chunkcoords::withinchunkbounds(ctpos))
         {
             if (ctpos.x == 0) addctiletochange(chunkpos{cpos.x-1, cpos.y}, ctilepos{chunkwidth, ctpos.y, ctpos.z}, newtileid);
             if (ctpos.x == chunkwidth-1) addctiletochange(chunkpos{cpos.x+1, cpos.y}, ctilepos{-1, ctpos.y, ctpos.z}, newtileid);
@@ -330,12 +331,12 @@ void chunkcontroller::updatesidesaround(chunk& c, ctilepos ctpos)
     for (int a = 0; a < 6; a++)
     {
         ctilepos neighbour = ctpos + sideoffsets[a];
-        if (withinextendedchunkbounds(neighbour))
+        if (chunkcoords::withinextendedchunkbounds(neighbour))
         {
             tileid ntid = c.gettile(neighbour);
             if (tiledata::renderside(tid, ntid, tiledata::sideflags[a])) c.setside(ctpos, tiledata::sideflags[a], true);
             else c.setside(ctpos, tiledata::sideflags[a], false);
-            if (withinchunkbounds(neighbour))
+            if (chunkcoords::withinchunkbounds(neighbour))
             {
                 if (tiledata::renderside(ntid, tid, tiledata::oppositesideflags[a])) c.setside(neighbour, tiledata::oppositesideflags[a], true);
                 else c.setside(neighbour, tiledata::oppositesideflags[a], false);

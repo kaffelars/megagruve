@@ -223,6 +223,8 @@ void inputmanager::initialize()
     addkey(KEYTYPE_KEYBOARD, KEY_LEFT, SDL_SCANCODE_A, mod_none, "left");
     addkey(KEYTYPE_KEYBOARD, KEY_RIGHT, SDL_SCANCODE_D, mod_none, "right");
 
+    addkey(KEYTYPE_KEYBOARD, KEY_INV, SDL_SCANCODE_I, mod_none, "inventory");
+
 
 
     std::cout << "done\n";

@@ -2,10 +2,12 @@
 #include "chunkcontroller.h"
 
 #include "biomecontroller.h"
+#include "chunkcoords.h"
+#include "chunkgetvertexdata.h"
 
 namespace chunkcontroller
 {
-    uint8_t getambaround(chunk& c, ctilepos vertex);
+    //uint8_t getambaround(chunk& c, ctilepos vertex);
 }
 
 void chunkcontroller::meshwholechunk(chunk& c)
@@ -70,7 +72,7 @@ void chunkcontroller::meshchunkpart(chunk& c, uint8_t cpart)
                             for (int zz = -1; zz < 1; zz++)
                             {
                                 ctilepos ct = ctilepos (x+xx, y-1, z+zz);
-                                if (withinchunkbounds(ct))
+                                if (chunkcoords::withinchunkbounds(ct))
                                 {
                                     uint8_t sunl = c.getsunlight(ct);
                                     //std::cout << int(sunl) << "o\n";
@@ -94,85 +96,24 @@ void chunkcontroller::meshchunkpart(chunk& c, uint8_t cpart)
                         //bbb
                         uint8_t ambocc[4] = {0,0,0,0};
                         rgbcolor255 tint[4] = {rgbcolor255{255,255,255},rgbcolor255{255,255,255},rgbcolor255{255,255,255},rgbcolor255{255,255,255}};
+                        rgbcolor255 light[4] = {rgbcolor255{0,0,0},rgbcolor255{0,0,0},rgbcolor255{0,0,0},rgbcolor255{0,0,0}};
+                        uint8_t sunlight[4] = {0,0,0,0};
 
-                        //fix
-                        if (sides & tiledata::SIDE_XM)
+                        for (int a = 0; a < 6; a++)
                         {
-                            ambocc[0] = getambaround(c, ctilepos{x,y,z+1});
-                            ambocc[1] = getambaround(c, ctilepos{x,y,z});//+1
-                            ambocc[2] = getambaround(c, ctilepos{x,y+1,z});//+1
-                            ambocc[3] = getambaround(c, ctilepos{x,y+1,z+1});
-                            if (tiledata::gettileinfo(tid).biometint)
-                                biomecontroller::getbiometintvertexes(c, chtilepos{x,z}, tiledata::SIDE_XM, tint);
-                            if (tid == 1)
-                                tiledata::addside(ctilepos{x,y,z}, tid, 0, 0, sunlight, rgbcolor255(0,0,0), glow, ambocc, tint, c.wmesh[cpart][c.getinactivemesh(cpart)]);
-                            else
-                                tiledata::addside(ctilepos{x,y,z}, tid, 0, 0, sunlight, rgbcolor255(0,0,0), glow, ambocc, tint, c.cmesh[cpart][c.getinactivemesh(cpart)]);
-                        }
-                        if (sides & tiledata::SIDE_XP)
-                        {
-                            ambocc[0] = getambaround(c, ctilepos{x+1,y,z});
-                            ambocc[1] = getambaround(c, ctilepos{x+1,y,z+1});
-                            ambocc[2] = getambaround(c, ctilepos{x+1,y+1,z+1});
-                            ambocc[3] = getambaround(c, ctilepos{x+1,y+1,z});
-                            if (tiledata::gettileinfo(tid).biometint)
-                                biomecontroller::getbiometintvertexes(c, chtilepos{x,z}, tiledata::SIDE_XP, tint);
-                            if (tid == 1)
-                                tiledata::addside(ctilepos{x,y,z}, tid, 0, 1, sunlight, rgbcolor255(0,0,0), glow, ambocc, tint, c.wmesh[cpart][c.getinactivemesh(cpart)]);
-                            else
-                                tiledata::addside(ctilepos{x,y,z}, tid, 0, 1, sunlight, rgbcolor255(0,0,0), glow, ambocc, tint, c.cmesh[cpart][c.getinactivemesh(cpart)]);
-                        }
-                        if (sides & tiledata::SIDE_YM)
-                        {
-                            ambocc[0] = getambaround(c, ctilepos{x,y,z});
-                            ambocc[1] = getambaround(c, ctilepos{x+1,y,z});
-                            ambocc[2] = getambaround(c, ctilepos{x+1,y,z+1});
-                            ambocc[3] = getambaround(c, ctilepos{x,y,z+1});
-                            if (tiledata::gettileinfo(tid).biometint)
-                                biomecontroller::getbiometintvertexes(c, chtilepos{x,z}, tiledata::SIDE_YM, tint);
-                            if (tid == 1)
-                                tiledata::addside(ctilepos{x,y,z}, tid, 0, 2, sunlight, rgbcolor255(0,0,0), glow, ambocc, tint, c.wmesh[cpart][c.getinactivemesh(cpart)]);
-                            else
-                                tiledata::addside(ctilepos{x,y,z}, tid, 0, 2, sunlight, rgbcolor255(0,0,0), glow, ambocc, tint, c.cmesh[cpart][c.getinactivemesh(cpart)]);
-                        }
-                        if (sides & tiledata::SIDE_YP)
-                        {
-                            ambocc[0] = getambaround(c, ctilepos{x,y+1,z});
-                            ambocc[1] = getambaround(c, ctilepos{x+1,y+1,z});
-                            ambocc[2] = getambaround(c, ctilepos{x+1,y+1,z+1});
-                            ambocc[3] = getambaround(c, ctilepos{x,y+1,z+1});
-                            if (tiledata::gettileinfo(tid).biometint)
-                                biomecontroller::getbiometintvertexes(c, chtilepos{x,z}, tiledata::SIDE_YP, tint);
-                            if (tid == 1)
-                                tiledata::addside(ctilepos{x,y,z}, tid, 0, 3, sunlight, rgbcolor255(0,0,0), glow, ambocc, tint, c.wmesh[cpart][c.getinactivemesh(cpart)]);
-                            else
-                                tiledata::addside(ctilepos{x,y,z}, tid, 0, 3, sunlight, rgbcolor255(0,0,0), glow, ambocc, tint, c.cmesh[cpart][c.getinactivemesh(cpart)]);
-                        }
-                        if (sides & tiledata::SIDE_ZM)
-                        {
-                            ambocc[0] = getambaround(c, ctilepos{x,y,z});
-                            ambocc[1] = getambaround(c, ctilepos{x+1,y,z});
-                            ambocc[2] = getambaround(c, ctilepos{x+1,y+1,z});
-                            ambocc[3] = getambaround(c, ctilepos{x,y+1,z});
-                            if (tiledata::gettileinfo(tid).biometint)
-                                biomecontroller::getbiometintvertexes(c, chtilepos{x,z}, tiledata::SIDE_ZM, tint);
-                            if (tid == 1)
-                                tiledata::addside(ctilepos{x,y,z}, tid, 0, 4, sunlight, rgbcolor255(0,0,0), glow, ambocc, tint, c.wmesh[cpart][c.getinactivemesh(cpart)]);
-                            else
-                                tiledata::addside(ctilepos{x,y,z}, tid, 0, 4, sunlight, rgbcolor255(0,0,0), glow, ambocc, tint, c.cmesh[cpart][c.getinactivemesh(cpart)]);
-                        }
-                        if (sides & tiledata::SIDE_ZP)
-                        {
-                            ambocc[0] = getambaround(c, ctilepos{x,y,z+1});
-                            ambocc[1] = getambaround(c, ctilepos{x+1,y,z+1});
-                            ambocc[2] = getambaround(c, ctilepos{x+1,y+1,z+1});
-                            ambocc[3] = getambaround(c, ctilepos{x,y+1,z+1});
-                            if (tiledata::gettileinfo(tid).biometint)
-                                biomecontroller::getbiometintvertexes(c, chtilepos{x,z}, tiledata::SIDE_ZP, tint);
-                            if (tid == 1)
-                                tiledata::addside(ctilepos{x,y,z}, tid, 0, 5, sunlight, rgbcolor255(0,0,0), glow, ambocc, tint, c.wmesh[cpart][c.getinactivemesh(cpart)]);
-                            else
-                                tiledata::addside(ctilepos{x,y,z}, tid, 0, 5, sunlight, rgbcolor255(0,0,0), glow, ambocc, tint, c.cmesh[cpart][c.getinactivemesh(cpart)]);
+                            if (sides & tiledata::sideflags[a])
+                            {
+                                chunkgetvertexdata::setambocc(c, ctilepos{x,y,z}, tiledata::sideflags[a], ambocc);
+                                chunkgetvertexdata::setsunlight(c, ctilepos{x,y,z}, tiledata::sideflags[a], sunlight);
+
+                                if (tiledata::gettileinfo(tid).biometint)
+                                    chunkgetvertexdata::getbiometintvertexes(c, chtilepos{x,z}, tiledata::sideflags[a], tint);
+
+                                if (tid == 1)
+                                    tiledata::addside(ctilepos{x,y,z}, tid, 0, a, sunlight, light, glow, ambocc, tint, c.wmesh[cpart][c.getinactivemesh(cpart)]);
+                                else
+                                    tiledata::addside(ctilepos{x,y,z}, tid, 0, a, sunlight, light, glow, ambocc, tint, c.cmesh[cpart][c.getinactivemesh(cpart)]);
+                            }
                         }
                     }
                     else
@@ -190,19 +131,5 @@ void chunkcontroller::meshchunkpart(chunk& c, uint8_t cpart)
     }
 }
 
-uint8_t chunkcontroller::getambaround(chunk& c, ctilepos vertex)
-{
-    uint8_t amb = 0;
-    for (ytile y = vertex.y-1; y < vertex.y+1; y++)
-    {
-        for (htile z = vertex.z-1; z < vertex.z+1; z++)
-        {
-            for (htile x = vertex.x-1; x < vertex.x+1; x++)
-            {
-                int tilert = c.gettile(ctilepos{x,y,z});
-                if (tiledata::isambocc(tilert)) amb += 1;
-            }
-        }
-    }
-    return amb;
-}
+
+

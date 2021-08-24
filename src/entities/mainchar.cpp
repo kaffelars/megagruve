@@ -25,6 +25,20 @@ void mainchar::fillinv()
     mcharinv.additem("i_stone", 99);
     mcharinv.additem("i_bookcase", 77);
 
+    mcharinv.additem("i_cactus", 56);
+    mcharinv.additem("i_apple", 13);
+    mcharinv.additem("i_sand", 64);
+    mcharinv.additem("i_flower2", 64);
+    mcharinv.additem("i_planks", 64);
+    mcharinv.additem("i_rock", 64);
+    mcharinv.additem("i_ironaxe", 1);
+    mcharinv.additem("i_snow", 1);
+    mcharinv.additem("i_ironpickaxe", 1);
+    mcharinv.additem("i_ironpickaxe", 1);
+
+    mcharinv.additem("i_ironpickaxe", 1);
+    mcharinv.additem("i_ironpickaxe", 1);
+
 
 }
 

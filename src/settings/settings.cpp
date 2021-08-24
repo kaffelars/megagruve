@@ -22,7 +22,9 @@ void settings::loadsettings()
     setts.emplace_back(setting("tileres", 1, 0));
     setts.emplace_back(setting("vsync", 1, 0));
     setts.emplace_back(setting("uiscale", 2, 0));
-    setts.emplace_back(setting("language", 0, 1)); //game
+    setts.emplace_back(setting("language", 0, 1));//game
+    setts.emplace_back(setting("bbox", 1, 1));
+    setts.emplace_back(setting("mbox", 1, 1));
 
     pugi::xml_document doc;
 
@@ -60,36 +62,7 @@ void settings::loadsettings()
 
 void settings::writedefaultsettings()
 {
-    std::cout << "writing default settings... ";
-    std::ofstream inifile;
-    inifile.open("data/dorf.ini");
-    inifile << "screenx" << "\n";
-    inifile << "1" << "\n";
-    inifile << "1920" << "\n";
-    inifile << "screeny" << "\n";
-    inifile << "1" << "\n";
-    inifile << "1147" << "\n";
-    inifile << "fov" << "\n";
-    inifile << "1" << "\n";
-    inifile << "75" << "\n";
-    inifile << "cdist" << "\n";
-    inifile << "1" << "\n";
-    inifile << "13" << "\n";
-    inifile << "aa" << "\n";
-    inifile << "1" << "\n";
-    inifile << "5" << "\n";
-    inifile << "tileres" << "\n";
-    inifile << "1" << "\n";
-    inifile << "64" << "\n";
-    inifile << "vsync" << "\n";
-    inifile << "1" << "\n";
-    inifile << "1" << "\n";
-    inifile << "uiscale" << "\n";
-    inifile << "2" << "\n";
-    inifile << "1.0" << "\n";
-    inifile << "-1" << "\n";
 
-    inifile.close();
 }
 
 void settings::savesettings()
