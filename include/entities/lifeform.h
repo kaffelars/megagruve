@@ -22,7 +22,7 @@ class lifeform : public entity
         statnumbers actualstats; //modifies av statuseffects når de settes eller forsvinner
         std::vector<statuseffect> activestatuseffects;
 
-        virtual void heal(uint32_t healamount);
+        virtual void heal(int32_t healamount);
         virtual void takedamage(int32_t attackstrength, int32_t attacktype, entity& source);
         virtual void applybuff(std::string buffname);
 

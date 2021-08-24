@@ -9,6 +9,16 @@ namespace uiingame
     void initialize();
 
     void updateactionbaritems(bool updatebar);
+
+    void updateinventory(bool update, bool alsobg);
+
+    void hover();
+    void click();
+    void renderiteminfobox();
+
+    int32_t getinvitemidbyposition(glm::ivec2 position);
+
+    void toggleinventory();
 }
 
 

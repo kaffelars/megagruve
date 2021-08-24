@@ -29,17 +29,6 @@ namespace chunkcontroller
 
     bool chunkexists(chunkpos cpos);
 
-    chunkpos wpostocpos(wposition wpos);
-    chunkpos wtilepostocpos(wtilepos wtpos);
-    ctilepos wpostoctilepos(wposition wpos);
-    wtilepos wpostowtilepos(wposition wpos);
-    ctilepos wtilepostoctilepos(wtilepos wtpos);
-    wposition cpostowpos(chunkpos cpos);
-    bool wtileposwithinworldbounds(wtilepos wtpos);
-    wtilepos cposctilepostowtilepos(chunkpos cpos, ctilepos ctpos);
-
-    bool withinchunkbounds(ctilepos cpos);
-    bool withinextendedchunkbounds(ctilepos cpos);
 
     void addctiletochange(chunkpos cpos, ctilepos ctpos, tileid newtileid);
     bool changectile(chunkpos cpos, ctilepos ctile, tileid newtileid);

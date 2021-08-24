@@ -19,9 +19,11 @@ class scenegame : public scene
         virtual ~scenegame();
 
         bool showingescbox {false};
+        bool showinginventory {false};
 
         void shutdownworld();
         void toggleescbox();
+        void toggleinventory();
         void setkeys();
 
         void render();

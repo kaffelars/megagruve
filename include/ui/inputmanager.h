@@ -48,6 +48,7 @@ namespace inputmanager
         KEY_SELECT,
         KEY_MISC,
         KEY_ESCAPE,
+        KEY_INV,
         KEY_1,
         KEY_2,
         KEY_3,

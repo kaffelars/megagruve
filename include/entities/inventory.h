@@ -10,6 +10,7 @@ class inventory
         virtual ~inventory();
 
         uint32_t invsize {32};
+        uint32_t getinvsize();
 
         //bool additem(uint32_t itemid, uint32_t quantity);
         void resizeinv(uint32_t newsize);
@@ -20,8 +21,14 @@ class inventory
             uint32_t quantity;
         };
 
-        invitem& getinvitem(uint32_t position);
+        bool positionininv(int32_t position);
+        void swapitems(int32_t position1, int32_t position2);
+        void swaporcombineitems(int32_t position1, int32_t position2);
+
+        invitem& getinvitem(int32_t position);
+        invitem& removeinvitem(int32_t position);
         invitem emptyinvitem;
+        void setinvitem(int32_t position, invitem item);
 
         bool additem(invitem itemtoadd);
         bool additem(std::string itemid, uint32_t quantity);
