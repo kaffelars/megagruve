@@ -47,6 +47,11 @@ wposition mainchar::geteyeposition()
     return pobject.getposition() + cameraoffset;
 }
 
+wposition mainchar::getposition()
+{
+    return pobject.getposition();
+}
+
 void mainchar::updatecamera()
 {
     camera::updateviewmatrix(geteyeposition(), rot);

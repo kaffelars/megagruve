@@ -48,6 +48,8 @@ void itemmanager::initialize()
     additem("i_ironaxe", "iron_axe", item{.name="Iron Axe", .description="An axe made from iron", .speed=7, .duration=5, .maxstack=1, .itemtype=I_TOOL, .useeffects=std::vector<effect*>{new attackeffect(10, 2)}});
     additem("i_apple", "apple", item{.name="Red apple", .description="Delicious red apple", .speed=5, .duration=0, .maxstack=10, .itemtype=I_USABLE, .useeffects=std::vector<effect*>{new healeffect(1)}});*/
 
+    uint8_t orbtexid = texturemanager::gettiletexturenumber("orb");
+
     additem("i_debug", "debug", item{.name="Error item", .description="An error has occurred", .speed=500, .duration=5, .maxstack=1, .itemtype=I_INERT, .useeffects=std::vector<std::shared_ptr<effect>>{}});
     additem("i_ironpickaxe", "iron_pickaxe", item{.name="Iron Pickaxe", .description="A pickaxe made from iron", .speed=300, .duration=5, .maxstack=1, .itemtype=I_DIG, .useeffects=std::vector<std::shared_ptr<effect>>{std::make_shared<attackeffect>(10, 1)}});
     additem("i_ironaxe", "iron_axe", item{.name="Iron Axe", .description="An axe made from iron", .speed=400, .duration=5, .maxstack=1, .itemtype=I_DIG, .useeffects=std::vector<std::shared_ptr<effect>>{std::make_shared<attackeffect>(11, 2)}});
@@ -55,7 +57,7 @@ void itemmanager::initialize()
     additem("i_lightbulb", "lightbulb", item{.name="Lightbulb", .description="Emits a decent amount of light", .speed=500, .duration=0, .maxstack=99, .itemtype=I_PLACEABLEOBJECT, .useeffects=std::vector<std::shared_ptr<effect>>{std::make_shared<healeffect>(1)}});
     additem("i_greenwand", "green_wand", item{.name="Green wand", .description="Make weather good", .speed=10, .duration=0, .maxstack=1, .itemtype=I_USABLE, .useeffects=std::vector<std::shared_ptr<effect>>{std::make_shared<changeweathereffect>(-0.001f)}});
     additem("i_redwand", "red_wand", item{.name="Red wand", .description="Make weather bad", .speed=10, .duration=0, .maxstack=1, .itemtype=I_USABLE, .useeffects=std::vector<std::shared_ptr<effect>>{std::make_shared<changeweathereffect>(0.001f)}});
-    additem("i_timetotem", "totem", item{.name="Time totem", .description="Toggle the movement of time", .speed=1000, .duration=0, .maxstack=1, .itemtype=I_USABLE, .useeffects=std::vector<std::shared_ptr<effect>>{std::make_shared<toggletime>()}});
+    additem("i_timetotem", "totem", item{.name="Time totem", .description="Toggle the movement of time", .speed=1000, .duration=0, .maxstack=1, .itemtype=I_USABLE, .useeffects=std::vector<std::shared_ptr<effect>>{std::make_shared<shootparticle>(25, orbtexid, 2), std::make_shared<toggletime>()}});
 
     //make items from blocks
     for (const tiledata::tileinfo& t : tiledata::gettileinfolist())

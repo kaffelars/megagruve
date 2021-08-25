@@ -3,6 +3,7 @@
 
 #include "chunkcoords.h"
 #include "uiingame.h"
+#include "particlemanager.h"
 
 scenegame::scenegame()
 {
@@ -199,6 +200,8 @@ void scenegame::update()
         environment::updatetime();
 
         maincharcontroller::update();
+
+        particlemanager::updateparticles();
     }
 
     chunkcontroller::updatechunks();

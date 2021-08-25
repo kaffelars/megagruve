@@ -20,7 +20,7 @@ namespace texturemanager
 
     std::vector<std::string> tiletexturenames = {"debug", "water", "dirt", "grass", "grass2", "grassydirt", "stone", "rock", "sand", "flag", "leaves", "blue", "log",
     "logtop", "grasstuft1", "grasstuft2", "planks", "cactus_side", "cactus_top", "littlegrass", "bookcase", "flower1", "flower2", "flower3",
-    "chest_top", "chest_bottom", "chest_side", "chest_front", "chest_inside", "destroy1", "destroy2", "destroy3", "destroy4", "glowstone", "snow", "gravel", "ice"};
+    "chest_top", "chest_bottom", "chest_side", "chest_front", "chest_inside", "destroy1", "destroy2", "destroy3", "destroy4", "glowstone", "snow", "gravel", "ice", "green", "orb"};
 }
 
 

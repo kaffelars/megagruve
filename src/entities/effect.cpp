@@ -3,7 +3,7 @@
 #include "chunkcontroller.h"
 #include "tiledata.h"
 #include "environment.h"
-
+#include "particlemanager.h"
 
 healeffect::healeffect(int32_t healstr) : healstrength{healstr}
 {
@@ -30,6 +30,27 @@ bool applybuff::activate(entity* user, entity* target)
     target->applybuff(buffname);
 
     return true;
+}
+
+
+shootparticle::shootparticle(uint32_t particlenum, uint8_t particletex, int32_t particlespread) : num{particlenum}, texid{particletex}, spread{particlespread}
+{
+
+}
+
+bool shootparticle::activate(entity* user, entity* target)
+{
+    for (int a = 0; a < num; a++)
+    {
+        float randx = utils::randint(-spread, spread);
+        float randy = utils::randint(-spread, spread);
+        float randz = utils::randint(-spread, spread);
+        randx /= 30.0f;
+        randy /= 30.0f;
+        randz /= 30.0f;
+        wposition pos = target->getposition();
+        particlemanager::addparticle(pos, velocity(randx, randy, randz), texid, 15, 5000, 0);
+    }
 }
 
 

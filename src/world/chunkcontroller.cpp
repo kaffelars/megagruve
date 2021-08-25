@@ -4,6 +4,7 @@
 #include "chunkcoords.h"
 
 #include "biomecontroller.h"
+#include "particlemanager.h"
 
 namespace chunkcontroller
 {
@@ -350,6 +351,19 @@ void chunkcontroller::breaktile(wtilepos wtile)
 {
     //drop stuff?
     addtiletochange(wtile, 0);
+    tileid tid = gettileid(wtile);
+    uint8_t textureid = tiledata::gettileinfo(tid).breaktextureid;
+    uint8_t glow = tiledata::gettileinfo(tid).glow;
+
+    for (int a =0 ; a < 4; a++)
+    {
+        //direction chardir = (-maincharcontroller::getviewdir() / 10.0f);
+        float randx = utils::randint(-3, 3);
+        float randz = utils::randint(-3, 3);
+        randx /= 30.0f;
+        randz /= 30.0f;
+        particlemanager::addparticle(wposition(wtile.x + 0.5f, wtile.y + 0.5f, wtile.z + 0.5f), velocity(randx, -0.05f, randz), textureid, 15, 2000, glow);
+    }
 
     if (wtile.y > 0)
     {

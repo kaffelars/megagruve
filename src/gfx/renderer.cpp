@@ -2,6 +2,7 @@
 #include "renderer.h"
 
 #include "timekeeper.h"
+#include "particlemanager.h"
 
 namespace renderer
 {
@@ -56,6 +57,20 @@ void renderer::rendergame()
 
     //destroy block
     maincharcontroller::renderdestroyblock();
+    //
+
+    //particles
+    if (particlemanager::anyactiveparticles())
+    {
+        shadercontroller::activateshader(shadercontroller::SH_PARTICLE);
+        glUniformMatrix4fv(shadercontroller::getuniformid("pv"), 1, GL_FALSE, &(camera::getpvmatrix()[0][0]));
+        glUniform3f(shadercontroller::getuniformid("sundir"), sundir.x, sundir.y, sundir.z);
+        glUniform3f(shadercontroller::getuniformid("fogcolor"), fogcolor.x, fogcolor.y, fogcolor.z);
+        glUniform3f(shadercontroller::getuniformid("suncolor"), suncolor.x, suncolor.y, suncolor.z);
+        glUniform3f(shadercontroller::getuniformid("campos"), campos.x, campos.y, campos.z);
+
+        particlemanager::renderparticles();
+    }
     //
 
     //render sky -----

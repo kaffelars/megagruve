@@ -1,11 +1,15 @@
 #include "consts.h"
 #include "physicsobject.h"
 
-physicsobject::physicsobject(wposition p, velocity v, boundingbox::box b)//std::vector<boundingbox::box>& fbbox)
+#include "timekeeper.h"
+
+physicsobject::physicsobject(wposition p, velocity v, point b, bbtype btyp, float gfactor)//std::vector<boundingbox::box>& fbbox)
 {
     setvelocity(v);
     setposition(p);
-    bbox.changeboundingbox(b);
+    bbox = b;
+    btype = btyp;
+    gravityfactor = gfactor;
 }
 
 physicsobject::physicsobject() = default;
@@ -47,15 +51,15 @@ void physicsobject::addvelocity(velocity v)
 
 wposition physicsobject::getnextposition()
 {
-    return position + vel;
+    return position + vel * timekeeper::gettimefactor();
 }
 
 void physicsobject::updateposition()
 {
-    position += vel;
+    position += vel * timekeeper::gettimefactor();
 }
 
 void physicsobject::updatevelocity()
 {
-    vel += velocity{0.0f,0.1f,0.0f};//gravity lol
+    vel += velocity{0.0f,0.1f * gravityfactor,0.0f};//gravity lol
 }
