@@ -15,6 +15,7 @@
 #include "maincharcontroller.h"
 #include "itemmanager.h"
 #include "uiingame.h"
+#include "biomecontroller.h"
 
 int main( int argc, char* args[] )
 {
@@ -29,6 +30,8 @@ int main( int argc, char* args[] )
     uiingame::initialize();
 
     voxelmodels::initialize();
+
+    biomecontroller::initialize();
 
     std::cout << "initializing skybox & scenequad... ";
     skybox::initialize();
