@@ -35,6 +35,18 @@ class applybuff : public effect
 
 };
 
+class shootparticle:public effect
+{
+    public:
+        shootparticle(uint32_t particlenum, uint8_t particletex, int32_t particlespread);
+        virtual ~shootparticle() = default;
+        bool activate(entity* user, entity* target);
+    private:
+        uint32_t num;
+        uint8_t texid;
+        int32_t spread;
+};
+
 class attackeffect:public effect
 {
 	public:

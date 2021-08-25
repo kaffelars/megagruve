@@ -35,6 +35,8 @@ namespace tiledata
         uint8_t glow;
         bool needssupport;
         bool biometint;
+        std::string breaktexture;
+        uint32_t breaktextureid;
         std::string sidetextures[6] {"", "", "", "", "", ""};
         uint32_t sidetextureids[6] {0,0,0,0,0,0};
     };

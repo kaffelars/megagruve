@@ -6,7 +6,12 @@
 class physicsobject
 {
     public:
-        physicsobject(wposition p, velocity v, boundingbox::box b);// std::vector<boundingbox::box>& fbbox);
+        enum bbtype
+        {
+            BB_POINT, BB_LINE, BB_BOX
+        };
+
+        physicsobject(wposition p, velocity v, point b, bbtype btyp, float gfactor);// std::vector<boundingbox::box>& fbbox);
         physicsobject();
 
         virtual ~physicsobject();
@@ -14,7 +19,11 @@ class physicsobject
         wposition getposition();
         wposition getnextposition();
 
-        boundingbox bbox;
+        bbtype btype;
+
+        point bbox;
+
+        float gravityfactor;
 
         void addvelocity(velocity v);
         void stop();

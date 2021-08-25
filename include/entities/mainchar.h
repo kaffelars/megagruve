@@ -20,8 +20,12 @@ class mainchar : public lifeform
         physicsobject pobject {
             wposition{50.5f, 78.0f, 0.5f},
             velocity{0.0f, 0.0f, 0.0f},
-            boundingbox::box{ point{0.0f, 0.0f, 0.0f}, point{0.8f, 1.8f, 0.8f} }
+            point{0.8f, 1.8f, 0.8f},
+            physicsobject::BB_BOX,
+            1.0f
         };
+
+        wposition getposition();
         wposition cameraoffset {wposition{0.4f, 0.2f, 0.4f}};
         wposition geteyeposition();
 
