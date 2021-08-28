@@ -14,12 +14,11 @@
 namespace chunkcontroller
 {
     chunk& getchunk(chunkpos cpos);
-    void generatechunk(chunk& c);
-    void generatechunksides(chunk& c);
+    //void generatechunk(chunk& c);
     //void generatechunksides(chunk& c, chunk& sidechunk, uint8_t side);
-    void decorate(chunk& c);
+    //void decorate(chunk& c);
     void adddecoration(chunkpos cpos, ctilepos ctpos, uint32_t voxelmodelid);
-    void addvoxelmodel(chunk& c, ctilepos ctpos, uint32_t voxelmodelid, bool cgenerator);
+    //void addvoxelmodel(chunk& c, ctilepos ctpos, uint32_t voxelmodelid, bool cgenerator);
 
     void meshwholechunk(chunk& c);
     void meshchunkpart(chunk& c, uint8_t cpart);
@@ -30,17 +29,19 @@ namespace chunkcontroller
     bool chunkexists(chunkpos cpos);
 
 
-    void addctiletochange(chunkpos cpos, ctilepos ctpos, tileid newtileid);
-    bool changectile(chunkpos cpos, ctilepos ctile, tileid newtileid);
-    void updatesidesaround(chunk& c, ctilepos cpos);
+    void addctiletochange(chunkpos cpos, ctilepos ctpos, tileid newtileid, bool breakage);
+    bool changectile(chunkpos cpos, ctilepos ctile, tileid newtileid, bool breakage);
 
     void changetiles();
-    void addtiletochange(wtilepos wtile, tileid newtileid);
+    void addtiletochange(wtilepos wtile, tileid newtileid, bool breakage);
     void breaktile(wtilepos wtile);
+    void explodetiles(wtilepos wtile, int32_t explosionpower);
 
     void updatesunlight(chunk& c, ctilepos ctpos, bool initial);
 
     tileid gettileid(wtilepos wtpos);
+    tileid gettileid(wposition wtpos);
+    chunk::tlight getlight(wtilepos wtpos);
 
     void updatechunks();
     int loadedchunksnum();

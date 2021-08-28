@@ -4,16 +4,18 @@
 #include "entity.h"
 #include "statuseffect.h"
 #include "statnumbers.h"
+#include "physicsobject.h"
 
-class lifeform : public entity
+class lifeform : public entity, public physicsobject
 {
     public:
-        lifeform();
+        lifeform(wposition p, velocity v, point b, bbtype btyp, float gfactor);
         virtual ~lifeform();
 
 
 
-        virtual wposition getposition();//return physicsobject::getposition(););
+        wposition getposition();//return physicsobject::getposition(););
+
         float hp {1};
 
         void setstats(float hp, float maxhp, float attack, float defense, float movespeed, float usespeed);

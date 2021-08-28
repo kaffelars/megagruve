@@ -34,6 +34,7 @@ namespace tiledata
         uint8_t hardness;
         uint8_t glow;
         bool needssupport;
+        bool passable;
         bool biometint;
         std::string breaktexture;
         uint32_t breaktextureid;
@@ -61,6 +62,7 @@ namespace tiledata
     bool istransparent(tileid tile);
     bool isambocc(tileid tile);
     bool needssupport(tileid tile);
+    bool ispassable(tileid tile);
 
     void initialize();
 

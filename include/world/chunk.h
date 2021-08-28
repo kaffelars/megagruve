@@ -63,13 +63,8 @@ class chunk
         tileid gettile(ctilepos tpos);
         void settile(ctilepos tpos, tileid value);
 
-        uint8_t getsides(ctilepos tpos);
-        void setsides(ctilepos tpos, uint8_t sideval);
-        void setside(ctilepos tpos, tiledata::tilesides side, bool addside);
-
         void addtile(tileid value);
-        void addside();
-        void addside(ctilepos tpos, tiledata::tilesides side);
+
         void addhighest(ytile value);
         ytile gethighest(chtilepos thpos);
         void sethighest(chtilepos thpos, ytile y);
@@ -83,11 +78,11 @@ class chunk
         void setsunlight(ctilepos tpos, uint8_t value);
         uint8_t getsunlight(ctilepos tpos);
 
+        tlight getalllight(ctilepos tpos);
+
         void render();
         void renderwater();
         void deletechunk();
-
-        std::vector<uint8_t> tilesides;
 
 
 

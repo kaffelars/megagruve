@@ -47,6 +47,25 @@ class shootparticle:public effect
         int32_t spread;
 };
 
+class toggleflying:public effect
+{
+    public:
+        toggleflying();
+        virtual ~toggleflying() = default;
+        bool activate(entity* user, entity* target);
+    private:
+};
+
+class explodeblocks:public effect
+{
+    public:
+        explodeblocks(uint32_t explosionpower);
+        virtual ~explodeblocks() = default;
+        bool activate(entity* user, entity* target);
+    private:
+        uint32_t power;
+};
+
 class attackeffect:public effect
 {
 	public:

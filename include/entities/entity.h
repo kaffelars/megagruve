@@ -20,6 +20,13 @@ class entity
 };
 
 
+class blankentity : public entity
+{
+    public:
+        blankentity() = default;
+};
+
+
 class blockentity : public entity
 {
     public:

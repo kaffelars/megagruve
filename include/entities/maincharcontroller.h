@@ -15,6 +15,7 @@ namespace maincharcontroller
     direction getviewdir();
     hdirection gethviewdir();
     wposition getmaincharposition();
+    wposition getmaincharcamera();
     void updatecamera();
     void movement();
     void toggleflying();
@@ -24,6 +25,7 @@ namespace maincharcontroller
     void renderselection();
     void setselectionmode(smode selmode);
     void movechar(hdirection dir);
+    void mcharjump();
 
     void renderdestroyblock();
 

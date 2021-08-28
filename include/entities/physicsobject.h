@@ -16,8 +16,15 @@ class physicsobject
 
         virtual ~physicsobject();
 
-        wposition getposition();
+        virtual wposition getposition();
         wposition getnextposition();
+
+        int32_t falldamage;
+
+        void dophysics();
+
+        bool resting;
+        bool onfloor;
 
         bbtype btype;
 
@@ -34,11 +41,13 @@ class physicsobject
         void updatevelocity();
 
         void updateposition();
+
+        wposition position {wposition{0.0f, 0.0f, 0.0f}};
+        velocity vel {velocity{0.0f, 0.0f, 0.0f}};
     protected:
 
     private:
-        wposition position {wposition{0.0f, 0.0f, 0.0f}};
-        velocity vel {velocity{0.0f, 0.0f, 0.0f}};
+
 };
 
 #endif // PHYSICSOBJECT_H
