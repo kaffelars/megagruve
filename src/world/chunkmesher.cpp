@@ -60,7 +60,6 @@ void chunkcontroller::meshchunkpart(chunk& c, uint8_t cpart)
 
                 if (!tiledata::isempty(tid))
                 {
-                    uint8_t sides = c.getsides(ctilepos{x,y,z});
                     //sunlight
                     uint8_t sunlight = 0;
                     uint8_t ambocc = 0;
@@ -101,7 +100,10 @@ void chunkcontroller::meshchunkpart(chunk& c, uint8_t cpart)
 
                         for (int a = 0; a < 6; a++)
                         {
-                            if (sides & tiledata::sideflags[a])
+                            //if (sides & tiledata::sideflags[a])
+                            //{
+                            tileid neighbour = c.gettile(ctilepos{x,y,z} + sideoffsets[a]);
+                            if (tiledata::renderside(tid, neighbour, a))
                             {
                                 chunkgetvertexdata::setambocc(c, ctilepos{x,y,z}, tiledata::sideflags[a], ambocc);
                                 chunkgetvertexdata::setsunlight(c, ctilepos{x,y,z}, tiledata::sideflags[a], sunlight);
@@ -114,6 +116,7 @@ void chunkcontroller::meshchunkpart(chunk& c, uint8_t cpart)
                                 else
                                     tiledata::addside(ctilepos{x,y,z}, tid, 0, a, sunlight, light, glow, ambocc, tint, c.cmesh[cpart][c.getinactivemesh(cpart)]);
                             }
+                            //}
                         }
                     }
                     else
@@ -123,7 +126,7 @@ void chunkcontroller::meshchunkpart(chunk& c, uint8_t cpart)
                         if (tiledata::gettileinfo(tid).biometint)
                             tint = biomecontroller::getbiometint(c.getbiome(chtilepos{x,z}));
 
-                        tiledata::addblock(ctilepos{x,y,z}, tid, tileshape, sides, sunlight, rgbcolor255(0,0,0), glow, 0, tint, c.cmesh[cpart][c.getinactivemesh(cpart)]);
+                        tiledata::addblock(ctilepos{x,y,z}, tid, tileshape, 0, sunlight, rgbcolor255(0,0,0), glow, 0, tint, c.cmesh[cpart][c.getinactivemesh(cpart)]);
                     }
                 }
             }

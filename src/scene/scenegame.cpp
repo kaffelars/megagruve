@@ -47,6 +47,9 @@ void scenegame::setkeys()
     inputmanager::setkeyfunction(inputmanager::KEY_SELECT, [&](){maincharcontroller::useselecteditem();}, inputmanager::KE_HELD);
 
     inputmanager::setkeyfunction(inputmanager::KEY_INV, [&](){toggleinventory();}, inputmanager::KE_CLICKED);
+    inputmanager::setkeyfunction(inputmanager::KEY_TOGGLEFLYING, [&](){maincharcontroller::toggleflying();}, inputmanager::KE_CLICKED);
+    inputmanager::setkeyfunction(inputmanager::KEY_JUMP, [&](){maincharcontroller::mcharjump();}, inputmanager::KE_CLICKED);
+    inputmanager::setkeyfunction(inputmanager::KEY_JUMP, [&](){maincharcontroller::mcharjump();}, inputmanager::KE_HELD);
 }
 
 void scenegame::show()
@@ -91,8 +94,8 @@ void scenegame::render()
 
     infotext << "ctilepos: " << wtpos.x << " " << wtpos.y << " " << wtpos.z << "\n";
 
-    chunkpos cpos = chunkcoords::wpostocpos(wtpos);
-    ctilepos ctpos = chunkcoords::wpostoctilepos(wtpos);
+    chunkpos cpos = chunkcoords::wpostocpos(wposition{wtpos} + wposition{0.5f});
+    ctilepos ctpos = chunkcoords::wpostoctilepos(wposition{wtpos} + wposition{0.5f});
 
     infotext << "chunk: " << cpos.x << " " << cpos.y << "\n";
     infotext << "ctpos: " << ctpos.x << " " << ctpos.y << " " << ctpos.z << "\n";

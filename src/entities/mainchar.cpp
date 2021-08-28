@@ -1,9 +1,14 @@
 #include "consts.h"
 #include "mainchar.h"
 
-mainchar::mainchar()
+mainchar::mainchar() : lifeform(wposition{50.5f, 78.0f, 0.5f},
+            velocity{0.0f, 0.0f, 0.0f},
+            point{0.4f, 1.8f, 0.4f},
+            physicsobject::BB_BOX,
+            1.0f)
 {
-    //ctor
+    flying = true;
+    toggleflying();
 
 }
 
@@ -12,14 +17,27 @@ mainchar::~mainchar()
     //dtor
 }
 
+void mainchar::toggleflying()
+{
+    flying = !flying;
+    if (flying)
+    {
+        physicsobject::gravityfactor = 0.0f;
+    }
+    else
+    {
+        physicsobject::gravityfactor = 1.0f;
+    }
+}
+
 void mainchar::fillinv()
 {
-    mcharinv.additem("i_ironpickaxe", 1);
+    mcharinv.additem("i_diamondpickaxe", 1);
     mcharinv.additem("i_timetotem", 1);
     mcharinv.additem("i_apple", 5);
     mcharinv.additem("i_greenwand", 1);
     mcharinv.additem("i_planks", 64);
-    mcharinv.additem("i_flag", 32);
+    mcharinv.additem("i_wings", 1);
     mcharinv.additem("i_redwand", 1);
     mcharinv.additem("i_glowstone", 65);
     mcharinv.additem("i_stone", 99);
@@ -38,19 +56,24 @@ void mainchar::fillinv()
 
     mcharinv.additem("i_ironpickaxe", 1);
     mcharinv.additem("i_ironpickaxe", 1);
+    mcharinv.additem("i_ironsword", 1);
+    mcharinv.additem("i_fireball", 1);
+    mcharinv.additem("i_diamond", 33);
+    mcharinv.additem("i_planks", 64);
+    mcharinv.additem("i_planks", 64);
+    mcharinv.additem("i_planks", 64);
+    mcharinv.additem("i_flag", 64);
+
+    mcharinv.additem("i_apple_golden", 13);
 
 
 }
 
 wposition mainchar::geteyeposition()
 {
-    return pobject.getposition() + cameraoffset;
+    return getposition() + cameraoffset;
 }
 
-wposition mainchar::getposition()
-{
-    return pobject.getposition();
-}
 
 void mainchar::updatecamera()
 {
@@ -75,10 +98,6 @@ hdirection mainchar::gethviewdir()
     return glm::normalize(hdirection(sin(kex)*cos(key), cos(kex)*cos(key)));
 }
 
-void mainchar::addvelocity(direction vel)
-{
-    pobject.addvelocity(vel);
-}
 
 void mainchar::movehoriz(hdirection movement)
 {
@@ -92,7 +111,9 @@ void mainchar::movehoriz(hdirection movement)
     hmovement.x += -dir.y * movement.x;
     hmovement.z += dir.x * movement.x;
 
-    pobject.addposition(hmovement*timekeeper::gettimefactor());
+    hmovement.y = vel.y;
+
+    setvelocity(hmovement);
 }
 
 void mainchar::moveflying(hdirection movement)
@@ -103,14 +124,14 @@ void mainchar::moveflying(hdirection movement)
     direction dmovement = glm::vec3(0.0f);
 
     dmovement.x = dir.x * movement.y;
-    dmovement.y = dir.y * movement.y;
+    dmovement.y = dir.y * movement.y + vel.y;
     dmovement.z = dir.z * movement.y;
 
     dmovement.x += -hdir.y * movement.x;
     //dmovement.y += dir.y * movement.x;
     dmovement.z += hdir.x * movement.x;
 
-    pobject.addposition(dmovement*timekeeper::gettimefactor());
+    setvelocity(dmovement);
 }
 
 void mainchar::rotateview(rotation r)

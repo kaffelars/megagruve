@@ -12,13 +12,13 @@
 #include "entity.h"
 #include "chunkmesh.h"
 #include "settings.h"
+#include "physicsmanager.h"
 
 #include "chunkcoords.h"
 
 namespace maincharcontroller
 {
     mainchar mchar;
-    bool flying = true;
     wtilepos tilehover = wtilepos(0,0,0);
     wtilepos oldtilehover = wtilepos(0,0,0);
     vaocontainer selection;
@@ -94,6 +94,11 @@ void maincharcontroller::renderselection()
     }
 }
 
+void maincharcontroller::toggleflying()
+{
+    mchar.toggleflying();
+}
+
 void maincharcontroller::renderdestroyblock()
 {
     int32_t hoverid = tilehoverentity.getid();
@@ -155,10 +160,6 @@ void maincharcontroller::initialize()
     mchar.fillinv();
 }
 
-void maincharcontroller::toggleflying()
-{
-    flying = !flying;
-}
 
 wtilepos maincharcontroller::gettilehover()
 {
@@ -182,7 +183,12 @@ hdirection maincharcontroller::gethviewdir()
 
 wposition maincharcontroller::getmaincharposition()
 {
-    return mchar.pobject.getposition();
+    return mchar.getposition();
+}
+
+wposition maincharcontroller::getmaincharcamera()
+{
+    return mchar.geteyeposition();
 }
 
 void maincharcontroller::updatecamera()
@@ -289,19 +295,42 @@ void maincharcontroller::update()
     updatecamera();
 }
 
+void maincharcontroller::mcharjump()
+{
+    if (mchar.onfloor || mchar.flying)
+    {
+        mchar.vel.y = -0.3f;
+    }
+}
+
 void maincharcontroller::movement()
 {
-    if (hmovement != hdirection(0.0f, 0.0f))
+    if (mchar.flying)
     {
-        hmovement = glm::normalize(hmovement);
+        if (hmovement != hdirection(0.0f, 0.0f))
+        {
+            hmovement = glm::normalize(hmovement);
 
-        if (flying)
             mchar.moveflying(hmovement);
-        else
-            mchar.movehoriz(hmovement);
-    }
+        }
 
-    mchar.pobject.updateposition();
+        //mchar.updateposition();
+        physicsmanager::boxphysics(mchar);
+        mchar.setvelocity(velocity{0.0f,0.0f,0.0f});
+    }
+    else
+    {
+        if (hmovement != hdirection(0.0f, 0.0f))
+        {
+            hmovement = glm::normalize(hmovement);
+
+            mchar.movehoriz(hmovement / 6.0f);
+        }
+
+        //mchar.updateposition();
+        physicsmanager::boxphysics(mchar);
+        //mchar.setvelocity(velocity{0.0f,0.0f,0.0f});
+    }
 
     mchar.rotateview(inputmanager::getmousedelta());
 

@@ -6,6 +6,8 @@
 #include "utils.h"
 #include "timekeeper.h"
 #include "chunkcontroller.h"
+#include "chunk.h"
+#include "physicsmanager.h"
 
 namespace particlemanager
 {
@@ -25,23 +27,32 @@ void particlemanager::initialize()
 
 void particlemanager::updateparticles()
 {
+    //std::vector<particle> ps; //ikke helt bra
     //updates particles
     for (particle& p: particles)
     {
         p.duration -= timekeeper::getdeltatime();
         if (p.duration > 0)
         {
-            wposition nextpos = p.getnextposition();
-            tileid tid = chunkcontroller::gettileid(wtilepos(nextpos.x, nextpos.y, nextpos.z));
-            if (tiledata::isempty(tid))
-            {
-                p.updatevelocity();
-                p.updateposition();
-            }
+            physicsmanager::pointphysics(p);
+            //p.dophysics();
+        }
+        else
+        {
+
         }
     }
 
-    //renser vekk døde particles
+    /*particles.clear();
+
+    for (particle& p : ps)
+    {
+        particles.push_back(p);
+    }*/
+
+    //std::remove_if(particles.begin(), particles.end(), [](const particle &p) { return (p.duration <= 0); }); //tregt
+
+    //renser vekk døde particles //tregt
     auto vit = particles.begin();
     while (vit != particles.end())
     {
@@ -71,8 +82,9 @@ void particlemanager::renderparticles()
         particlesvao.addvalues(0, pp.x, pp.y, pp.z, 0.0f);
 
         rgbcolor255 light = rgbcolor255(255, 255, 255);
-        uint8_t sunlight = 255;
-        uint8_t ambocc = 255;
+        chunk::tlight tl = chunkcontroller::getlight(pp);
+        uint8_t sunlight = tl.sunlight * 17;
+        uint8_t ambocc = 0;
 
         float packedlight = utils::packu2f(light.x, light.y, light.z);
         float packeddiv = utils::packu2f(sunlight, p.textureid, p.glow);

@@ -89,6 +89,15 @@ void scenesettings::game()
     {
         settings::setisetting(settings::SET_MBOX, mbox);
     }
+
+    uielement::text("Max threads (in addition to main thread): ", glm::vec2(25.0f, 95.0f));
+    int maxt = settings::getisetting(settings::SET_MAXTHREADS);
+    uielement::setposition(25.0f, 115.0f);
+    uielement::sliderint(1, 32, maxt, 1);
+    if (maxt != settings::getisetting(settings::SET_MAXTHREADS))
+    {
+        settings::setisetting(settings::SET_MAXTHREADS, maxt);
+    }
 }
 
 void scenesettings::video()

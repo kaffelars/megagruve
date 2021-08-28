@@ -25,6 +25,7 @@ void settings::loadsettings()
     setts.emplace_back(setting("language", 0, 1));//game
     setts.emplace_back(setting("bbox", 1, 1));
     setts.emplace_back(setting("mbox", 1, 1));
+    setts.emplace_back(setting("maxthreads", 1, 1));
 
     pugi::xml_document doc;
 

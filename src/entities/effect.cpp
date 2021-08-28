@@ -4,6 +4,7 @@
 #include "tiledata.h"
 #include "environment.h"
 #include "particlemanager.h"
+#include "maincharcontroller.h"
 
 healeffect::healeffect(int32_t healstr) : healstrength{healstr}
 {
@@ -92,6 +93,28 @@ bool toggletime::activate(entity* user, entity* target)
     return true;
 }
 
+toggleflying::toggleflying()
+{
+
+}
+
+bool toggleflying::activate(entity* user, entity* target)
+{
+    maincharcontroller::toggleflying();
+    return true;
+}
+
+
+explodeblocks::explodeblocks(uint32_t explosionpower) : power{explosionpower}
+{
+
+}
+
+bool explodeblocks::activate(entity* user, entity* target)
+{
+    wtilepos wt = target->getposition();
+    chunkcontroller::explodetiles(wt, power);
+}
 
 
 changeblockeffect::changeblockeffect(bool onlyemptyblocks, tileid block) : emptyonly{onlyemptyblocks}, tid{block}
@@ -111,7 +134,7 @@ bool changeblockeffect::activate(entity* user, entity* target)
     //std::cout << wt.x << " " << wt.y << " " << wt.z << "\n";
     target->heal(99999); //kan dette by på problemer?
 
-    chunkcontroller::addtiletochange(wt, tid);
+    chunkcontroller::addtiletochange(wt, tid, false);
     /*tileid tid = (uint8_t)target->getid();
     chunkcontroller::changewtile(wt, tid);*/
 

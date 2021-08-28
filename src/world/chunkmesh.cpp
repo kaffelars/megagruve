@@ -1,6 +1,7 @@
 #include "consts.h"
 #include "chunkmesh.h"
 
+
 chunkmesh::chunkmesh()
 {
     //ctor
@@ -34,6 +35,8 @@ bool chunkmesh::setvbos()
 {
     if (vertexes[0].size() > 0)
     {
+        vertexnum = vertexes[0].size() / 4;
+
         glGenBuffers(2, vbo);
 
         glGenVertexArrays(1, vao);
@@ -43,7 +46,9 @@ bool chunkmesh::setvbos()
         for (int a = 0; a < 2; a++)
         {
             glBindBuffer(GL_ARRAY_BUFFER, vbo[a]);
+
             glBufferData(GL_ARRAY_BUFFER, vertexes[a].size() * sizeof(GLfloat), &vertexes[a][0], GL_STATIC_DRAW);
+
             glVertexAttribPointer(a, 4, GL_FLOAT, GL_FALSE, 0, 0);
         }
 
@@ -51,6 +56,13 @@ bool chunkmesh::setvbos()
         {
             glEnableVertexAttribArray(a);
         }
+
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindVertexArray(0);
+
+
+        //vertexes[0].clear();
+        //vertexes[1].clear();
 
         return true;
     }
@@ -93,6 +105,6 @@ void chunkmesh::render()
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(vao[0]);
 
-        glDrawArrays(GL_TRIANGLES, 0, vertexes[0].size()/4);
+        glDrawArrays(GL_TRIANGLES, 0, vertexnum);
     }
 }

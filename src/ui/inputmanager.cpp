@@ -225,6 +225,9 @@ void inputmanager::initialize()
 
     addkey(KEYTYPE_KEYBOARD, KEY_INV, SDL_SCANCODE_I, mod_none, "inventory");
 
+    addkey(KEYTYPE_KEYBOARD, KEY_TOGGLEFLYING, SDL_SCANCODE_F, mod_none, "toggle flying");
+    addkey(KEYTYPE_KEYBOARD, KEY_JUMP, SDL_SCANCODE_SPACE, mod_none, "jump");
+
 
 
     std::cout << "done\n";

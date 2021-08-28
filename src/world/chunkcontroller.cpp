@@ -5,6 +5,9 @@
 
 #include "biomecontroller.h"
 #include "particlemanager.h"
+#include "chunkgenerator.h"
+#include "defaultgenerator.h"
+#include "chunklight.h"
 
 namespace chunkcontroller
 {
@@ -28,6 +31,7 @@ namespace chunkcontroller
         chunkpos cpos;
         ctilepos ctpos;
         tileid tid;
+        bool breakage {false};
     };
 
     std::vector<cchangetile> ctilestochange;
@@ -49,6 +53,9 @@ namespace chunkcontroller
     };
 
     std::vector<waterrender> waterrenders;
+
+
+    std::unique_ptr<chunkgenerator> currentchunkgenerator = std::make_unique<defaultgenerator>();
 }
 
 void chunkcontroller::adddecoration(chunkpos cpos, ctilepos ctpos, uint32_t voxelmodelid)
@@ -140,7 +147,7 @@ int chunkcontroller::loadedchunksnum()
     return loadedchunks.size();
 }
 
-tileid chunkcontroller::gettileid(wtilepos wtpos)
+chunk::tlight chunkcontroller::getlight(wtilepos wtpos)
 {
     chunkpos cpos = chunkcoords::wpostocpos(wtpos);
     if (chunkexists(cpos))
@@ -150,6 +157,40 @@ tileid chunkcontroller::gettileid(wtilepos wtpos)
         if (ctag == chunk::C_READY || ctag == chunk::C_REMESHING)
         {
             ctilepos ctpos = chunkcoords::wpostoctilepos(wtpos);
+            return c.getalllight(ctpos);
+        }
+    }
+
+    return chunk::tlight{0,0};
+}
+
+tileid chunkcontroller::gettileid(wposition wtpos)
+{
+    chunkpos cpos = chunkcoords::wpostocpos(wtpos);
+    if (chunkexists(cpos))
+    {
+        chunk& c = getchunk(cpos);
+        chunk::ctags ctag = c.gettag();
+        if (ctag == chunk::C_READY || ctag == chunk::C_REMESHING || ctag == chunk::C_REMESHED)
+        {
+            ctilepos ctpos = chunkcoords::wpostoctilepos(wtpos);
+            return c.gettile(ctpos);
+        }
+    }
+
+    return 0;
+}
+
+tileid chunkcontroller::gettileid(wtilepos wtpos)
+{
+    chunkpos cpos = chunkcoords::wtilepostocpos(wtpos);
+    if (chunkexists(cpos))
+    {
+        chunk& c = getchunk(cpos);
+        chunk::ctags ctag = c.gettag();
+        if (ctag == chunk::C_READY || ctag == chunk::C_REMESHING || ctag == chunk::C_REMESHED)
+        {
+            ctilepos ctpos = chunkcoords::wtilepostoctilepos(wtpos);
             return c.gettile(ctpos);
         }
     }
@@ -196,7 +237,7 @@ void chunkcontroller::renderchunk(chunkpos cpos)
     chunk& c = getchunk(cpos);
     chunk::ctags ctag = c.gettag();
 
-    if (threadcounter < maxthreads && ctag == chunk::C_READY && c.needsremesh())
+    if (threadcounter < settings::getisetting(settings::SET_MAXTHREADS) && ctag == chunk::C_READY && c.needsremesh())
     {
         threadcounter++;
         c.settag(chunk::C_REMESHING);
@@ -225,13 +266,13 @@ void chunkcontroller::renderchunk(chunkpos cpos)
     else
     {
         //std::cout << chunkmeshynum << "fsef\n";
-        if (threadcounter < maxthreads)
+        if (threadcounter < settings::getisetting(settings::SET_MAXTHREADS))
         {
             if (ctag == chunk::C_START) //mutex
             {
                 threadcounter++;
                 c.settag(chunk::C_GENERATING);
-                auto t = std::thread(generatechunk, std::ref(c));
+                auto t = std::thread(&chunkgenerator::generatechunk, std::ref(*currentchunkgenerator), std::ref(c));
                 t.detach();
                 //generatechunk(c);
             }
@@ -254,16 +295,16 @@ void chunkcontroller::renderchunk(chunkpos cpos)
 }
 
 
-void chunkcontroller::addtiletochange(wtilepos wtile, tileid newtileid)
+void chunkcontroller::addtiletochange(wtilepos wtile, tileid newtileid, bool breakage)
 {
     chunkpos cpos = chunkcoords::wpostocpos(wtile);
     ctilepos ctpos = chunkcoords::wtilepostoctilepos(wtile);
-    addctiletochange(cpos, ctpos, newtileid);
+    addctiletochange(cpos, ctpos, newtileid, breakage);
 }
 
-void chunkcontroller::addctiletochange(chunkpos cpos, ctilepos ctpos, tileid newtileid)
+void chunkcontroller::addctiletochange(chunkpos cpos, ctilepos ctpos, tileid newtileid, bool breakage)
 {
-    ctilestochangequeue.emplace_back(cchangetile{cpos, ctpos, newtileid});
+    ctilestochangequeue.emplace_back(cchangetile{cpos, ctpos, newtileid, breakage});
 }
 
 void chunkcontroller::changetiles()
@@ -280,7 +321,7 @@ void chunkcontroller::changetiles()
     auto vit = ctilestochange.begin();
     while (vit != ctilestochange.end())
     {
-        if (changectile((*vit).cpos, (*vit).ctpos, (*vit).tid))
+        if (changectile((*vit).cpos, (*vit).ctpos, (*vit).tid, (*vit).breakage))
         {
             vit = ctilestochange.erase(vit);
         }
@@ -291,7 +332,7 @@ void chunkcontroller::changetiles()
     }
 }
 
-bool chunkcontroller::changectile(chunkpos cpos, ctilepos ctpos, tileid newtileid)
+bool chunkcontroller::changectile(chunkpos cpos, ctilepos ctpos, tileid newtileid, bool breakage)
 {
     if (!chunkexists(cpos)) return false;
     chunk& c = getchunk(cpos);
@@ -300,21 +341,37 @@ bool chunkcontroller::changectile(chunkpos cpos, ctilepos ctpos, tileid newtilei
         tileid oldtile = c.gettile(ctpos);
         c.settile(ctpos, newtileid);
 
-        if (chunkcoords::withinchunkbounds(ctpos))
+        if (chunkcoords::withinextendedchunkbounds(ctpos))
             c.setremeshy(ctpos.y);
 
         if (tiledata::gettiletype(oldtile) != tiledata::gettiletype(newtileid)) //check if side updates = necessary
         {
-            updatesunlight(c, ctpos, false);
-            updatesidesaround(c, ctpos);
+            chunklight::updatesunlight(c, ctpos, false);
         }
 
         if (chunkcoords::withinchunkbounds(ctpos))
         {
-            if (ctpos.x == 0) addctiletochange(chunkpos{cpos.x-1, cpos.y}, ctilepos{chunkwidth, ctpos.y, ctpos.z}, newtileid);
-            if (ctpos.x == chunkwidth-1) addctiletochange(chunkpos{cpos.x+1, cpos.y}, ctilepos{-1, ctpos.y, ctpos.z}, newtileid);
-            if (ctpos.z == 0) addctiletochange(chunkpos{cpos.x, cpos.y-1}, ctilepos{ctpos.x, ctpos.y, chunkwidth}, newtileid);
-            if (ctpos.z == chunkwidth-1) addctiletochange(chunkpos{cpos.x, cpos.y+1}, ctilepos{ctpos.x, ctpos.y, -1}, newtileid);
+            if (ctpos.x == 0) addctiletochange(chunkpos{cpos.x-1, cpos.y}, ctilepos{chunkwidth, ctpos.y, ctpos.z}, newtileid, false);
+            if (ctpos.x == chunkwidth-1) addctiletochange(chunkpos{cpos.x+1, cpos.y}, ctilepos{-1, ctpos.y, ctpos.z}, newtileid, false);
+            if (ctpos.z == 0) addctiletochange(chunkpos{cpos.x, cpos.y-1}, ctilepos{ctpos.x, ctpos.y, chunkwidth}, newtileid, false);
+            if (ctpos.z == chunkwidth-1) addctiletochange(chunkpos{cpos.x, cpos.y+1}, ctilepos{ctpos.x, ctpos.y, -1}, newtileid, false);
+        }
+
+        if (breakage)
+        {
+            uint8_t textureid = tiledata::gettileinfo(oldtile).breaktextureid;
+            uint8_t glow = tiledata::gettileinfo(oldtile).glow;
+            wposition tilepos = wposition(cpos.x * chunkwidth + ctpos.x, ctpos.y, cpos.y * chunkwidth + ctpos.z);
+
+            for (int a =0 ; a < 3; a++)
+            {
+                //direction chardir = (-maincharcontroller::getviewdir() / 10.0f);
+                float randx = utils::randint(-3, 3);
+                float randz = utils::randint(-3, 3);
+                randx /= 30.0f;
+                randz /= 30.0f;
+                particlemanager::addparticle(wposition(tilepos.x + 0.5f, tilepos.y + 0.5f, tilepos.z + 0.5f), velocity(randx, -0.05f, randz), textureid, 15, 2000, glow);
+            }
         }
 
         return true;
@@ -325,24 +382,21 @@ bool chunkcontroller::changectile(chunkpos cpos, ctilepos ctpos, tileid newtilei
     }
 }
 
-void chunkcontroller::updatesidesaround(chunk& c, ctilepos ctpos)
+void chunkcontroller::explodetiles(wtilepos wtile, int32_t explosionpower)
 {
-    tileid tid = c.gettile(ctpos);
-
-    for (int a = 0; a < 6; a++)
+    for (int x = -explosionpower; x <= explosionpower; x++)
     {
-        ctilepos neighbour = ctpos + sideoffsets[a];
-        if (chunkcoords::withinextendedchunkbounds(neighbour))
+        for (int z = -explosionpower; z <= explosionpower; z++)
         {
-            tileid ntid = c.gettile(neighbour);
-            if (tiledata::renderside(tid, ntid, tiledata::sideflags[a])) c.setside(ctpos, tiledata::sideflags[a], true);
-            else c.setside(ctpos, tiledata::sideflags[a], false);
-            if (chunkcoords::withinchunkbounds(neighbour))
+            for (int y = -explosionpower; y <= explosionpower; y++)
             {
-                if (tiledata::renderside(ntid, tid, tiledata::oppositesideflags[a])) c.setside(neighbour, tiledata::oppositesideflags[a], true);
-                else c.setside(neighbour, tiledata::oppositesideflags[a], false);
+                if (glm::distance(glm::vec3(0.0f), glm::vec3(x,y,z)) <= explosionpower && wtile.y + y > 0 && wtile.y + y < chunkheight)
+                {
+                    tileid tid = gettileid(wtile + wtilepos{x,y,z});
+                    if (!tiledata::needssupport(tid))
+                        breaktile(wtile + wtilepos{x,y,z}); //blir debug particles fordi busker og sånt legges med - fixed
+                }
             }
-            c.setremeshy(ctpos.y);
         }
     }
 }
@@ -350,28 +404,19 @@ void chunkcontroller::updatesidesaround(chunk& c, ctilepos ctpos)
 void chunkcontroller::breaktile(wtilepos wtile)
 {
     //drop stuff?
-    addtiletochange(wtile, 0);
     tileid tid = gettileid(wtile);
-    uint8_t textureid = tiledata::gettileinfo(tid).breaktextureid;
-    uint8_t glow = tiledata::gettileinfo(tid).glow;
-
-    for (int a =0 ; a < 4; a++)
+    if (tid > 1) //air and water cannot be broken normally
     {
-        //direction chardir = (-maincharcontroller::getviewdir() / 10.0f);
-        float randx = utils::randint(-3, 3);
-        float randz = utils::randint(-3, 3);
-        randx /= 30.0f;
-        randz /= 30.0f;
-        particlemanager::addparticle(wposition(wtile.x + 0.5f, wtile.y + 0.5f, wtile.z + 0.5f), velocity(randx, -0.05f, randz), textureid, 15, 2000, glow);
-    }
+        addtiletochange(wtile, 0, true);
 
-    if (wtile.y > 0)
-    {
-        wtile.y--;
-        tileid tid = gettileid(wtile);
-        if (tiledata::needssupport(tid))
+        if (wtile.y > 0)
         {
-            breaktile(wtile);
+            wtile.y--;
+            tileid tid = gettileid(wtile);
+            if (tiledata::needssupport(tid))
+            {
+                breaktile(wtile);
+            }
         }
     }
 }

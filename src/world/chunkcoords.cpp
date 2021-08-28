@@ -4,8 +4,18 @@
 chunkpos chunkcoords::wpostocpos(wposition wpos)
 {
     chunkpos c = chunkpos(wpos.x/chunkwidth, wpos.z/chunkwidth);
-    if (wpos.x < 0.0f) c.x -= 1;
-    if (wpos.z < 0.0f) c.y -= 1;
+    if (wpos.x < 0.0f)
+    {
+        if (ceilf(wpos.x) == wpos.x) wpos.x += 1;
+        c.x = (wpos.x) / chunkwidth;
+        c.x -= 1;
+    }
+    if (wpos.z < 0.0f)
+    {
+        if (ceilf(wpos.z) == wpos.z) wpos.z += 1;
+        c.y = (wpos.z) / chunkwidth;
+        c.y -= 1;
+    }
     return c;
 }
 
@@ -191,12 +201,13 @@ ctilepos chunkcoords::wpostoctilepos(wposition wpos) //noe er galt her med negat
     t.x = wpos.x - (c.x * chunkwidth);
     t.z = wpos.z - (c.y * chunkwidth);
 
+
     /*if (wpos.x < 0) t.x+=1;
     if (wpos.z < 0) t.z+=1;*/
 
     //special border cases
-    if (t.x == 32) t.x = 31;
-    if (t.z == 32) t.z = 31;
+    /*if (t.x == 32) t.x = 31;
+    if (t.z == 32) t.z = 31;*/
 
     return t;
 }

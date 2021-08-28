@@ -41,7 +41,7 @@ void renderer::rendergame()
     direction sundir = environment::getsundir();//environment.getsundir();
     rgbcolor suncolor = environment::getsuncolor();//environment.getsuncolor();
     rgbcolor fogcolor = environment::getfogcolor();//environment.getfogcolor();
-    wposition campos = maincharcontroller::getmaincharposition();
+    wposition campos = maincharcontroller::getmaincharcamera();
 
     shadercontroller::activateshader(shadercontroller::SH_MAIN);
     glUniformMatrix4fv(shadercontroller::getuniformid("pv"), 1, GL_FALSE, &(camera::getpvmatrix()[0][0]));
@@ -52,7 +52,7 @@ void renderer::rendergame()
 
     texturemanager::bindtiletextures(0);
 
-    chunkcontroller::renderchunks(maincharcontroller::getviewdir(), maincharcontroller::getmaincharposition());
+    chunkcontroller::renderchunks(maincharcontroller::getviewdir(), maincharcontroller::getmaincharcamera());
     //------------------
 
     //destroy block
@@ -80,13 +80,17 @@ void renderer::rendergame()
     environment::renderskybox();
     //----------------
 
+
+
     //tar 0.4 ms ... ------------------
     //reading pixel data!! alert!
+    //https://www.roxlu.com/2014/048/fast-pixel-transfers-with-pixel-buffer-objects ?
     glm::ivec2 mousepos = inputmanager::getcursorpos();
     glReadBuffer(GL_COLOR_ATTACHMENT1);
     glReadPixels(settings::getisetting(settings::SET_SCREENX)/2,settings::getisetting(settings::SET_SCREENY)/2,1,1,GL_RGBA, GL_FLOAT, &mousedata);
     glReadBuffer(0);
     // --------------------------------
+
 
 
     //---------------------------------

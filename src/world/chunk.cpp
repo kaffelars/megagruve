@@ -116,6 +116,11 @@ uint8_t chunk::getsunlight(ctilepos tpos)
     return tilelight[gettilecoord(tpos)].sunlight * 17; //for å mappe til 0 - 255
 }
 
+chunk::tlight chunk::getalllight(ctilepos tpos)
+{
+    return tilelight[gettilecoord(tpos)];
+}
+
 void chunk::setallvbos()
 {
     for (int a = 0; a < chunkmeshynum; a++)
@@ -167,44 +172,13 @@ void chunk::settile(ctilepos tpos, tileid value)
 {
     tileids[gettilecoord(tpos)] = value;
 }
-uint8_t chunk::getsides(ctilepos tpos)
-{
-    return tilesides[get3dcoord(tpos)];
-}
-void chunk::setsides(ctilepos tpos, uint8_t sideval)
-{
-    tilesides[get3dcoord(tpos)] = sideval;
-}
-void chunk::addside(ctilepos tpos, tiledata::tilesides side)
-{
-    int sidez = getsides(tpos);
-    sidez |= side;
-    setsides(tpos, sidez);
-}
 
-void chunk::setside(ctilepos tpos, tiledata::tilesides side, bool toggleon)
-{
-    if (toggleon)
-    {
-        addside(tpos, side);
-    }
-    else
-    {
-        int sidez = getsides(tpos);
-        sidez &= ~side;
-        setsides(tpos, sidez);
-    }
-}
 
 void chunk::addtile(tileid value)
 {
     tileids.push_back(value);
 }
 
-void chunk::addside()
-{
-    tilesides.push_back(0);
-}
 
 uint8_t chunk::getactivemesh(uint8_t meshnum)
 {
