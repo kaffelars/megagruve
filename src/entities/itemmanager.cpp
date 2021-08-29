@@ -63,16 +63,18 @@ void itemmanager::initialize()
     additem("i_timetotem", "totem", item{.name="Time totem", .description="Toggle the movement of time", .speed=1000, .duration=0, .maxstack=1, .itemtype=I_USABLE, .useeffects=std::vector<std::shared_ptr<effect>>{std::make_shared<shootparticle>(25, orbtexid, 2), std::make_shared<toggletime>()}});
     additem("i_fireball", "fireball", item{.name="Exploder", .description="Blows up targeted tiles", .speed=500, .duration=5, .maxstack=1, .itemtype=I_DIG, .useeffects=std::vector<std::shared_ptr<effect>>{std::make_shared<explodeblocks>(5)}});
     additem("i_diamond", "diamond", item{.name="Diamonds", .description="Shiny diamonds", .speed=500, .duration=5, .maxstack=1, .itemtype=I_INERT, .useeffects=std::vector<std::shared_ptr<effect>>{}});
-    additem("i_wings", "wings", item{.name="Wings", .description="Fly all over the place", .speed=500, .duration=5, .maxstack=1, .itemtype=I_INERT, .useeffects=std::vector<std::shared_ptr<effect>>{std::make_shared<toggleflying>()}});
+    additem("i_wings", "wings", item{.name="Wings", .description="Fly all over the place", .speed=500, .duration=5, .maxstack=1, .itemtype=I_USABLE, .useeffects=std::vector<std::shared_ptr<effect>>{std::make_shared<toggleflying>()}});
+    additem("i_star", "star", item{.name="Star light", .description="Use to create light", .speed=500, .duration=5, .maxstack=1, .itemtype=I_USABLE, .useeffects=std::vector<std::shared_ptr<effect>>{std::make_shared<togglelight>(10)}});
 
     //make items from blocks
     for (const tiledata::tileinfo& t : tiledata::gettileinfolist())
     {
         //if (t.ttype == tiledata::T_SOLID || t.ttype == tiledata::T_SOLID_VERT || t.ttype == tiledata::T_DISCARD) //trengs dette?
         //{
-            std::string itemid = "i_" + t.name.substr(2, t.name.size()-2);
-            int32_t tid = tiledata::gettileid(t.name);
-            additem(itemid, t.sidetextures[0], item{.name=t.fullname, .description="Placeable object", .speed=200, .duration=0, .maxstack=99, .itemtype=I_BLOCK, .useeffects=std::vector<std::shared_ptr<effect>>{std::make_shared<changeblockeffect>(true, tid)}});
+        std::cout << "adding tile item: " << t.name << "-" << t.name.size() << "\n";
+        std::string itemid = "i_" + t.name.substr(2, t.name.size()-2);
+        int32_t tid = tiledata::gettileid(t.name);
+        additem(itemid, t.sidetextures[0], item{.name=t.fullname, .description="Placeable object", .speed=200, .duration=0, .maxstack=99, .itemtype=I_BLOCK, .useeffects=std::vector<std::shared_ptr<effect>>{std::make_shared<changeblockeffect>(true, tid)}});
         //}
     }
 }

@@ -108,7 +108,7 @@ void scenegame::render()
         chunk& c = chunkcontroller::getchunk(cpos);
         if (c.gettag()==chunk::C_READY)
         {
-            chunk::biomedata biome = c.getbiome(chtilepos{ctpos.x, ctpos.z});
+            chunk::biomedata biome = c.getbiome(ctpos);
             infotext << "temp: " << int(biome.temperature) << " humid: " << int(biome.humidity) << "\n";
         }
     }
@@ -117,7 +117,6 @@ void scenegame::render()
     uielement::text(infotext.str(), glm::vec2(10.0f, 0.0f));
 
     uielement::endwindow();
-
 }
 
 void scenegame::shutdownworld()
@@ -200,14 +199,18 @@ void scenegame::update()
     }
     else
     {
+        //std::cout << "\n1";
         environment::updatetime();
-
-        maincharcontroller::update();
-
+        //std::cout << "2";
+        maincharcontroller::update(); //her kræsjer det - eller kanskje ikke??
+        //std::cout << "3";
         particlemanager::updateparticles();
+        //std::cout << "4";
     }
 
     chunkcontroller::updatechunks();
+
+    //std::cout << "5\n";
 }
 
 void scenegame::destroy()

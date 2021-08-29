@@ -57,7 +57,7 @@ void blockentity::heal(int32_t healamount)
 void blockentity::takedamage (int32_t attackstrength, int32_t attacktype, entity* source)
 {
     //sjekk
-    if (!tiledata::isempty(getid()))
+    if (!tiledata::isempty(getid()) && health < 255) //255 = uknuselig
     {
         health -= attackstrength;
         if (health <= 0) destroy();

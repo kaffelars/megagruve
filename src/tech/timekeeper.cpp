@@ -25,7 +25,10 @@ float timekeeper::getdeltatime()
 
 float timekeeper::gettimefactor() //returnerer faktor i forhold til 60 fps
 {
-    return deltatime / 16.66667f;
+    float factor = deltatime / 16.66667f;
+    if (factor > 1.0) factor = 1.0; //60 fps min
+    if (factor == 0.0f) factor = 0.1f; //bøgg?
+    return factor;
 }
 
 void timekeeper::timekeeping()

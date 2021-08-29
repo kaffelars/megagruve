@@ -18,7 +18,7 @@ void biomecontroller::initialize()
 
 rgbcolor255 biomecontroller::getbiometint(chunk::biomedata b)
 {
-    return biometintcolors[b.humidity + 256 * b.temperature];
+    return biometintcolors[b.temperature + 256 * (b.humidity)];
 }
 
 

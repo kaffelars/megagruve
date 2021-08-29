@@ -7,7 +7,7 @@
 namespace chunkgetvertexdata
 {
     uint8_t getambaround(chunk& c, ctilepos vertex, tiledata::tilesides ts);
-    rgbcolor255 getbiomearound(chunk& c, chtilepos ctpos);
+    rgbcolor255 getbiomearound(chunk& c, ctilepos ctpos);
 }
 
 void chunkgetvertexdata::setambocc(chunk& c, ctilepos tilepos, tiledata::tilesides ts, uint8_t (&ambocc)[4])
@@ -63,7 +63,7 @@ uint8_t chunkgetvertexdata::getambaround(chunk& c, ctilepos vertex, tiledata::ti
 }
 
 
-void chunkgetvertexdata::getbiometintvertexes(chunk& c, chtilepos chtpos, tiledata::tilesides ts, rgbcolor255 (&rgb)[4])
+void chunkgetvertexdata::getbiometintvertexes(chunk& c, ctilepos ctpos, tiledata::tilesides ts, rgbcolor255 (&rgb)[4])
 {
     for (int a = 0; a < 4; a++)
         rgb[a] = rgbcolor255(0,0,0);
@@ -74,11 +74,11 @@ void chunkgetvertexdata::getbiometintvertexes(chunk& c, chtilepos chtpos, tileda
 
     for (int a = 0; a < 4; a++)
     {
-        rgb[a] = getbiomearound(c, chtpos + around[a]);
+        rgb[a] = getbiomearound(c, ctpos + ctilepos{around[a].x, 0, around[a].y});
     }
 }
 
-rgbcolor255 chunkgetvertexdata::getbiomearound(chunk& c, chtilepos chtpos)
+rgbcolor255 chunkgetvertexdata::getbiomearound(chunk& c, ctilepos ctpos)
 {
     rgbcolor255 r = rgbcolor255(0,0,0);
 
@@ -86,7 +86,7 @@ rgbcolor255 chunkgetvertexdata::getbiomearound(chunk& c, chtilepos chtpos)
     {
         for (int x = -1; x < 1; x++)
         {
-            r += biomecontroller::getbiometint(c.getbiome(chtilepos{chtpos.x+x, chtpos.y+z}));
+            r += biomecontroller::getbiometint(c.getbiome(ctilepos{ctpos.x+x, ctpos.y, ctpos.z+z}));
         }
     }
 

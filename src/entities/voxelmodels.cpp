@@ -11,16 +11,24 @@ void voxelmodels::initialize()
 {
     //tree
     voxelmodel v;
+    voxelmodel bv;
 
     tileid leavesid = tiledata::gettileid("t_leaves");
     tileid logid = tiledata::gettileid("t_log");
+    tileid blogid = tiledata::gettileid("t_birch_log");
 
     for (int a = 1; a < 7; a++)
-    v.addpoint(ctilepos(3, a, 3), logid);
+    {
+        v.addpoint(ctilepos(3, a, 3), logid);
+        bv.addpoint(ctilepos(3, a, 3), blogid);
+    }
+
 
     v.centerbottomtile = ctilepos(3,6,3);
+    bv.centerbottomtile = ctilepos(3,6,3);
 
     v.addpoint(ctilepos(3, 0, 3), leavesid);
+    bv.addpoint(ctilepos(3, 0, 3), leavesid);
 
     for (int y = 0; y < 3; y++)
     {
@@ -31,6 +39,8 @@ void voxelmodels::initialize()
                 float dist = glm::distance(glm::vec3(x, y, z), glm::vec3(3,2,3));
                 if (!(x == z && x == 3) && dist < 2.5f && utils::randint(0, 10) < 8)
                     v.addpoint(ctilepos(x, y, z), leavesid);
+                if (!(x == z && x == 3) && dist < 2.5f && utils::randint(0, 10) > 2)
+                    bv.addpoint(ctilepos(x, y, z), leavesid);
             }
         }
     }
@@ -39,6 +49,11 @@ void voxelmodels::initialize()
     models.push_back(v);
     uint32_t id = models.size()-1;
     modelidtoid.insert(std::make_pair("vox_tree", id));
+
+    models.push_back(bv);
+    id = models.size()-1;
+    modelidtoid.insert(std::make_pair("vox_birch_tree", id));
+
 
     voxelmodel c;
 

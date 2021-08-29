@@ -42,6 +42,7 @@ void renderer::rendergame()
     rgbcolor suncolor = environment::getsuncolor();//environment.getsuncolor();
     rgbcolor fogcolor = environment::getfogcolor();//environment.getfogcolor();
     wposition campos = maincharcontroller::getmaincharcamera();
+    float mcharlight = maincharcontroller::getmcharlight();
 
     shadercontroller::activateshader(shadercontroller::SH_MAIN);
     glUniformMatrix4fv(shadercontroller::getuniformid("pv"), 1, GL_FALSE, &(camera::getpvmatrix()[0][0]));
@@ -49,6 +50,7 @@ void renderer::rendergame()
     glUniform3f(shadercontroller::getuniformid("fogcolor"), fogcolor.x, fogcolor.y, fogcolor.z);
     glUniform3f(shadercontroller::getuniformid("suncolor"), suncolor.x, suncolor.y, suncolor.z);
     glUniform3f(shadercontroller::getuniformid("campos"), campos.x, campos.y, campos.z);
+    glUniform1f(shadercontroller::getuniformid("mcharlight"), mcharlight);
 
     texturemanager::bindtiletextures(0);
 
@@ -68,6 +70,7 @@ void renderer::rendergame()
         glUniform3f(shadercontroller::getuniformid("fogcolor"), fogcolor.x, fogcolor.y, fogcolor.z);
         glUniform3f(shadercontroller::getuniformid("suncolor"), suncolor.x, suncolor.y, suncolor.z);
         glUniform3f(shadercontroller::getuniformid("campos"), campos.x, campos.y, campos.z);
+        glUniform1f(shadercontroller::getuniformid("mcharlight"), mcharlight);
 
         particlemanager::renderparticles();
     }
@@ -126,6 +129,7 @@ void renderer::rendergame()
     glUniform1i(shadercontroller::getuniformid("gbuf_norm"), 2);
     glUniform1i(shadercontroller::getuniformid("tex"), 3);
     glUniform1f(shadercontroller::getuniformid("timer"), timer);
+    glUniform1f(shadercontroller::getuniformid("mcharlight"), mcharlight);
 
     framebuffercontroller::activatebuffertextures();
     texturemanager::bindtiletextures(3);
@@ -145,6 +149,10 @@ void renderer::rendergame()
     glUniform1i(shadercontroller::getuniformid("gbuf_rgb"), 0);
     glUniform1i(shadercontroller::getuniformid("gbuf_pos"), 1);
     glUniform1i(shadercontroller::getuniformid("gbuf_norm"), 2);
+
+    float filter = 0.0f;
+    if (maincharcontroller::isunderwater()) filter = 1.0f;
+    glUniform1f(shadercontroller::getuniformid("underwater"), filter);
 
     scenequad::render();
     framebuffercontroller::deactivatebuffertextures();
@@ -172,6 +180,8 @@ void renderer::rendergame()
     shadercontroller::activateshader(shadercontroller::SH_PP);
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, framebuffercontroller::postrgb);
+
+
 
     //lightc.bindstexture(1);
 

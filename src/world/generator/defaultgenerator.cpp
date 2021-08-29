@@ -112,7 +112,7 @@ void defaultgenerator::generator(chunk& c)
                         }
                     }
 
-                    chunk::biomedata biome = c.getbiome(chtilepos(x,z));
+                    chunk::biomedata biome = c.getbiome(ctilepos(x,y,z));
 
                     if (tile == tid_dirt && (y > 149 && y < 153) && biome.humidity > 50 && biome.temperature > 50)
                     {
@@ -234,16 +234,23 @@ void defaultgenerator::decorate(chunk& c)
 
         if (y < 200)
         {
-            chunk::biomedata biome = c.getbiome(chtilepos(x,z));
+            chunk::biomedata biome = c.getbiome(ctilepos(x,y,z));
 
             uint32_t voxelmodelid = 0;
 
             if (biome.temperature > 190 && biome.humidity < 75)
-                voxelmodelid = 1;
-            else if (biome.temperature > 180 && biome.humidity > 165)
+            {
                 voxelmodelid = 2;
+            }
+            else if (biome.temperature > 180 && biome.humidity > 165)
+                voxelmodelid = 3;
             else if (biome.humidity > 50)
-                voxelmodelid = 0;
+            {
+                if (biome.temperature > 126)
+                    voxelmodelid = 1;
+                else
+                    voxelmodelid = 0;
+            }
 
             chunkdecorator::addvoxelmodel(c, ctilepos(x,y,z), voxelmodelid, true);
         }
@@ -254,20 +261,25 @@ void defaultgenerator::decorate(chunk& c)
     //grass etc
     tileid grasstile1 = tiledata::gettileid("t_grasstuft1");
     tileid grasstile2 = tiledata::gettileid("t_grasstuft2");
+    tileid grass_bottom = tiledata::gettileid("t_grass_bottom");
+    tileid grass_top = tiledata::gettileid("t_grass_top");
     tileid flower1 = tiledata::gettileid("t_flower1");
     tileid flower2 = tiledata::gettileid("t_flower2");
     tileid flower3 = tiledata::gettileid("t_flower3");
     tileid grass = tiledata::gettileid("t_grass");
+    tileid grass2 = tiledata::gettileid("t_grass2");
+    tileid snow = tiledata::gettileid("t_snow");
     for (htile z = 0; z < chunkwidth; z++)
     {
         for (htile x = 0; x < chunkwidth; x++)
         {
-            chunk::biomedata biome = c.getbiome(chtilepos(x,z));
+            ytile maxy = c.gethighest(chtilepos(x,z));
+            chunk::biomedata biome = c.getbiome(ctilepos(x,maxy,z));
+            tileid ctid = c.gettile(ctilepos(x,maxy,z));
 
             if (biome.temperature > 70 && biome.temperature < 160 && biome.humidity > 70)
             {
-                ytile maxy = c.gethighest(chtilepos(x,z));
-                if (maxy > 1 && c.gettile(ctilepos(x,maxy,z)) == grass && c.gettile(ctilepos(x,maxy-1,z)) == 0)
+                if (maxy > 1 && (ctid == grass || ctid == grass2) && c.gettile(ctilepos(x,maxy-1,z)) == 0)
                 {
                     int rint = utils::randint(0, 100);
                     if (rint < 20)
@@ -280,18 +292,32 @@ void defaultgenerator::decorate(chunk& c)
                         c.settile(ctilepos{x, maxy-1, z}, flower2);
                     if (rint == 46)
                         c.settile(ctilepos{x, maxy-1, z}, flower3);
+
+                    if (biome.humidity > 170)
+                    {
+                        if (rint > 30 && rint < 40)
+                        {
+                            c.settile(ctilepos{x, maxy-1, z}, grass_bottom);
+                            c.settile(ctilepos{x, maxy-2, z}, grass_top);
+                        }
+                    }
                 }
+
             }
             else
             {
-                ytile maxy = c.gethighest(chtilepos(x,z));
-                if (maxy > 1 && c.gettile(ctilepos(x,maxy,z)) == grass && c.gettile(ctilepos(x,maxy-1,z)) == 0)
+                if (maxy > 1 && maxy < chunkheight-1)
                 {
-                    int rint = utils::randint(0, 100);
-                    if (rint < 10)
-                        c.settile(ctilepos{x, maxy-1, z}, grasstile1);
-                    if (rint > 90)
-                        c.settile(ctilepos{x, maxy-1, z}, grasstile2);
+                    //std::cout << int(x) << " " << maxy << " " << int(z) << "\n";
+                    tileid ctid = c.gettile(ctilepos(x,maxy,z));
+                    if ((ctid == grass || ctid == grass2 || ctid == snow) && c.gettile(ctilepos(x,maxy-1,z)) == 0)
+                    {
+                        int rint = utils::randint(0, 100);
+                        if (rint < 10)
+                            c.settile(ctilepos{x, maxy-1, z}, grasstile1);
+                        if (rint > 90)
+                            c.settile(ctilepos{x, maxy-1, z}, grasstile2);
+                    }
                 }
             }
         }

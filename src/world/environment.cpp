@@ -8,6 +8,7 @@
 #include "skybox.h"
 #include "texturemanager.h"
 #include "utils.h"
+#include "particlemanager.h"
 
 namespace environment
 {
@@ -38,6 +39,23 @@ void environment::changecloudcover(float change)
     utils::clamp(cloudcover, 0.0f, 1.0f);
 }
 
+void environment::rain()
+{
+    //test regn - litt slow
+    for (int x = -55; x < 55; x+=2)
+    {
+        for (int z = -55; z < 55; z+=2)
+        {
+            if (utils::randint(0, 140) ==2)
+            {
+                float px = maincharcontroller::getmaincharposition().x + x + ((float)utils::randint(0, 10) / 10.0f);
+                float pz = maincharcontroller::getmaincharposition().z + z + ((float)utils::randint(0, 10) / 10.0f);
+                particlemanager::addparticle(wposition{px, 0.5f, pz}, velocity(0.0f), 11, 10, 4000, 0, 0.7f, true);
+            }
+        }
+    }
+}
+
 void environment::updatetime()
 {
     if (!timemoving) return;
@@ -49,6 +67,8 @@ void environment::updatetime()
     cloudposition += timekeeper::gettimefactor() * 0.0001f * wind;
 
     if (cloudposition > 255.0f) cloudposition -= 255.0f;
+
+    if (cloudcover > 0.7f) rain();
 }
 
 direction environment::getsundir()

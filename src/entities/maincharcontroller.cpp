@@ -33,6 +33,21 @@ namespace maincharcontroller
     int32_t itemusecooldown[10] = {0,0,0,0,0,0,0,0,0,0};
 
     chunkmesh destructorblock[4];
+
+    float mcharlight = 0.0f;
+}
+
+void maincharcontroller::togglelight(float lightstr)
+{
+    if (mcharlight == 0.0f)
+        mcharlight = lightstr;
+    else
+        mcharlight = 0.0f;
+}
+
+float maincharcontroller::getmcharlight()
+{
+    return mcharlight;
 }
 
 void maincharcontroller::movechar(hdirection dir)
@@ -269,6 +284,8 @@ void maincharcontroller::useselecteditem()
 
 void maincharcontroller::update()
 {
+    //std::cout << "A";
+
     for (int a = 0; a < 10; a++)
     {
         itemusecooldown[a] -= timekeeper::getdeltatime();
@@ -277,12 +294,15 @@ void maincharcontroller::update()
 
     mchar.lifeform::update();
 
+    //std::cout << "B";
+
     glm::vec4 mdata = renderer::getmousedata();
     if (getselectionmode() == SEL_BLOCK)
         tilehover = chunkcoords::wpostowtilepos(wposition(mdata.x, mdata.y, mdata.z) + (getviewdir() / 10.0f)); //negativ viewdir hvis lufttile skal selectes (SEL_AIR)
     else
         tilehover = chunkcoords::wpostowtilepos(wposition(mdata.x, mdata.y, mdata.z) - (getviewdir() / 10.0f));
 
+    //std::cout << "C";
 
     if (tilehover != oldtilehover)
     {
@@ -291,8 +311,15 @@ void maincharcontroller::update()
             tilehoverentity.setposition(tilehover);
     }
 
+    //std::cout << "D";
+
     movement();
+
+    //std::cout << "E";
+
     updatecamera();
+
+    //std::cout << "F\n";
 }
 
 void maincharcontroller::mcharjump()
@@ -303,13 +330,25 @@ void maincharcontroller::mcharjump()
     }
 }
 
+bool maincharcontroller::isunderwater()
+{
+    wposition mcpos = mchar.geteyeposition();
+    tileid tid = chunkcontroller::gettileid(mcpos);
+    if (tiledata::gettileinfo(tid).ttype == tiledata::T_WATER) return true;
+    else return false;
+}
+
 void maincharcontroller::movement()
 {
-    if (mchar.flying)
+    //std::cout << "movement ";
+
+    if (mchar.flying || isunderwater())
     {
         if (hmovement != hdirection(0.0f, 0.0f))
         {
             hmovement = glm::normalize(hmovement);
+
+            if (isunderwater()) hmovement /= 3.0f;
 
             mchar.moveflying(hmovement);
         }
@@ -329,10 +368,13 @@ void maincharcontroller::movement()
 
         //mchar.updateposition();
         physicsmanager::boxphysics(mchar);
+
         //mchar.setvelocity(velocity{0.0f,0.0f,0.0f});
     }
 
     mchar.rotateview(inputmanager::getmousedelta());
 
     hmovement = hdirection(0.0f,0.0f);
+
+    //std::cout << "eff\n";
 }

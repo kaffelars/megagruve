@@ -159,6 +159,17 @@ chunk::biomedata chunk::getbiome(chtilepos chpos)
     return biomes[getbiomecoord(chpos)];
 }
 
+chunk::biomedata chunk::getbiome(ctilepos ctpos)
+{
+    chunk::biomedata b = biomes[getbiomecoord(chtilepos{ctpos.x, ctpos.z})];
+    if (ctpos.y < 120)
+    {
+        if (120 - ctpos.y > b.temperature) b.temperature = 0;
+        else b.temperature -= (120 - ctpos.y);
+    }
+    return b;
+}
+
 void chunk::addbiome()
 {
     biomes.push_back(biomedata{0,0});

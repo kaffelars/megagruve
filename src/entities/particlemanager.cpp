@@ -15,9 +15,9 @@ namespace particlemanager
     particlevao particlesvao;
 }
 
-void particlemanager::addparticle(wposition p, velocity v, uint8_t ptex, uint8_t psiz, uint32_t dur, uint8_t glo)
+void particlemanager::addparticle(wposition p, velocity v, uint8_t ptex, uint8_t psiz, uint32_t dur, uint8_t glo, float gravity, bool destro)
 {
-    particles.emplace_back(particle(p, v, ptex, psiz, dur, glo));
+    particles.emplace_back(particle(p, v, ptex, psiz, dur, glo, gravity, destro));
 }
 
 void particlemanager::initialize()
@@ -56,7 +56,7 @@ void particlemanager::updateparticles()
     auto vit = particles.begin();
     while (vit != particles.end())
     {
-        if ((*vit).duration <= 0)
+        if ((*vit).duration <= 0 || ((*vit).onfloor && (*vit).destroyedwhenlanding))
         {
             vit = particles.erase(vit);
         }

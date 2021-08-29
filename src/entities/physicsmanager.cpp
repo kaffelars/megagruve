@@ -67,10 +67,12 @@ void physicsmanager::pointphysics(physicsobject& p)
 
 void physicsmanager::boxphysics(physicsobject& p)
 {
+    //std::cout << "coolio ";
+
     p.updatevelocity();
     wposition newpos = p.position;
     float timefactor = timekeeper::gettimefactor();
-    velocity vel = p.vel * timefactor;
+    velocity vel = p.vel * timefactor; //kan kræsje hvis vel > 1.0
     p.onfloor = false;
 
     point bb = p.bbox;
@@ -78,8 +80,11 @@ void physicsmanager::boxphysics(physicsobject& p)
     wposition points[6];
     int8_t pts = 6;
 
+    //std::cout << "a" << timefactor << "-" << p.vel.z << " vs " << vel.z << "\n";
+
     for (int a = 0; a < 3; a++)
     {
+        //std::cout << a;
         if (vel[a])
         {
             //messy - fix (funker bare for mchar bbox)
@@ -146,9 +151,10 @@ void physicsmanager::boxphysics(physicsobject& p)
                 }
             }
             bool passable = true;
+            //std::cout << " m";
             for (int i = 0; i < pts; i++)
             {
-                wposition nextpos = p.position + points[i];
+                wposition nextpos = newpos + points[i];
                 nextpos[a] += vel[a];
                 tileid tid = chunkcontroller::gettileid(nextpos);
                 if (!tiledata::ispassable(tid))
@@ -156,6 +162,7 @@ void physicsmanager::boxphysics(physicsobject& p)
                     passable = false;
                 }
             }
+            //std::cout << "o";
 
             if (passable)
             {
@@ -182,8 +189,11 @@ void physicsmanager::boxphysics(physicsobject& p)
 
                 vel[a] = 0;
             }
+            //std::cout << "rt ";
         }
     }
+
+    //std::cout << "b" << timefactor;
 
     if (p.onfloor)
     {
@@ -196,4 +206,6 @@ void physicsmanager::boxphysics(physicsobject& p)
 
     p.vel = vel / timefactor;
     p.position = newpos;
+
+    //std::cout << "finitos\n";
 }

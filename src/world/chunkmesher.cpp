@@ -12,6 +12,7 @@ namespace chunkcontroller
 
 void chunkcontroller::meshwholechunk(chunk& c)
 {
+    //std::cout << "meshin";
     for (int a = 0; a < chunkmeshynum; a++)
     {
         meshchunkpart(c, a);
@@ -47,7 +48,6 @@ void chunkcontroller::meshchunkpart(chunk& c, uint8_t cpart)
     //std::cout << int(cpart) << " - " << int(starty) << "x" << int(endy) << "\n";
 
     //std::cout << int(c.getactivemesh(cpart));
-
 
     for (ytile y = starty; y < endy; y++)
     {
@@ -94,7 +94,8 @@ void chunkcontroller::meshchunkpart(chunk& c, uint8_t cpart)
                     {
                         //bbb
                         uint8_t ambocc[4] = {0,0,0,0};
-                        rgbcolor255 tint[4] = {rgbcolor255{255,255,255},rgbcolor255{255,255,255},rgbcolor255{255,255,255},rgbcolor255{255,255,255}};
+                        rgbcolor255 tint[4] = {notint,notint,notint,notint};
+                        //rgbcolor255 notint[4] = {rgbcolor255{255,255,255},rgbcolor255{255,255,255},rgbcolor255{255,255,255},rgbcolor255{255,255,255}};
                         rgbcolor255 light[4] = {rgbcolor255{0,0,0},rgbcolor255{0,0,0},rgbcolor255{0,0,0},rgbcolor255{0,0,0}};
                         uint8_t sunlight[4] = {0,0,0,0};
 
@@ -109,19 +110,24 @@ void chunkcontroller::meshchunkpart(chunk& c, uint8_t cpart)
                                 chunkgetvertexdata::setsunlight(c, ctilepos{x,y,z}, tiledata::sideflags[a], sunlight);
 
                                 if (tiledata::gettileinfo(tid).biometint)
-                                    chunkgetvertexdata::getbiometintvertexes(c, chtilepos{x,z}, tiledata::sideflags[a], tint);
+                                    chunkgetvertexdata::getbiometintvertexes(c, ctilepos{x,y,z}, tiledata::sideflags[a], tint);
 
                                 if (tid == 1)
+                                {
                                     tiledata::addside(ctilepos{x,y,z}, tid, 0, a, sunlight, light, glow, ambocc, tint, c.wmesh[cpart][c.getinactivemesh(cpart)]);
+                                    if (a == 2)
+                                        tiledata::addside(ctilepos{x,y-1,z}, tid, 0, 3, sunlight, light, glow, ambocc, tint, c.wmesh[cpart][c.getinactivemesh(cpart)]);
+                                }
                                 else
                                     tiledata::addside(ctilepos{x,y,z}, tid, 0, a, sunlight, light, glow, ambocc, tint, c.cmesh[cpart][c.getinactivemesh(cpart)]);
+
                             }
                             //}
                         }
                     }
                     else
                     {
-                        rgbcolor255 tint = rgbcolor255(255,255,255);
+                        rgbcolor255 tint = notint;
 
                         if (tiledata::gettileinfo(tid).biometint)
                             tint = biomecontroller::getbiometint(c.getbiome(chtilepos{x,z}));

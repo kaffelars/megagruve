@@ -263,19 +263,45 @@ void tiledata::initializetileshapes()
     tileshapes.push_back(cactus);
 }
 
-void tiledata::addside(ctilepos cpos, tileid id, uint32_t bshape, uint8_t tileside, uint8_t sunlight[4], rgbcolor255 light[4], uint8_t glow, uint8_t ambocc[4], rgbcolor255 tint[4], chunkmesh& cmesh)
+void tiledata::addside(ctilepos cpos, tileid id, uint32_t bshape, uint8_t tileside, uint8_t sunlight[4], rgbcolor255 light[4], uint8_t glow, uint8_t ambocc[4], rgbcolor255 tint[4], chunkmesh& cmesh, bool overlay)
 {
     int index = 0;
+    uint32_t texid;
+    tileid overlayid;
+
+    if (overlay)
+    {
+        texid = gettileinfo(id).overlaytextureids[tileside];
+        overlayid = 0;
+    }
+    else
+    {
+        texid = gettileinfo(id).sidetextureids[tileside];
+        overlayid = gettileinfo(id).overlaytextureids[tileside];
+    }
+
 
     for (vpos& v : tileshapes[bshape].vertexes[tileside])
     {
-        uint32_t texid = gettileinfo(id).sidetextureids[tileside];
+
         uint8_t corner = 0;
         if (tileshapes[bshape].uv[tileside][index] == uvpos{1,0}) corner = 1;
         if (tileshapes[bshape].uv[tileside][index] == uvpos{1,1}) corner = 2;
         if (tileshapes[bshape].uv[tileside][index] == uvpos{0,1}) corner = 3;
-        cmesh.addvertex(vpos{cpos.x + v.x, cpos.y + v.y, cpos.z + v.z}, sidenormals[tileside], tileshapes[bshape].uv[tileside][index], texid, sunlight[corner], light[corner], glow, ambocc[corner], tint[corner]);
+        if (overlayid > 0)
+        {
+            cmesh.addvertex(vpos{cpos.x + v.x, cpos.y + v.y, cpos.z + v.z}, sidenormals[tileside], tileshapes[bshape].uv[tileside][index], texid, sunlight[corner], light[corner], glow, ambocc[corner], notint);
+        }
+        else
+        {
+            cmesh.addvertex(vpos{cpos.x + v.x, cpos.y + v.y, cpos.z + v.z}, sidenormals[tileside], tileshapes[bshape].uv[tileside][index], texid, sunlight[corner], light[corner], glow, ambocc[corner], tint[corner]);
+        }
         index ++;
+    }
+
+    if (overlayid > 0)
+    {
+        addside(cpos, id, bshape, tileside, sunlight, light, glow, ambocc, tint, cmesh, true); //adding overlay on top
     }
 }
 

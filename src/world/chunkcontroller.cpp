@@ -8,6 +8,7 @@
 #include "chunkgenerator.h"
 #include "defaultgenerator.h"
 #include "chunklight.h"
+#include "chunkwatermanager.h"
 
 namespace chunkcontroller
 {
@@ -117,11 +118,12 @@ void chunkcontroller::renderchunks(direction dir, wposition maincharposition)
         x = x+dx;
         y = y+dy;
     }
-
 }
 
 void chunkcontroller::updatechunks()
 {
+    chunkwatermanager::updateactivewatertiles();
+
     changetiles();
 
     //sletter chunks out of range
@@ -274,7 +276,7 @@ void chunkcontroller::renderchunk(chunkpos cpos)
                 c.settag(chunk::C_GENERATING);
                 auto t = std::thread(&chunkgenerator::generatechunk, std::ref(*currentchunkgenerator), std::ref(c));
                 t.detach();
-                //generatechunk(c);
+                //currentchunkgenerator->generatechunk(c);
             }
 
             if (ctag == chunk::C_GENERATED)
@@ -339,10 +341,23 @@ bool chunkcontroller::changectile(chunkpos cpos, ctilepos ctpos, tileid newtilei
     if (c.gettag() == chunk::C_READY)
     {
         tileid oldtile = c.gettile(ctpos);
+
+        if (oldtile == newtileid) return true; //ingenting å endre
+
         c.settile(ctpos, newtileid);
 
+        if (newtileid == 1)// && chunkcoords::withinchunkbounds(ctpos)) //water
+        {
+            chunkwatermanager::addactivewatertile(cpos, ctpos);
+            //std::cout << "hey";
+        }
+
         if (chunkcoords::withinextendedchunkbounds(ctpos))
+        {
             c.setremeshy(ctpos.y);
+            if (ctpos.y > 1) c.setremeshy(ctpos.y-1);
+            if (ctpos.y < chunkheight-2) c.setremeshy(ctpos.y+1);
+        }
 
         if (tiledata::gettiletype(oldtile) != tiledata::gettiletype(newtileid)) //check if side updates = necessary
         {
@@ -370,7 +385,19 @@ bool chunkcontroller::changectile(chunkpos cpos, ctilepos ctpos, tileid newtilei
                 float randz = utils::randint(-3, 3);
                 randx /= 30.0f;
                 randz /= 30.0f;
-                particlemanager::addparticle(wposition(tilepos.x + 0.5f, tilepos.y + 0.5f, tilepos.z + 0.5f), velocity(randx, -0.05f, randz), textureid, 15, 2000, glow);
+                particlemanager::addparticle(wposition(tilepos.x + 0.5f, tilepos.y + 0.5f, tilepos.z + 0.5f), velocity(randx, -0.05f, randz), textureid, 15, 2000, glow, 0.5f, false);
+            }
+
+            //water
+            if (chunkcoords::withinchunkbounds(ctpos))
+            {
+                for (int a = 0; a < 6; a++)
+                {
+                    if (c.gettile(ctpos + sideoffsets[a]) == 1)
+                    {
+                        chunkwatermanager::addactivewatertile(cpos, ctpos + sideoffsets[a]);
+                    }
+                }
             }
         }
 

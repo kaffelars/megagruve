@@ -18,9 +18,10 @@ namespace texturemanager
 
     std::unordered_map<std::string, uint32_t> iconnametoid[3];
 
-    std::vector<std::string> tiletexturenames = {"debug", "water", "dirt", "grass", "grass2", "grassydirt", "stone", "rock", "sand", "flag", "leaves", "blue", "log",
+    std::vector<std::string> tiletexturenames = {"debug", "water", "water_side", "dirt", "grass", "grass2", "grassydirt", "stone", "rock", "sand", "flag", "leaves", "rain", "blue", "log",
     "logtop", "grasstuft1", "grasstuft2", "planks", "cactus_side", "cactus_top", "littlegrass", "bookcase", "flower1", "flower2", "flower3",
-    "chest_top", "chest_bottom", "chest_side", "chest_front", "chest_inside", "destroy1", "destroy2", "destroy3", "destroy4", "glowstone", "snow", "gravel", "ice", "green", "orb"};
+    "chest_top", "chest_bottom", "chest_side", "chest_front", "chest_inside", "destroy1", "destroy2", "destroy3", "destroy4", "glowstone", "snow", "gravel", "ice", "green", "orb",
+    "bedrock", "diamond_ore", "iron_ore", "coal_ore", "log_birch", "log_birch_top", "grass_side_overlay", "clay", "clay_hard", "brick", "door_lower", "door_upper", "grass_bottom", "grass_top"};
 }
 
 
@@ -74,7 +75,7 @@ void texturemanager::loadicontextures()
     int sizes[3] = {10, 16, 24};
     std::vector<std::string> filenames[3]= {
     {"debug", "redheart", "halfheart", "halfblackheart", "blackheart", "yellowheart", "greenheart", "blueheart", "silverheart", "shield"},
-    {"debug", "iron_pickaxe", "iron_axe", "iron_sword", "diamond_pickaxe", "apple", "apple_golden", "lightbulb", "green_wand", "red_wand", "totem", "fireball", "diamond", "wings"},
+    {"debug", "iron_pickaxe", "iron_axe", "iron_sword", "diamond_pickaxe", "apple", "apple_golden", "lightbulb", "green_wand", "red_wand", "totem", "fireball", "diamond", "wings", "star"},
     {"debug", "border", "selectedborder", "clickedborder"}
     };
 

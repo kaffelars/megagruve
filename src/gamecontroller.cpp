@@ -29,6 +29,7 @@ void gamecontroller::gameloop()
     //THE loop
     while (!scenec::quit)
     {
+        //std::cout << "loop";
         //--------- inputs og events ----------
         inputmanager::logcursorpos();//putt i refresh? neh
 
@@ -44,12 +45,17 @@ void gamecontroller::gameloop()
                 scenec::quitgame();
         }
 
+        //std::cout << "lo2";
+
         inputmanager::processheldkeys();
+
+        //std::cout << "lo3";
 
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplSDL2_NewFrame(windowmanager::sdlwindow);
         ImGui::NewFrame();
 
+        //std::cout << "lo§";
 
         if (windowmanager::windowhasfocus())
         {
@@ -57,9 +63,15 @@ void gamecontroller::gameloop()
             scenec::getactivescene().update();
         }
 
+        //std::cout << "lo4";
+
         render();
 
+        //std::cout << "lo5";
+
         timekeeper::timekeeping(); //oppdaterer fps counter og deltatime
+
+        //std::cout << "lF\n";
     }
 
 

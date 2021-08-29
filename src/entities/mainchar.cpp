@@ -35,9 +35,11 @@ void mainchar::fillinv()
     mcharinv.additem("i_diamondpickaxe", 1);
     mcharinv.additem("i_timetotem", 1);
     mcharinv.additem("i_apple", 5);
+    mcharinv.additem("i_star", 1);
     mcharinv.additem("i_greenwand", 1);
     mcharinv.additem("i_planks", 64);
     mcharinv.additem("i_wings", 1);
+    mcharinv.additem("i_water", 64);
     mcharinv.additem("i_redwand", 1);
     mcharinv.additem("i_glowstone", 65);
     mcharinv.additem("i_stone", 99);
@@ -65,6 +67,7 @@ void mainchar::fillinv()
     mcharinv.additem("i_flag", 64);
 
     mcharinv.additem("i_apple_golden", 13);
+    mcharinv.additem("i_grass", 56);
 
 
 }
