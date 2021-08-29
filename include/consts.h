@@ -19,5 +19,6 @@ constexpr int chunkmeshynum = chunkheight/chunkmeshheight;
 #include <aliases.h>
 
 const glm::ivec3 sideoffsets[6] = {glm::ivec3(-1, 0 ,0), glm::ivec3(1, 0 ,0), glm::ivec3(0, -1 ,0), glm::ivec3(0, 1 ,0), glm::ivec3(0, 0 ,-1), glm::ivec3(0, 0 ,1)};
+const rgbcolor255 notint = rgbcolor255{127,127,127};
 
 #endif // CONSTS_H_INCLUDED

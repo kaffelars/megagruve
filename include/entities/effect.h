@@ -23,6 +23,17 @@ class healeffect : public effect
 		int32_t healstrength;
 };
 
+class togglelight : public effect
+{
+	public:
+		togglelight(float lightstr);
+		virtual ~togglelight() = default;
+		bool activate(entity* user, entity* target);
+
+	private:
+		float lightstrength;
+};
+
 class applybuff : public effect
 {
 	public:

@@ -18,6 +18,8 @@ namespace environment
 
     void changecloudcover(float change);
 
+    void rain();
+
     float getcloudcover();
     void toggletimemoving();
 };

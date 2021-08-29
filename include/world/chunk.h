@@ -71,6 +71,7 @@ class chunk
 
         void setbiome(biomedata b, chtilepos chpos);
         biomedata getbiome(chtilepos chpos);
+        biomedata getbiome(ctilepos ctpos);
         void addbiome();
 
         void addlight();

@@ -27,6 +27,11 @@ namespace maincharcontroller
     void movechar(hdirection dir);
     void mcharjump();
 
+    bool isunderwater();
+
+    void togglelight(float lightstr);
+    float getmcharlight();
+
     void renderdestroyblock();
 
     void useselecteditem();
