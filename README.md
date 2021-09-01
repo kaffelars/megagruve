@@ -12,9 +12,12 @@ Textures, shaders, data, etc. are in the zip in builds folder, as well as a comp
 
 Features:
 * blocks
+* chunks (32x256x32 blocks)
 * trees
+* other plants and flowers
 * biomes
-* water with "physics"
+* simplex noise based random world generation
+* water with "physics" (watch out)
 * glowing blocks
 * fall damage
 * day/night cycle
