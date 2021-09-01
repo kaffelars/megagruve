@@ -18,6 +18,7 @@ Textures, shaders, data, etc. are in the zip in builds folder, as well as a comp
 
 Using:
 * [SDL2](https://www.libsdl.org/)
+* OpenGL
 * [GLM](https://github.com/g-truc/glm)
 * [Dear ImGui](https://github.com/ocornut/imgui)
 * [pugixml](https://pugixml.org/)
