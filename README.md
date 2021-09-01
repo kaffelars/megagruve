@@ -19,6 +19,7 @@ Features:
 * simplex noise based random world generation
 * water with "physics" (watch out)
 * glowing blocks
+* particles
 * fall damage
 * day/night cycle
 * clouds and rain
