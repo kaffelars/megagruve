@@ -8,6 +8,32 @@ Textures, shaders, data, etc. are in the zip in builds folder, as well as a comp
 
 [Default textures by XSSheep](https://www.minecraftforum.net/forums/mapping-and-modding-java-edition/resource-packs/1242533-pixel-perfection-now-with-polar-bears-1-11)
 
+## Features
+
+Features:
+* blocks
+* trees
+* biomes
+* water with "physics"
+* glowing blocks
+* fall damage
+* day/night cycle
+* clouds and rain
+* many interesting items
+* player inventory
+* chests
+* flagpoles (with flags)
+
+Missing features:
+* proper light propagation
+* crafting
+* optimizations
+* nice animals
+* evil animals (enemies)
+* lots more
+
+## Screenshots
+
 ![screenshot](https://github.com/kaffelars/megagruve/blob/main/screenshots/screenshot2.png)
 
 ![screenshot](https://github.com/kaffelars/megagruve/blob/main/screenshots/screenshot5.png)
@@ -16,7 +42,7 @@ Textures, shaders, data, etc. are in the zip in builds folder, as well as a comp
 
 ![screenshot](https://github.com/kaffelars/megagruve/blob/main/screenshots/screenshot3.png)
 
-Using:
+## Using
 * [SDL2](https://www.libsdl.org/)
 * OpenGL
 * [GLM](https://github.com/g-truc/glm)
