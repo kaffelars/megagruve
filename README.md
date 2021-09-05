@@ -25,8 +25,9 @@ Features:
 * clouds and rain
 * many interesting items
 * player inventory
-* chests
+* chests (just for decoration at the moment)
 * flagpoles (with flags)
+* random crashes
 
 Missing features:
 * proper light propagation
