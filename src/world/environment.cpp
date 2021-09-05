@@ -21,6 +21,13 @@ namespace environment
     float cloudcover = 0.2f;
 
     float wind = 0.1f;
+
+    uint32_t raintexid = 0;
+}
+
+void environment::initialize()
+{
+    raintexid = texturemanager::gettiletexturenumber("rain");
 }
 
 void environment::toggletimemoving()
@@ -50,7 +57,7 @@ void environment::rain()
             {
                 float px = maincharcontroller::getmaincharposition().x + x + ((float)utils::randint(0, 10) / 10.0f);
                 float pz = maincharcontroller::getmaincharposition().z + z + ((float)utils::randint(0, 10) / 10.0f);
-                particlemanager::addparticle(wposition{px, 0.5f, pz}, velocity(0.0f), 11, 10, 4000, 0, 0.7f, true);
+                particlemanager::addparticle(wposition{px, 0.5f, pz}, velocity(0.0f), raintexid, 10, 4000, 0, 0.7f, true);
             }
         }
     }
@@ -109,6 +116,11 @@ rgbcolor environment::getsuncolor()
     }
 
     utils::clamp(suncol, 0.0f, 1.0f);
+
+    if (cloudcover > 0.5f)
+    {
+        suncol *= (1.0f - 2.0f * (cloudcover - 0.5f));
+    }
 
     return suncol;
 }

@@ -4,6 +4,7 @@
 #include "chunkcontroller.h"
 #include "chunkcoords.h"
 #include "tiledata.h"
+#include "chunktilemanager.h"
 
 namespace chunkwatermanager
 {
@@ -38,7 +39,7 @@ void chunkwatermanager::updateactivewatertiles()
                             tileid tid = c.gettile(a.ctpos + sideoffsets[i]);
                             if (tiledata::isempty(tid))
                             {
-                                chunkcontroller::addctiletochange(a.cpos, a.ctpos + sideoffsets[i], 1, false);
+                                chunktilemanager::addctiletochange(a.cpos, a.ctpos + sideoffsets[i], 1, 0, false);
                             }
                         }
                     }

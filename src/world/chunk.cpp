@@ -1,6 +1,8 @@
 #include "consts.h"
 #include "chunk.h"
 
+#include "map_obj_manager.h"
+
 chunk::chunk(dimensions dims, chunkpos pos)
 {
     cdims = dims;
@@ -13,6 +15,11 @@ chunk::chunk(dimensions dims, chunkpos pos)
 chunk::~chunk()
 {
     //dtor
+}
+
+std::shared_ptr<map_obj>& chunk::getmapobj(ctilepos ctpos)
+{
+    return chunk_objs.at(get3dcoord(ctpos));
 }
 
 void chunk::deletechunk()
@@ -80,6 +87,23 @@ bool chunk::needsremesh()
 
     return needsremesh;
 }
+
+void chunk::addchunkobj(ctilepos ctpos, uint8_t mapobjid, uint8_t forwardside)
+{
+    map_obj_manager::addmapobj(*this, ctpos, mapobjid, forwardside);
+}
+
+void chunk::removechunkobj(ctilepos ctpos)
+{
+    getmapobj(ctpos)->destroy();
+    chunk_objs.erase(get3dcoord(ctpos));
+}
+
+void chunk::interactobj(ctilepos ctpos, mainchar& mchar)
+{
+    getmapobj(ctpos)->interact(mchar);
+}
+
 
 void chunk::addlight()
 {
@@ -161,6 +185,12 @@ chunk::biomedata chunk::getbiome(chtilepos chpos)
 
 chunk::biomedata chunk::getbiome(ctilepos ctpos)
 {
+    //debug stuff
+    /*if (ctpos.x < -1) std::cout << "x binus " << ctpos.x;
+    if (ctpos.z < -1) std::cout << "z binus " << ctpos.z;
+    if (ctpos.x > chunkwidth) std::cout << "x bakrus " << ctpos.x;
+    if (ctpos.z > chunkwidth) std::cout << "z bakrus " << ctpos.z;*/
+
     chunk::biomedata b = biomes[getbiomecoord(chtilepos{ctpos.x, ctpos.z})];
     if (ctpos.y < 120)
     {
@@ -177,6 +207,13 @@ void chunk::addbiome()
 
 tileid chunk::gettile(ctilepos tpos)
 {
+    //debug stuff
+    /*if (tpos.x < -1) std::cout << "x minus " << tpos.x;
+    if (tpos.z < -1) std::cout << "z minus " << tpos.z;
+    if (tpos.x > chunkwidth) std::cout << "x makrus " << tpos.x;
+    if (tpos.z > chunkwidth) std::cout << "z makrus " << tpos.z;
+    if (tpos.y < 0) std::cout << "y minus " << tpos.y;
+    if (tpos.y > chunkheight-1) std::cout << "y makrus " << tpos.y;*/
     return tileids[gettilecoord(tpos)];
 }
 void chunk::settile(ctilepos tpos, tileid value)

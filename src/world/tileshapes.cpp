@@ -259,6 +259,7 @@ void tiledata::initializetileshapes()
         cactus.normals.push_back(sidenormals[5]);
 
     cactus.hasanyways = true;
+    cactus.onlyanyways = false;
 
     tileshapes.push_back(cactus);
 }

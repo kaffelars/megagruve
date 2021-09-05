@@ -7,8 +7,11 @@
 #include "particlemanager.h"
 #include "chunkgenerator.h"
 #include "defaultgenerator.h"
+#include "newgenerator.h"
 #include "chunklight.h"
 #include "chunkwatermanager.h"
+
+#include "chunktilemanager.h"
 
 namespace chunkcontroller
 {
@@ -25,18 +28,6 @@ namespace chunkcontroller
     std::vector<chunkpos> loadedchunks; //loop heller bare gjennom elementene i unordered map
     int32_t chunksrendered = 0;
 
-
-
-    struct cchangetile
-    {
-        chunkpos cpos;
-        ctilepos ctpos;
-        tileid tid;
-        bool breakage {false};
-    };
-
-    std::vector<cchangetile> ctilestochange;
-    std::vector<cchangetile> ctilestochangequeue;
 
     struct cdecorate
     {
@@ -56,7 +47,8 @@ namespace chunkcontroller
     std::vector<waterrender> waterrenders;
 
 
-    std::unique_ptr<chunkgenerator> currentchunkgenerator = std::make_unique<defaultgenerator>();
+    //std::unique_ptr<chunkgenerator> currentchunkgenerator = std::make_unique<defaultgenerator>();
+    std::unique_ptr<chunkgenerator> currentchunkgenerator = std::make_unique<newgenerator>();
 }
 
 void chunkcontroller::adddecoration(chunkpos cpos, ctilepos ctpos, uint32_t voxelmodelid)
@@ -64,6 +56,13 @@ void chunkcontroller::adddecoration(chunkpos cpos, ctilepos ctpos, uint32_t voxe
     decoratemutex.lock();
     decorations.push_back(cdecorate{voxelmodelid, cpos, ctpos});
     decoratemutex.unlock();
+}
+
+bool chunkcontroller::chunkexists(chunkpos cpos)
+{
+    uint32_t id = cpostoid(cpos);
+    if (chunks.find(id) == chunks.end()) return false;
+    return true;
 }
 
 chunk& chunkcontroller::getchunk(chunkpos cpos)
@@ -124,7 +123,7 @@ void chunkcontroller::updatechunks()
 {
     chunkwatermanager::updateactivewatertiles();
 
-    changetiles();
+    chunktilemanager::changetiles();
 
     //sletter chunks out of range
     glm::vec3 charpos = maincharcontroller::getmaincharposition();
@@ -142,6 +141,7 @@ void chunkcontroller::updatechunks()
             break;
         }
     }
+
 }
 
 int chunkcontroller::loadedchunksnum()
@@ -156,7 +156,7 @@ chunk::tlight chunkcontroller::getlight(wtilepos wtpos)
     {
         chunk& c = getchunk(cpos);
         chunk::ctags ctag = c.gettag();
-        if (ctag == chunk::C_READY || ctag == chunk::C_REMESHING)
+        if (ctag == chunk::C_READY || ctag == chunk::C_REMESHING || ctag == chunk::C_REMESHED)
         {
             ctilepos ctpos = chunkcoords::wpostoctilepos(wtpos);
             return c.getalllight(ctpos);
@@ -164,6 +164,19 @@ chunk::tlight chunkcontroller::getlight(wtilepos wtpos)
     }
 
     return chunk::tlight{0,0};
+}
+
+void chunkcontroller::addremesh(chunkpos cpos, ctilepos ctpos) //brukes fra map_obj
+{
+    if (chunkexists(cpos))
+    {
+        chunk& c = getchunk(cpos);
+        chunk::ctags ctag = c.gettag();
+        if (ctag == chunk::C_READY || ctag == chunk::C_REMESHED)
+        {
+            addremesh(c, ctpos.y);
+        }
+    }
 }
 
 tileid chunkcontroller::gettileid(wposition wtpos)
@@ -205,6 +218,10 @@ bool chunkcontroller::ischunkvisible(chunk& c) //not good when looking down
     wposition mcharpos = maincharcontroller::getmaincharposition();
     chunkpos curchunk = chunkcoords::wpostocpos(mcharpos);
     if (c.cpos == curchunk) return true;
+
+    //lazy fix for når man ser down
+    if (c.cpos.x > curchunk.x -2 && c.cpos.x <= curchunk.x +2) return true;
+    if (c.cpos.y > curchunk.y -2 && c.cpos.y <= curchunk.y +2) return true;
 
     hposition cpos[4];
 
@@ -297,163 +314,38 @@ void chunkcontroller::renderchunk(chunkpos cpos)
 }
 
 
-void chunkcontroller::addtiletochange(wtilepos wtile, tileid newtileid, bool breakage)
+
+
+
+
+void chunkcontroller::addremesh(chunk& c, ytile yt)
 {
-    chunkpos cpos = chunkcoords::wpostocpos(wtile);
-    ctilepos ctpos = chunkcoords::wtilepostoctilepos(wtile);
-    addctiletochange(cpos, ctpos, newtileid, breakage);
+    c.setremeshy(yt);
+    if (yt > 1) c.setremeshy(yt-1);
+    if (yt < chunkheight-2) c.setremeshy(yt+1);
 }
 
-void chunkcontroller::addctiletochange(chunkpos cpos, ctilepos ctpos, tileid newtileid, bool breakage)
+void chunkcontroller::interactobj(wtilepos wtpos, mainchar& mchar)
 {
-    ctilestochangequeue.emplace_back(cchangetile{cpos, ctpos, newtileid, breakage});
+    chunkpos cpos = chunkcoords::wtilepostocpos(wtpos);
+    ctilepos ctpos = chunkcoords::wtilepostoctilepos(wtpos);
+    interactobj(cpos, ctpos, mchar);
 }
 
-void chunkcontroller::changetiles()
+void chunkcontroller::interactobj(chunkpos cpos, ctilepos ctpos, mainchar& mchar)
 {
-    for (cchangetile& c: ctilestochangequeue)
+    if (chunkexists(cpos))
     {
-        ctilestochange.push_back(c);
-    }
-    ctilestochangequeue.clear();
-
-
-    if (ctilestochange.empty()) return;
-
-    auto vit = ctilestochange.begin();
-    while (vit != ctilestochange.end())
-    {
-        if (changectile((*vit).cpos, (*vit).ctpos, (*vit).tid, (*vit).breakage))
+        chunk& c = getchunk(cpos);
+        chunk::ctags ctag = c.gettag();
+        if (ctag == chunk::C_READY || ctag == chunk::C_REMESHING)
         {
-            vit = ctilestochange.erase(vit);
-        }
-        else
-        {
-            ++vit;
+            if (c.gettile(ctpos) == 255) //hvis obj, legg inn sjekk om obj exists et sted? i chunk::getmapobj probs
+                c.interactobj(ctpos, mchar);
         }
     }
 }
 
-bool chunkcontroller::changectile(chunkpos cpos, ctilepos ctpos, tileid newtileid, bool breakage)
-{
-    if (!chunkexists(cpos)) return false;
-    chunk& c = getchunk(cpos);
-    if (c.gettag() == chunk::C_READY)
-    {
-        tileid oldtile = c.gettile(ctpos);
-
-        if (oldtile == newtileid) return true; //ingenting å endre
-
-        c.settile(ctpos, newtileid);
-
-        if (newtileid == 1)// && chunkcoords::withinchunkbounds(ctpos)) //water
-        {
-            chunkwatermanager::addactivewatertile(cpos, ctpos);
-            //std::cout << "hey";
-        }
-
-        if (chunkcoords::withinextendedchunkbounds(ctpos))
-        {
-            c.setremeshy(ctpos.y);
-            if (ctpos.y > 1) c.setremeshy(ctpos.y-1);
-            if (ctpos.y < chunkheight-2) c.setremeshy(ctpos.y+1);
-        }
-
-        if (tiledata::gettiletype(oldtile) != tiledata::gettiletype(newtileid)) //check if side updates = necessary
-        {
-            chunklight::updatesunlight(c, ctpos, false);
-        }
-
-        if (chunkcoords::withinchunkbounds(ctpos))
-        {
-            if (ctpos.x == 0) addctiletochange(chunkpos{cpos.x-1, cpos.y}, ctilepos{chunkwidth, ctpos.y, ctpos.z}, newtileid, false);
-            if (ctpos.x == chunkwidth-1) addctiletochange(chunkpos{cpos.x+1, cpos.y}, ctilepos{-1, ctpos.y, ctpos.z}, newtileid, false);
-            if (ctpos.z == 0) addctiletochange(chunkpos{cpos.x, cpos.y-1}, ctilepos{ctpos.x, ctpos.y, chunkwidth}, newtileid, false);
-            if (ctpos.z == chunkwidth-1) addctiletochange(chunkpos{cpos.x, cpos.y+1}, ctilepos{ctpos.x, ctpos.y, -1}, newtileid, false);
-        }
-
-        if (breakage)
-        {
-            uint8_t textureid = tiledata::gettileinfo(oldtile).breaktextureid;
-            uint8_t glow = tiledata::gettileinfo(oldtile).glow;
-            wposition tilepos = wposition(cpos.x * chunkwidth + ctpos.x, ctpos.y, cpos.y * chunkwidth + ctpos.z);
-
-            for (int a =0 ; a < 3; a++)
-            {
-                //direction chardir = (-maincharcontroller::getviewdir() / 10.0f);
-                float randx = utils::randint(-3, 3);
-                float randz = utils::randint(-3, 3);
-                randx /= 30.0f;
-                randz /= 30.0f;
-                particlemanager::addparticle(wposition(tilepos.x + 0.5f, tilepos.y + 0.5f, tilepos.z + 0.5f), velocity(randx, -0.05f, randz), textureid, 15, 2000, glow, 0.5f, false);
-            }
-
-            //water
-            if (chunkcoords::withinchunkbounds(ctpos))
-            {
-                for (int a = 0; a < 6; a++)
-                {
-                    if (c.gettile(ctpos + sideoffsets[a]) == 1)
-                    {
-                        chunkwatermanager::addactivewatertile(cpos, ctpos + sideoffsets[a]);
-                    }
-                }
-            }
-        }
-
-        return true;
-    }
-    else
-    {
-        return false;
-    }
-}
-
-void chunkcontroller::explodetiles(wtilepos wtile, int32_t explosionpower)
-{
-    for (int x = -explosionpower; x <= explosionpower; x++)
-    {
-        for (int z = -explosionpower; z <= explosionpower; z++)
-        {
-            for (int y = -explosionpower; y <= explosionpower; y++)
-            {
-                if (glm::distance(glm::vec3(0.0f), glm::vec3(x,y,z)) <= explosionpower && wtile.y + y > 0 && wtile.y + y < chunkheight)
-                {
-                    tileid tid = gettileid(wtile + wtilepos{x,y,z});
-                    if (!tiledata::needssupport(tid))
-                        breaktile(wtile + wtilepos{x,y,z}); //blir debug particles fordi busker og sånt legges med - fixed
-                }
-            }
-        }
-    }
-}
-
-void chunkcontroller::breaktile(wtilepos wtile)
-{
-    //drop stuff?
-    tileid tid = gettileid(wtile);
-    if (tid > 1) //air and water cannot be broken normally
-    {
-        addtiletochange(wtile, 0, true);
-
-        if (wtile.y > 0)
-        {
-            wtile.y--;
-            tileid tid = gettileid(wtile);
-            if (tiledata::needssupport(tid))
-            {
-                breaktile(wtile);
-            }
-        }
-    }
-}
-
-bool chunkcontroller::chunkexists(chunkpos cpos)
-{
-    uint32_t id = cpostoid(cpos);
-    if (chunks.find(id) == chunks.end()) return false;
-    return true;
-}
 
 bool chunkcontroller::newchunk(chunkpos cpos)
 {

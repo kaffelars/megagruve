@@ -17,11 +17,13 @@ namespace texturemanager
     GLuint iconstextureid[3];
 
     std::unordered_map<std::string, uint32_t> iconnametoid[3];
+    std::vector<uint32_t> itemtextotiletex;
 
     std::vector<std::string> tiletexturenames = {"debug", "water", "water_side", "dirt", "grass", "grass2", "grassydirt", "stone", "rock", "sand", "flag", "leaves", "rain", "blue", "log",
     "logtop", "grasstuft1", "grasstuft2", "planks", "cactus_side", "cactus_top", "littlegrass", "bookcase", "flower1", "flower2", "flower3",
     "chest_top", "chest_bottom", "chest_side", "chest_front", "chest_inside", "destroy1", "destroy2", "destroy3", "destroy4", "glowstone", "snow", "gravel", "ice", "green", "orb",
-    "bedrock", "diamond_ore", "iron_ore", "coal_ore", "log_birch", "log_birch_top", "grass_side_overlay", "clay", "clay_hard", "brick", "door_lower", "door_upper", "grass_bottom", "grass_top"};
+    "bedrock", "diamond_ore", "iron_ore", "coal_ore", "log_birch", "log_birch_top", "grass_side_overlay", "clay", "clay_hard", "brick", "door_lower", "door_upper", "grass_bottom", "grass_top",
+    "flag1", "flag2", "flag3", "flag4", "flagpole", "crafting_table", "table_side", "white_tiles", "sandstone_block"};
 }
 
 
@@ -131,6 +133,9 @@ void texturemanager::loadicontextures()
             tileimg = nullptr;
 
             layer++;
+
+            if (a == 1)
+                itemtextotiletex.push_back(0);
         }
 
         if (a == 1)//tiletextures, fix bedre
@@ -209,6 +214,9 @@ void texturemanager::loadicontextures()
                 tileimg = nullptr;
 
                 layer++;
+
+                if (a == 1)
+                    itemtextotiletex.push_back(gettiletexturenumber(texture));
             }
         }
 
@@ -272,6 +280,7 @@ void texturemanager::loadtiletextures()
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_WRAP_T, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_MAX_ANISOTROPY_EXT, 16); //add setting?
 }
 
 void texturemanager::loadcloudtexture()
@@ -308,6 +317,11 @@ uint32_t texturemanager::gettiletexturenumber(std::string texturename)
 {
     if (texnametoid.find(texturename) == texnametoid.end()) return 0;
     return texnametoid.at(texturename);
+}
+
+uint32_t texturemanager::gettiletexturefromitemtexture(uint32_t itemtexid)
+{
+    return itemtextotiletex[itemtexid];
 }
 
 uint32_t texturemanager::geticontexturenumber(std::string texturename, iconsizes iconsize)

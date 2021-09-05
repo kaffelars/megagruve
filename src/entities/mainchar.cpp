@@ -1,6 +1,9 @@
 #include "consts.h"
 #include "mainchar.h"
 
+#include "uiingame.h"
+#include "itemmanager.h"
+
 mainchar::mainchar() : lifeform(wposition{50.5f, 78.0f, 0.5f},
             velocity{0.0f, 0.0f, 0.0f},
             point{0.4f, 1.8f, 0.4f},
@@ -30,6 +33,43 @@ void mainchar::toggleflying()
     }
 }
 
+int32_t mainchar::getitemusecooldown(uint32_t actionbarid)
+{
+    return itemusecooldown[actionbarid];
+}
+
+void mainchar::setitemusecooldown(uint32_t actionbarid, uint32_t cooldown)
+{
+    itemusecooldown[actionbarid] = cooldown;
+}
+
+void mainchar::setitemusecooldowndelta(uint32_t actionbarid, uint32_t cooldownchange)
+{
+    itemusecooldown[actionbarid] += cooldownchange;
+    if (itemusecooldown[actionbarid] < 0) itemusecooldown[actionbarid] = 0;
+}
+
+void mainchar::usecurrentlyselecteditem(bool useup)
+{
+    inventory::invitem& iitem = mcharinv.getinvitem(actionbarselection);
+    if (iitem.quantity > 0)
+    {
+        itemmanager::item& iteminfo = itemmanager::getitem(iitem.itemid);
+        setitemusecooldown(actionbarselection, iteminfo.speed);
+        if (useup)
+        {
+            iitem.quantity -= 1;
+            uiingame::updateactionbaritems(true);
+        }
+    }
+}
+
+void mainchar::additem(inventory::invitem iitem)
+{
+    mcharinv.additem(iitem);
+    uiingame::updateactionbaritems(true);
+}
+
 void mainchar::fillinv()
 {
     mcharinv.additem("i_diamondpickaxe", 1);
@@ -38,6 +78,7 @@ void mainchar::fillinv()
     mcharinv.additem("i_star", 1);
     mcharinv.additem("i_greenwand", 1);
     mcharinv.additem("i_planks", 64);
+    mcharinv.additem("i_chest", 27);
     mcharinv.additem("i_wings", 1);
     mcharinv.additem("i_water", 64);
     mcharinv.additem("i_redwand", 1);
@@ -46,10 +87,10 @@ void mainchar::fillinv()
     mcharinv.additem("i_bookcase", 77);
 
     mcharinv.additem("i_cactus", 56);
-    mcharinv.additem("i_apple", 13);
+    mcharinv.additem("i_ctable", 13);
     mcharinv.additem("i_sand", 64);
     mcharinv.additem("i_flower2", 64);
-    mcharinv.additem("i_planks", 64);
+    mcharinv.additem("i_white_tiles", 64);
     mcharinv.additem("i_rock", 64);
     mcharinv.additem("i_ironaxe", 1);
     mcharinv.additem("i_snow", 1);
@@ -68,6 +109,11 @@ void mainchar::fillinv()
 
     mcharinv.additem("i_apple_golden", 13);
     mcharinv.additem("i_grass", 56);
+    mcharinv.additem("i_flag1", 64);
+    mcharinv.additem("i_flag2", 64);
+    mcharinv.additem("i_flag3", 64);
+    mcharinv.additem("i_flag4", 64);
+    mcharinv.additem("i_flagpole", 64);
 
 
 }

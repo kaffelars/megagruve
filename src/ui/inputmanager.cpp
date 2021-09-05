@@ -217,6 +217,7 @@ void inputmanager::initialize()
     addkey(KEYTYPE_MOUSESCROLL, KEY_ZOOMOUT, -1, mod_none, "zoom out");
 
     addkey(KEYTYPE_MOUSEBUTTON, KEY_SELECT, SDL_BUTTON_LEFT, mod_none, "select");
+    addkey(KEYTYPE_MOUSEBUTTON, KEY_INTERACT, SDL_BUTTON_RIGHT, mod_none, "interact");
 
     addkey(KEYTYPE_KEYBOARD, KEY_UP, SDL_SCANCODE_W, mod_none, "up");
     addkey(KEYTYPE_KEYBOARD, KEY_DOWN, SDL_SCANCODE_S, mod_none, "down");

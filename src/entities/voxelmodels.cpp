@@ -97,6 +97,26 @@ void voxelmodels::initialize()
     models.push_back(tt);
     id = models.size()-1;
     modelidtoid.insert(std::make_pair("vox_talltree", id));
+
+
+    tileid ssblock = tiledata::gettileid("t_sandstone_block");
+
+    voxelmodel p;
+
+    for (int y = 0; y < 8; y++)
+    {
+        for (int x = -y-1; x < y+1; x++)
+        {
+            for (int z = -y-1; z < y+1; z++)
+            {
+                p.addpoint(ctilepos(x,y,z), ssblock);
+            }
+        }
+    }
+    p.centerbottomtile = ctilepos(-1, 7, -1);
+    models.push_back(p);
+    id = models.size()-1;
+    modelidtoid.insert(std::make_pair("vox_pyramid", id));
 }
 
 voxelmodel& voxelmodels::getvoxelmodel(uint32_t id)

@@ -159,7 +159,7 @@ bool chunkcoords::withinchunkbounds(ctilepos cpos)
 bool chunkcoords::withinextendedchunkbounds(ctilepos cpos)
 {
     if (cpos.x < -1 || cpos.x > chunkwidth) return false;
-    if (cpos.y < -1 || cpos.y > chunkheight) return false;
+    if (cpos.y < 0 || cpos.y > chunkheight-1) return false; //y extended == y vanlig
     if (cpos.z < -1 || cpos.z > chunkwidth) return false;
     return true;
 }

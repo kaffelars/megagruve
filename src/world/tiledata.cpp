@@ -1,5 +1,6 @@
 #include "consts.h"
 #include "tiledata.h"
+#include "map_obj_manager.h"
 
 namespace tiledata
 {
@@ -30,11 +31,14 @@ void tiledata::initialize()
     tileinfolist.emplace_back(tileinfo{.name="t_littlegrass", .fullname="Grass tuft block", .ttype = T_SOLID, .defaultshape = SHAPE_BLOCK,  .hardness = 5,  .glow = 0, .needssupport = false, .passable = false, .biometint = false, .breaktexture = "dirt", .sidetextures = {"dirt", "dirt", "littlegrass", "dirt", "dirt", "dirt"}});
     tileinfolist.emplace_back(tileinfo{.name="t_stone", .fullname="Stone block", .ttype = T_SOLID, .defaultshape = SHAPE_BLOCK,             .hardness = 50, .glow = 0, .needssupport = false, .passable = false, .biometint = false, .breaktexture = "stone", .sidetextures = {"stone"}});
     tileinfolist.emplace_back(tileinfo{.name="t_rock", .fullname="Rock block", .ttype = T_SOLID, .defaultshape = SHAPE_BLOCK,               .hardness = 80, .glow = 0, .needssupport = false, .passable = false, .biometint = false, .breaktexture = "rock", .sidetextures = {"rock"}});
+    tileinfolist.emplace_back(tileinfo{.name="t_white_tiles", .fullname="White tile block", .ttype = T_SOLID, .defaultshape = SHAPE_BLOCK,   .hardness = 40, .glow = 0, .needssupport = false, .passable = false, .biometint = false, .breaktexture = "white_tiles", .sidetextures = {"white_tiles"}});
     tileinfolist.emplace_back(tileinfo{.name="t_coalore", .fullname="Coal ore block", .ttype = T_SOLID, .defaultshape = SHAPE_BLOCK,        .hardness = 100, .glow = 0, .needssupport = false, .passable = false, .biometint = false, .breaktexture = "rock", .sidetextures = {"coal_ore"}});
     tileinfolist.emplace_back(tileinfo{.name="t_ironore", .fullname="Iron ore block", .ttype = T_SOLID, .defaultshape = SHAPE_BLOCK,        .hardness = 120, .glow = 0, .needssupport = false, .passable = false, .biometint = false, .breaktexture = "rock", .sidetextures = {"iron_ore"}});
     tileinfolist.emplace_back(tileinfo{.name="t_diamondore", .fullname="Diamond ore block", .ttype = T_SOLID, .defaultshape = SHAPE_BLOCK,  .hardness = 180, .glow = 0, .needssupport = false, .passable = false, .biometint = false, .breaktexture = "rock", .sidetextures = {"diamond_ore"}});
     tileinfolist.emplace_back(tileinfo{.name="t_ice", .fullname="Ice block", .ttype = T_SOLID, .defaultshape = SHAPE_BLOCK,                 .hardness = 25, .glow = 0, .needssupport = false, .passable = false, .biometint = false, .breaktexture = "ice", .sidetextures = {"ice"}});
     tileinfolist.emplace_back(tileinfo{.name="t_sand", .fullname="Sand block", .ttype = T_SOLID, .defaultshape = SHAPE_BLOCK,               .hardness = 5,  .glow = 0, .needssupport = false, .passable = false, .biometint = false, .breaktexture = "sand", .sidetextures = {"sand"}});
+    tileinfolist.emplace_back(tileinfo{.name="t_sandstone_block", .fullname="Sandstone block", .ttype = T_SOLID, .defaultshape = SHAPE_BLOCK,               .hardness = 35,  .glow = 0, .needssupport = false, .passable = false, .biometint = false, .breaktexture = "sandstone_block", .sidetextures = {"sandstone_block"}});
+    tileinfolist.emplace_back(tileinfo{.name="t_clay", .fullname="Clay block", .ttype = T_SOLID, .defaultshape = SHAPE_BLOCK,               .hardness = 5,  .glow = 0, .needssupport = false, .passable = false, .biometint = false, .breaktexture = "clay", .sidetextures = {"clay"}});
     tileinfolist.emplace_back(tileinfo{.name="t_leaves", .fullname="Leaves", .ttype = T_DISCARD, .defaultshape = SHAPE_BLOCK,               .hardness = 2,  .glow = 0, .needssupport = false, .passable = false, .biometint = true, .breaktexture = "green", .sidetextures = {"leaves"}});
     tileinfolist.emplace_back(tileinfo{.name="t_log", .fullname="Tree log", .ttype = T_SOLID, .defaultshape = SHAPE_BLOCK,                  .hardness = 40, .glow = 0, .needssupport = false, .passable = false, .biometint = false, .breaktexture = "log", .sidetextures = {"log", "log", "logtop", "logtop", "log", "log"}});
     tileinfolist.emplace_back(tileinfo{.name="t_birch_log", .fullname="Birch tree log", .ttype = T_SOLID, .defaultshape = SHAPE_BLOCK,      .hardness = 40, .glow = 0, .needssupport = false, .passable = false, .biometint = false, .breaktexture = "log", .sidetextures = {"log_birch", "log_birch", "log_birch_top", "log_birch_top", "log_birch", "log_birch"}});
@@ -57,7 +61,18 @@ void tiledata::initialize()
     tileinfolist.emplace_back(tileinfo{.name="t_destroy3", .fullname="cracks", .ttype = T_SOLID, .defaultshape = SHAPE_BLOCK,               .hardness = 1, .glow = 0, .needssupport = false, .passable = true, .biometint = false, .breaktexture = "", .sidetextures = {"destroy3"}});
     tileinfolist.emplace_back(tileinfo{.name="t_destroy4", .fullname="cracks", .ttype = T_SOLID, .defaultshape = SHAPE_BLOCK,               .hardness = 1, .glow = 0, .needssupport = false, .passable = true, .biometint = false, .breaktexture = "", .sidetextures = {"destroy4"}});
 
-    for (tileinfo& t : tileinfolist)
+    finalizetileinfos(tileinfolist);
+
+    initializetileshapes();
+
+    map_obj_manager::initialize();
+
+    initialized = true;
+}
+
+void tiledata::finalizetileinfos(std::vector<tileinfo>& data)
+{
+    for (tileinfo& t : data)
     {
         int index = 0;
         int texid = 0;
@@ -84,17 +99,12 @@ void tiledata::initialize()
             texid = 0;
             if (s != "")
             {
-                std::cout << "hey man " << s << "a\n";
                 texid = texturemanager::gettiletexturenumber(s);
             }
             t.overlaytextureids[index] = texid;
             index++;
         }
     }
-
-    initializetileshapes();
-
-    initialized = true;
 }
 
 uint32_t tiledata::gettileid(std::string tilename)
@@ -111,6 +121,8 @@ uint32_t tiledata::gettileid(std::string tilename)
 
 std::string tiledata::gettilename(tileid tid)
 {
+    if (tid == 255) return "map obj";
+
     if (tid >= 0 && tid < tileinfolist.size())
         return tileinfolist[tid].name;
     else
@@ -124,11 +136,16 @@ std::string tiledata::gettilename(tileid tid)
 
 inline tiledata::tileinfo& tiledata::gettileinfo(tileid tile)
 {
+    if (tile == 255)
+    {
+        return map_obj_manager::getmapobjinfo(0); //hmmmmm
+    }
     return tileinfolist[tile];
 }
 
 bool tiledata::isempty(tileid tile)
 {
+    if (tile == 255) return false;
     if (gettileinfo(tile).ttype == T_EMPTY) return true;
 
     return false;
@@ -136,16 +153,25 @@ bool tiledata::isempty(tileid tile)
 
 bool tiledata::ispassable(tileid tile)
 {
+    if (tile == 255)
+    {
+        return map_obj_manager::getmapobjinfo(0).passable;
+    }
     return gettileinfo(tile).passable;
 }
 
 bool tiledata::needssupport(tileid tile)
 {
+    if (tile == 255)
+    {
+        return map_obj_manager::getmapobjinfo(0).needssupport;
+    }
     return gettileinfo(tile).needssupport;
 }
 
 bool tiledata::istransparent(tileid tile)
 {
+    if (tile == 255) return true;
     if (gettileinfo(tile).ttype == T_EMPTY || gettileinfo(tile).ttype == T_DISCARD || gettileinfo(tile).ttype == T_TRANSPARENT) return true;
 
     return false;
@@ -153,22 +179,26 @@ bool tiledata::istransparent(tileid tile)
 
 bool tiledata::isambocc(tileid tile)
 {
+    if (tile == 255) return false;
     if (gettileinfo(tile).defaultshape == SHAPE_BLOCK && gettileinfo(tile).ttype != T_WATER && gettileinfo(tile).glow < 127) return true;
     else return false;
 }
 
 tiledata::tiletype tiledata::gettiletype(tileid tile)
 {
+    if (tile == 255) return T_MAP_OBJ;
     return gettileinfo(tile).ttype;
 }
 
 tiledata::blockshape tiledata::gettileshape(tileid tile)
 {
+    if (tile == 255) return SHAPE_CUSTOM;
     return gettileinfo(tile).defaultshape;
 }
 
 bool tiledata::renderside(tileid tile, tileid neighbour, uint8_t side)
 {
+    if (tile == 255 || neighbour == 255) return true;
     //yucky
     tiletype ttype = gettiletype(tile);
     tiletype tnb = gettiletype(neighbour);

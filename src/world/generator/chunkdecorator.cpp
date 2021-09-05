@@ -9,7 +9,7 @@ namespace chunkdecorator
     //ctor
 }
 
-void chunkdecorator::addvoxelmodel(chunk& c, ctilepos ctpos, uint32_t voxelmodelid, bool cgenerator)
+void chunkdecorator::addvoxelmodel(chunk& c, ctilepos ctpos, uint32_t voxelmodelid, bool cgenerator, bool overwrite)
 {
     voxelmodel& v = voxelmodels::getvoxelmodel(voxelmodelid);
 
@@ -25,7 +25,7 @@ void chunkdecorator::addvoxelmodel(chunk& c, ctilepos ctpos, uint32_t voxelmodel
         if (chunkcoords::withinextendedchunkbounds(cpos))
         {
             tileid t = c.gettile(cpos);
-            if (t == 0)
+            if (t == 0 || overwrite)
             {
                 c.settile(cpos, vp.tid);
             }

@@ -156,7 +156,8 @@ void physicsmanager::boxphysics(physicsobject& p)
             {
                 wposition nextpos = newpos + points[i];
                 nextpos[a] += vel[a];
-                tileid tid = chunkcontroller::gettileid(nextpos);
+                tileid tid = 0;
+                if (nextpos.y >= 0 && nextpos.y < chunkheight) tid = chunkcontroller::gettileid(nextpos);
                 if (!tiledata::ispassable(tid))
                 {
                     passable = false;

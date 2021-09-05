@@ -12,6 +12,15 @@ namespace chunkgetvertexdata
 
 void chunkgetvertexdata::setambocc(chunk& c, ctilepos tilepos, tiledata::tilesides ts, uint8_t (&ambocc)[4])
 {
+    if (tilepos.y == 0 || tilepos.y == chunkheight-1)
+    {
+        for (int a = 0; a < 4; a++)
+        {
+            ambocc[a] = 0;
+        }
+        return;
+    }
+
     ctilepos around[4];
 
     chunkcoords::getvertexoffset(ts, around);
@@ -24,6 +33,15 @@ void chunkgetvertexdata::setambocc(chunk& c, ctilepos tilepos, tiledata::tilesid
 
 void chunkgetvertexdata::setsunlight(chunk& c, ctilepos tilepos, tiledata::tilesides ts, uint8_t (&sunlight)[4])
 {
+    if (tilepos.y == 0)
+    {
+        for (int a = 0; a < 4; a++)
+        {
+            sunlight[a] = 255;
+        }
+        return;
+    }
+
     ctilepos around[4];
 
     chunkcoords::getvertexoffset(ts, around);
@@ -45,6 +63,8 @@ void chunkgetvertexdata::setsunlight(chunk& c, ctilepos tilepos, tiledata::tiles
 
 uint8_t chunkgetvertexdata::getambaround(chunk& c, ctilepos vertex, tiledata::tilesides ts)
 {
+    if (vertex.y == 0) return 0;
+
     uint8_t amb = 0;
 
     ctilepos above[4];

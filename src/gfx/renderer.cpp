@@ -77,6 +77,7 @@ void renderer::rendergame()
     //
 
     //render sky -----
+    glDisable(GL_DEPTH_TEST);
     glStencilFunc(GL_EQUAL, 0, 0xFF);
     glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
 

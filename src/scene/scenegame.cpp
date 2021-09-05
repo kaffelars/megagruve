@@ -46,6 +46,8 @@ void scenegame::setkeys()
     inputmanager::setkeyfunction(inputmanager::KEY_SELECT, [&](){maincharcontroller::useselecteditem();}, inputmanager::KE_CLICKED);
     inputmanager::setkeyfunction(inputmanager::KEY_SELECT, [&](){maincharcontroller::useselecteditem();}, inputmanager::KE_HELD);
 
+    inputmanager::setkeyfunction(inputmanager::KEY_INTERACT, [&](){maincharcontroller::interact();}, inputmanager::KE_CLICKED);
+
     inputmanager::setkeyfunction(inputmanager::KEY_INV, [&](){toggleinventory();}, inputmanager::KE_CLICKED);
     inputmanager::setkeyfunction(inputmanager::KEY_TOGGLEFLYING, [&](){maincharcontroller::toggleflying();}, inputmanager::KE_CLICKED);
     inputmanager::setkeyfunction(inputmanager::KEY_JUMP, [&](){maincharcontroller::mcharjump();}, inputmanager::KE_CLICKED);

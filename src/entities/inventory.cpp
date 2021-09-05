@@ -127,15 +127,36 @@ bool inventory::additem(invitem itemtoadd) //returner overskuddsitems hvis f.eks
 {
     bool itemadded = false;
     int index = 0;
+    //sjekk om den kan adderes først
     for (invitem& i : invitems)
     {
-        if (i.quantity == 0) //empty slot
+        if (i.itemid == itemtoadd.itemid)
         {
-            i = itemtoadd;
-            itemadded = true;
-            break;
+            itemmanager::item& item = itemmanager::getitem(i.itemid);
+            if (i.quantity < item.maxstack)
+            {
+                i.quantity += itemtoadd.quantity;
+                itemtoadd.quantity = 0;
+                if (i.quantity > item.maxstack) {
+                    itemtoadd.quantity = i.quantity - item.maxstack;
+                    i.quantity = item.maxstack;
+                }
+            }
         }
-        index++;
+    }
+
+    if (itemtoadd.quantity > 0) //hvis noe er igjen, putt evt. resten i empty slot
+    {
+        for (invitem& i : invitems)
+        {
+            if (i.quantity == 0) //empty slot
+            {
+                i = itemtoadd;
+                itemadded = true;
+                break;
+            }
+            index++;
+        }
     }
 
     return itemadded;

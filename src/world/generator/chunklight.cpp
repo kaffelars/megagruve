@@ -68,6 +68,7 @@ void chunklight::updatesunlight(chunk& c, ctilepos ctpos, bool initial) //dette 
         if (!initial) c.setremeshy(currentpos.y);
 
         currentpos.y++;
+        if (currentpos.y == chunkheight) break;
     }
 
 

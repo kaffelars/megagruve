@@ -1,6 +1,8 @@
 #include "consts.h"
 #include "itemmanager.h"
 
+#include "map_obj_manager.h"
+
 namespace itemmanager
 {
     std::vector<item> items;
@@ -19,7 +21,7 @@ void itemmanager::additem(std::string itemname, std::string texturename, item it
     itemtoadd.selectionmode = maincharcontroller::SEL_NONE;
     if (itemtoadd.itemtype == I_DIG)
         itemtoadd.selectionmode = maincharcontroller::SEL_BLOCK;
-    if (itemtoadd.itemtype == I_BLOCK || itemtoadd.itemtype == I_PLACEABLEOBJECT)
+    if (itemtoadd.itemtype == I_BLOCK || itemtoadd.itemtype == I_PLACEABLEOBJECT || itemtoadd.itemtype == I_FLAG)
         itemtoadd.selectionmode = maincharcontroller::SEL_AIR;
 
     items.emplace_back(itemtoadd);
@@ -31,6 +33,19 @@ void itemmanager::additem(std::string itemname, std::string texturename, item it
 itemmanager::item& itemmanager::getitem(uint32_t itemnumid)
 {
     return items[itemnumid];
+}
+
+uint32_t itemmanager::getflagidbytextureid(uint32_t texid)
+{
+    int index = 0;
+    for (item& i: items)
+    {
+        if (i.itemtype == I_FLAG && i.textureid == texid)
+        {
+            return index;
+        }
+        index++;
+    }
 }
 
 uint32_t itemmanager::getitemid(std::string itemname)
@@ -66,6 +81,9 @@ void itemmanager::initialize()
     additem("i_wings", "wings", item{.name="Wings", .description="Fly all over the place", .speed=500, .duration=5, .maxstack=1, .itemtype=I_USABLE, .useeffects=std::vector<std::shared_ptr<effect>>{std::make_shared<toggleflying>()}});
     additem("i_star", "star", item{.name="Star light", .description="Use to create light", .speed=500, .duration=5, .maxstack=1, .itemtype=I_USABLE, .useeffects=std::vector<std::shared_ptr<effect>>{std::make_shared<togglelight>(10)}});
 
+    for (int a = 1; a <=4; a++)
+        additem("i_flag"+std::to_string(a), "flag"+std::to_string(a), item{.name="Flag "+std::to_string(a), .description="Beautiful flag", .speed=500, .duration=5, .maxstack=64, .itemtype=I_FLAG, .useeffects=std::vector<std::shared_ptr<effect>>{}}); //place flag effect?
+
     //make items from blocks
     for (const tiledata::tileinfo& t : tiledata::gettileinfolist())
     {
@@ -74,7 +92,18 @@ void itemmanager::initialize()
         std::cout << "adding tile item: " << t.name << "-" << t.name.size() << "\n";
         std::string itemid = "i_" + t.name.substr(2, t.name.size()-2);
         int32_t tid = tiledata::gettileid(t.name);
-        additem(itemid, t.sidetextures[0], item{.name=t.fullname, .description="Placeable object", .speed=200, .duration=0, .maxstack=99, .itemtype=I_BLOCK, .useeffects=std::vector<std::shared_ptr<effect>>{std::make_shared<changeblockeffect>(true, tid)}});
+        additem(itemid, t.sidetextures[0], item{.name=t.fullname, .description="Placeable block", .speed=200, .duration=0, .maxstack=99, .itemtype=I_BLOCK, .useeffects=std::vector<std::shared_ptr<effect>>{std::make_shared<changeblockeffect>(true, tid)}});
         //}
+    }
+
+    uint32_t index = 0;
+    for (const tiledata::tileinfo& t : map_obj_manager::getmapobjlist())
+    {
+        std::cout << "adding map object: " << t.name << "-" << t.name.size() << "\n";
+        std::string itemid = "i_" + t.name.substr(2, t.name.size()-2);
+        int32_t objid = index;
+        additem(itemid, t.sidetextures[0], item{.name=t.fullname, .description="Placeable object", .speed=200, .duration=0, .maxstack=64, .itemtype=I_PLACEABLEOBJECT, .useeffects=std::vector<std::shared_ptr<effect>>{std::make_shared<placeobjecteffect>(true, objid)}});
+
+        index ++;
     }
 }

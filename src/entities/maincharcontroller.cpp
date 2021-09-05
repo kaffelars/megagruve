@@ -21,20 +21,29 @@ namespace maincharcontroller
     mainchar mchar;
     wtilepos tilehover = wtilepos(0,0,0);
     wtilepos oldtilehover = wtilepos(0,0,0);
+    wtilepos tileinteract = wtilepos(0,0,0);
+
     vaocontainer selection;
     smode selectionmode = SEL_BLOCK;
 
     hdirection hmovement = glm::vec2(0.0f);
 
-    int32_t actionbarselection = 0;
-
     blockentity tilehoverentity (wtilepos(0, 0, 0));
 
-    int32_t itemusecooldown[10] = {0,0,0,0,0,0,0,0,0,0};
 
     chunkmesh destructorblock[4];
 
     float mcharlight = 0.0f;
+}
+
+mainchar& maincharcontroller::getmainchar() //trengs denne nå?
+{
+    return mchar;
+}
+
+void maincharcontroller::interact()
+{
+    chunkcontroller::interactobj(tileinteract, mchar);
 }
 
 void maincharcontroller::togglelight(float lightstr)
@@ -72,7 +81,7 @@ int32_t maincharcontroller::getmaxhealth()
 
 int32_t maincharcontroller::getactionbarselection()
 {
-    return actionbarselection;
+    return mchar.actionbarselection;
 }
 
 maincharcontroller::smode maincharcontroller::getselectionmode()
@@ -213,10 +222,10 @@ void maincharcontroller::updatecamera()
 
 void maincharcontroller::changeselection(int selection)
 {
-    actionbarselection = selection;
-    utils::clamp(actionbarselection, 0, 9);
+    mchar.actionbarselection = selection;
+    utils::clamp(mchar.actionbarselection, 0, 9);
 
-    inventory::invitem& iitem = mchar.mcharinv.getinvitem(actionbarselection);
+    inventory::invitem& iitem = mchar.mcharinv.getinvitem(mchar.actionbarselection);
     if (iitem.quantity > 0)
     {
         itemmanager::item& iteminfo = itemmanager::getitem(iitem.itemid);
@@ -227,14 +236,14 @@ void maincharcontroller::changeselection(int selection)
 
 void maincharcontroller::changeselectiondelta(int selectiondelta)
 {
-    changeselection(actionbarselection+selectiondelta);
+    changeselection(mchar.actionbarselection+selectiondelta);
 }
 
 void maincharcontroller::useselecteditem()
 {
-    inventory::invitem& iitem = mchar.mcharinv.getinvitem(actionbarselection);
+    inventory::invitem& iitem = mchar.mcharinv.getinvitem(mchar.actionbarselection);
 
-    if (itemusecooldown[actionbarselection] == 0 && iitem.quantity > 0)
+    if (mchar.getitemusecooldown(mchar.actionbarselection) == 0 && iitem.quantity > 0)
     {
         itemmanager::item& iteminfo = itemmanager::getitem(iitem.itemid);
 
@@ -246,7 +255,7 @@ void maincharcontroller::useselecteditem()
             user = &mchar;
             target = &mchar;
         }
-        if (iteminfo.itemtype == itemmanager::I_BLOCK || iteminfo.itemtype == itemmanager::I_PLACEABLEOBJECT)
+        if (iteminfo.itemtype == itemmanager::I_BLOCK || iteminfo.itemtype == itemmanager::I_PLACEABLEOBJECT || iteminfo.itemtype == itemmanager::I_FLAG)
         {
             user = &mchar;
             target = &tilehoverentity;
@@ -266,17 +275,19 @@ void maincharcontroller::useselecteditem()
 
         if (activated)
         {
-            itemusecooldown[actionbarselection] = iteminfo.speed;
+            mchar.setitemusecooldown(mchar.actionbarselection, iteminfo.speed);
 
             if (iteminfo.itemtype == itemmanager::I_BLOCK)
             {
+                mchar.usecurrentlyselecteditem(false);
                 //tilehoverentity.resethealth(); //funker ikke fordi block blir updated på et senere tidspunkt
             }
 
-            if ((iteminfo.itemtype == itemmanager::I_CONSUMABLE || iteminfo.itemtype == itemmanager::I_BLOCK))
+            if ((iteminfo.itemtype == itemmanager::I_CONSUMABLE || iteminfo.itemtype == itemmanager::I_BLOCK || iteminfo.itemtype == itemmanager::I_PLACEABLEOBJECT || iteminfo.itemtype == itemmanager::I_FLAG))
             {
-                iitem.quantity -= 1;
-                uiingame::updateactionbaritems(true); //litt krøkkete å ha denne her? ha heller en func i uiingame som detekterer action bar changes
+                mchar.usecurrentlyselecteditem(true);
+                //iitem.quantity -= 1;
+                //uiingame::updateactionbaritems(true); //litt krøkkete å ha denne her? ha heller en func i uiingame som detekterer action bar changes
             }
         }
     }
@@ -288,8 +299,7 @@ void maincharcontroller::update()
 
     for (int a = 0; a < 10; a++)
     {
-        itemusecooldown[a] -= timekeeper::getdeltatime();
-        if (itemusecooldown[a] < 0) itemusecooldown[a] = 0;
+        mchar.setitemusecooldowndelta(a, -timekeeper::getdeltatime());
     }
 
     mchar.lifeform::update();
@@ -297,6 +307,9 @@ void maincharcontroller::update()
     //std::cout << "B";
 
     glm::vec4 mdata = renderer::getmousedata();
+
+    tileinteract = chunkcoords::wpostowtilepos(wposition(mdata.x, mdata.y, mdata.z) + (getviewdir() / 10.0f));
+
     if (getselectionmode() == SEL_BLOCK)
         tilehover = chunkcoords::wpostowtilepos(wposition(mdata.x, mdata.y, mdata.z) + (getviewdir() / 10.0f)); //negativ viewdir hvis lufttile skal selectes (SEL_AIR)
     else
@@ -338,24 +351,36 @@ bool maincharcontroller::isunderwater()
     else return false;
 }
 
+bool maincharcontroller::isinwater()
+{
+    wposition mcpos = mchar.geteyeposition();
+    mcpos.y += 1.2f;//ikkje bra
+    tileid tid = chunkcontroller::gettileid(mcpos);
+    if (tiledata::gettileinfo(tid).ttype == tiledata::T_WATER) return true;
+    else return false;
+}
+
 void maincharcontroller::movement()
 {
     //std::cout << "movement ";
 
-    if (mchar.flying || isunderwater())
+    if (mchar.flying || isinwater())
     {
         if (hmovement != hdirection(0.0f, 0.0f))
         {
             hmovement = glm::normalize(hmovement);
 
-            if (isunderwater()) hmovement /= 3.0f;
+            if (isinwater()) hmovement /= 3.0f;
 
             mchar.moveflying(hmovement);
         }
 
-        //mchar.updateposition();
         physicsmanager::boxphysics(mchar);
-        mchar.setvelocity(velocity{0.0f,0.0f,0.0f});
+
+        if (mchar.flying || isunderwater())
+        {
+            mchar.setvelocity(velocity{0.0f,0.0f,0.0f});
+        }
     }
     else
     {

@@ -55,10 +55,13 @@ void chunkcontroller::meshchunkpart(chunk& c, uint8_t cpart)
         {
             for (htile x = 0; x < chunkwidth; x++)
             {
-
                 tileid tid = c.gettile(ctilepos{x,y,z});
 
-                if (!tiledata::isempty(tid))
+                if (tid == 255) //map_obj
+                {
+                    c.getmapobj(ctilepos{x,y,z})->addmodel(ctilepos{x,y,z}, c.cmesh[cpart][c.getinactivemesh(cpart)]);
+                }
+                else if (!tiledata::isempty(tid))
                 {
                     //sunlight
                     uint8_t sunlight = 0;
@@ -95,15 +98,14 @@ void chunkcontroller::meshchunkpart(chunk& c, uint8_t cpart)
                         //bbb
                         uint8_t ambocc[4] = {0,0,0,0};
                         rgbcolor255 tint[4] = {notint,notint,notint,notint};
-                        //rgbcolor255 notint[4] = {rgbcolor255{255,255,255},rgbcolor255{255,255,255},rgbcolor255{255,255,255},rgbcolor255{255,255,255}};
                         rgbcolor255 light[4] = {rgbcolor255{0,0,0},rgbcolor255{0,0,0},rgbcolor255{0,0,0},rgbcolor255{0,0,0}};
                         uint8_t sunlight[4] = {0,0,0,0};
 
                         for (int a = 0; a < 6; a++)
                         {
-                            //if (sides & tiledata::sideflags[a])
-                            //{
-                            tileid neighbour = c.gettile(ctilepos{x,y,z} + sideoffsets[a]);
+                            tileid neighbour = 2;
+                            if (y + sideoffsets[a].y >= 0 && y + sideoffsets[a].y < chunkheight) neighbour = c.gettile(ctilepos{x,y,z} + sideoffsets[a]);
+
                             if (tiledata::renderside(tid, neighbour, a))
                             {
                                 chunkgetvertexdata::setambocc(c, ctilepos{x,y,z}, tiledata::sideflags[a], ambocc);
@@ -122,17 +124,31 @@ void chunkcontroller::meshchunkpart(chunk& c, uint8_t cpart)
                                     tiledata::addside(ctilepos{x,y,z}, tid, 0, a, sunlight, light, glow, ambocc, tint, c.cmesh[cpart][c.getinactivemesh(cpart)]);
 
                             }
-                            //}
                         }
                     }
                     else
                     {
+                        uint8_t tilesides = 0;
+                        if (tileshape == tiledata::SHAPE_CACTUS)
+                        {
+                            for (int a = 0; a < 6; a++)
+                            {
+                                tileid neighbour = 2;
+                                if (y > 0 && y < chunkheight-1) neighbour = c.gettile(ctilepos{x,y,z} + sideoffsets[a]);
+
+                                if (tiledata::renderside(tid, neighbour, a))
+                                {
+                                    tilesides = tilesides | sideflags[a];
+                                }
+                            }
+                        }
+
                         rgbcolor255 tint = notint;
 
                         if (tiledata::gettileinfo(tid).biometint)
                             tint = biomecontroller::getbiometint(c.getbiome(chtilepos{x,z}));
 
-                        tiledata::addblock(ctilepos{x,y,z}, tid, tileshape, 0, sunlight, rgbcolor255(0,0,0), glow, 0, tint, c.cmesh[cpart][c.getinactivemesh(cpart)]);
+                        tiledata::addblock(ctilepos{x,y,z}, tid, tileshape, tilesides, sunlight, rgbcolor255(0,0,0), glow, 0, tint, c.cmesh[cpart][c.getinactivemesh(cpart)]);
                     }
                 }
             }

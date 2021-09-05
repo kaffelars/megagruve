@@ -173,32 +173,6 @@ void defaultgenerator::generator(chunk& c)
     }
 
     //std::cout << c.tileids.size() << "wee"; //295936 korrekt
-
-    //highest
-    for (htile z = 0; z < chunkwidth; z++)
-    {
-        for (htile x = 0; x < chunkwidth; x++)
-        {
-            bool hset = false;
-            for (ytile y = 0; y < chunkheight; y++)
-            {
-                ctilepos tpos = ctilepos(x,y,z);
-                tileid tid = c.gettile(tpos);
-
-                if (tid != 0)
-                {
-                    c.addhighest(y);
-                    hset = true;
-                    break;
-                }
-            }
-
-            if (!hset)
-                c.addhighest(255);
-        }
-    }
-
-    decorate(c);
 }
 
 

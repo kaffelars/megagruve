@@ -4,6 +4,7 @@
 #include "tiledata.h"
 #include "chunkcontroller.h"
 #include "modelmanager.h"
+#include "chunktilemanager.h"
 
 void entity::heal(int32_t healamount) {}
 void entity::takedamage(int32_t attackstrength, int32_t attacktype, entity* source) {};
@@ -40,7 +41,7 @@ void blockentity::resethealth()
 
 bool blockentity::destroy()
 {
-    chunkcontroller::breaktile(wtpos);
+    chunktilemanager::breaktile(wtpos);
     return true;
 }
 
