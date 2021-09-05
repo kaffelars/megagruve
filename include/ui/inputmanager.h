@@ -46,6 +46,7 @@ namespace inputmanager
         KEY_ZOOMDOWN,
         KEY_ROTATECAM,
         KEY_SELECT,
+        KEY_INTERACT,
         KEY_MISC,
         KEY_ESCAPE,
         KEY_INV,

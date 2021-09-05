@@ -3,6 +3,7 @@
 
 
 #include "inventory.h"
+#include "mainchar.h"
 
 
 namespace maincharcontroller
@@ -11,6 +12,8 @@ namespace maincharcontroller
     {
         SEL_BLOCK, SEL_AIR, SEL_NONE
     };
+
+    mainchar& getmainchar();
 
     direction getviewdir();
     hdirection gethviewdir();
@@ -26,8 +29,10 @@ namespace maincharcontroller
     void setselectionmode(smode selmode);
     void movechar(hdirection dir);
     void mcharjump();
+    void interact();
 
     bool isunderwater();
+    bool isinwater();
 
     void togglelight(float lightstr);
     float getmcharlight();

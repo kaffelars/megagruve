@@ -6,6 +6,7 @@
 #include "utils.h"
 #include "randfunc.h"
 #include "maincharcontroller.h"
+#include "mainchar.h"
 #include "camera.h"
 #include "settings.h"
 #include "voxelmodels.h"
@@ -24,18 +25,16 @@ namespace chunkcontroller
     void meshchunkpart(chunk& c, uint8_t cpart);
     void remeshchunk(chunk& c);
 
+    void addremesh(chunkpos cpos, ctilepos ctpos);
+    void addremesh(chunk& c, ytile yt);
+
     bool ischunkvisible(chunk& c);
 
     bool chunkexists(chunkpos cpos);
 
 
-    void addctiletochange(chunkpos cpos, ctilepos ctpos, tileid newtileid, bool breakage);
-    bool changectile(chunkpos cpos, ctilepos ctile, tileid newtileid, bool breakage);
-
-    void changetiles();
-    void addtiletochange(wtilepos wtile, tileid newtileid, bool breakage);
-    void breaktile(wtilepos wtile);
-    void explodetiles(wtilepos wtile, int32_t explosionpower);
+    void interactobj(wtilepos wtpos, mainchar& mchar);
+    void interactobj(chunkpos cpos, ctilepos ctpos, mainchar& mchar);
 
     void updatesunlight(chunk& c, ctilepos ctpos, bool initial);
 

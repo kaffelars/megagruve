@@ -16,9 +16,13 @@ constexpr int chunkmeshynum = chunkheight/chunkmeshheight;
 
 //constexpr int maxthreads = 3;
 
-#include <aliases.h>
+#include "enumclasses.h"
+#include "aliases.h"
 
 const glm::ivec3 sideoffsets[6] = {glm::ivec3(-1, 0 ,0), glm::ivec3(1, 0 ,0), glm::ivec3(0, -1 ,0), glm::ivec3(0, 1 ,0), glm::ivec3(0, 0 ,-1), glm::ivec3(0, 0 ,1)};
 const rgbcolor255 notint = rgbcolor255{127,127,127};
+const uint8_t sideflags[6] = {1,2,4,8,16,32};
+
+const tileid mapobjtileid = 255;
 
 #endif // CONSTS_H_INCLUDED

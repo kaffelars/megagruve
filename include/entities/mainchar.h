@@ -31,7 +31,13 @@ class mainchar : public lifeform
 
         rotation rot { rotation{855.0f, 0.0f} };
 
+        void usecurrentlyselecteditem(bool useup);
+        void additem(inventory::invitem iitem);
+
         inventory mcharinv {40};
+        int32_t getitemusecooldown(uint32_t actionbarid);
+        void setitemusecooldown(uint32_t actionbarid, uint32_t cooldown);
+        void setitemusecooldowndelta(uint32_t actionbarid, uint32_t cooldownchange);
 
         bool flying;
         void toggleflying();
@@ -41,6 +47,9 @@ class mainchar : public lifeform
 
         direction getviewdir();
         hdirection gethviewdir();
+
+        int32_t actionbarselection {0};
+        int32_t itemusecooldown[10] = {0,0,0,0,0,0,0,0,0,0};
 
         void movehoriz(hdirection dir);
         void rotateview(rotation r);

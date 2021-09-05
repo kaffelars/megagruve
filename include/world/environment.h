@@ -16,6 +16,8 @@ namespace environment
     rgbcolor getfogcolor();
     rgbcolor getsuncolor();
 
+    void initialize();
+
     void changecloudcover(float change);
 
     void rain();

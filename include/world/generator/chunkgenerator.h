@@ -16,6 +16,8 @@ class chunkgenerator
         void updatesunlight(chunk& c, ctilepos ctpos, bool initial);
 
         virtual void generator(chunk& c);
+        virtual void decorate(chunk& c);
+        void sethighest(chunk& c);
 
     protected:
 

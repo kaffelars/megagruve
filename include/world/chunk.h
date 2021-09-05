@@ -4,6 +4,8 @@
 #include "tiledata.h"
 #include "chunkmesh.h"
 #include "shadercontroller.h"
+#include "map_obj.h"
+#include "mainchar.h"
 
 class chunk
 {
@@ -34,8 +36,8 @@ class chunk
         chunkmesh cmesh[chunkmeshynum][2];
         chunkmesh wmesh[chunkmeshynum][2];
 
-        inline uint32_t get2dcoord(chtilepos tpos);
-        inline uint32_t get3dcoord(ctilepos tpos);
+        uint32_t get2dcoord(chtilepos tpos);
+        uint32_t get3dcoord(ctilepos tpos);
         uint32_t gettilecoord(ctilepos tpos);
         uint32_t getbiomecoord(chtilepos thpos);
 
@@ -85,7 +87,12 @@ class chunk
         void renderwater();
         void deletechunk();
 
+        std::unordered_map<uint32_t, std::shared_ptr<map_obj>> chunk_objs;
+        void addchunkobj(ctilepos ctpos, uint8_t mapobjid, uint8_t forwardside);
+        void interactobj(ctilepos ctpos, mainchar& mchar);
+        void removechunkobj(ctilepos ctpos);
 
+        std::shared_ptr<map_obj>& getmapobj(ctilepos ctpos);
 
     protected:
 

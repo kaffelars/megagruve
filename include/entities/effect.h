@@ -118,6 +118,17 @@ class changeblockeffect:public effect
         bool emptyonly;
 };
 
+class placeobjecteffect:public effect
+{
+	public:
+        placeobjecteffect(bool onlyemptyblocks, uint32_t objid);
+        virtual ~placeobjecteffect() = default;
+        bool activate(entity* user, entity* target);
+    private:
+        uint32_t tid;
+        bool emptyonly;
+};
+
 
 
 #endif // EFFECT_H

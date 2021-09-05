@@ -11,7 +11,7 @@ class entityvitals
 
         enum s_effects
         {
-            SE_POISON
+            SE_POISON, SE_HEAL
         };
 
         struct s_effect

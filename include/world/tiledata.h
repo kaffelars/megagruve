@@ -9,7 +9,7 @@ namespace tiledata
 {
     enum tiletype
     {
-        T_EMPTY, T_TRANSPARENT, T_DISCARD, T_SOLID, T_SOLID_VERT, T_WATER, T_OBJECT
+        T_EMPTY, T_TRANSPARENT, T_DISCARD, T_SOLID, T_SOLID_VERT, T_WATER, T_OBJECT, T_MAP_OBJ
     };
 
     enum blockshape
@@ -67,6 +67,7 @@ namespace tiledata
     bool ispassable(tileid tile);
 
     void initialize();
+    void finalizetileinfos(std::vector<tileinfo>& data);
 
     bool renderside(tileid tile, tileid neighbour, uint8_t side); //true hvis side på 'tile' skal rendes mot 'neighbour'
 };

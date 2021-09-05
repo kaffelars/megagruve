@@ -10,7 +10,7 @@ namespace itemmanager
 {
     enum itemtypes
     {
-        I_BLOCK, I_DIG, I_USABLE, I_CONSUMABLE, I_INERT, I_PLACEABLEOBJECT
+        I_BLOCK, I_DIG, I_USABLE, I_CONSUMABLE, I_INERT, I_PLACEABLEOBJECT, I_FLAG
     };
 
     struct item
@@ -35,6 +35,7 @@ namespace itemmanager
     void additem(std::string itemid, std::string texturename, item itemtoadd);
 
     item& getitem(uint32_t itemnumid);
+    uint32_t getflagidbytextureid(uint32_t texid);
     uint32_t getitemid(std::string itemid);
     void initialize();
 };

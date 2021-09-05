@@ -25,6 +25,7 @@ namespace texturemanager
 
     uint32_t gettiletexturenumber(std::string texturename);
     uint32_t geticontexturenumber(std::string texturename, iconsizes iconsize);
+    uint32_t gettiletexturefromitemtexture(uint32_t itemtexid);
 };
 
 #endif // TEXTUREMANAGER_H

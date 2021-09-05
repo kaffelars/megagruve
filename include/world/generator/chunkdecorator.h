@@ -5,7 +5,7 @@
 
 namespace chunkdecorator
 {
-    void addvoxelmodel(chunk& c, ctilepos ctpos, uint32_t voxelmodelid, bool cgenerator);
+    void addvoxelmodel(chunk& c, ctilepos ctpos, uint32_t voxelmodelid, bool cgenerator, bool overwrite = false);
 };
 
 #endif // CHUNKDECORATOR_H
