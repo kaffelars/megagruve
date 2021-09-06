@@ -31,6 +31,7 @@ Features:
 
 Missing features:
 * proper light propagation
+* saving worlds
 * crafting
 * optimizations
 * nice animals
