@@ -46,7 +46,7 @@ Missing features:
 
 ![screenshot](https://github.com/kaffelars/megagruve/blob/main/screenshots/screenshot4.png)
 
-![screenshot](https://github.com/kaffelars/megagruve/blob/main/screenshots/screenshot3.png)
+![screenshot](https://github.com/kaffelars/megagruve/blob/main/screenshots/screenshot6.png)
 
 ## Using
 * [SDL2](https://www.libsdl.org/)
