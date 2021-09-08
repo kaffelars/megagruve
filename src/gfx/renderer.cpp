@@ -110,6 +110,7 @@ void renderer::rendergame()
     glBindFramebuffer(GL_FRAMEBUFFER, framebuffercontroller::postbuffer);
     glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);// | GL_DEPTH_BUFFER_BIT
+    //glViewport(0, 0, settings::getisetting(settings::SET_SCREENX), settings::getisetting(settings::SET_SCREENY));
     //glDisable(GL_DEPTH_TEST);
     glEnable(GL_DEPTH_TEST);
 
@@ -176,7 +177,7 @@ void renderer::rendergame()
     glDisable(GL_DEPTH_TEST);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glViewport(0, 0, settings::getisetting(settings::SET_SCREENX), settings::getisetting(settings::SET_SCREENY));
+    //glViewport(0, 0, settings::getisetting(settings::SET_SCREENX), settings::getisetting(settings::SET_SCREENY));
 
     shadercontroller::activateshader(shadercontroller::SH_PP);
     glActiveTexture(GL_TEXTURE0);

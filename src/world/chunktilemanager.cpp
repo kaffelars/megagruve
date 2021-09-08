@@ -6,6 +6,9 @@
 #include "chunkwatermanager.h"
 #include "chunklight.h"
 
+#include "map_obj_manager.h"
+#include "map_obj.h"
+
 #include "tiledata.h"
 #include "particlemanager.h"
 
@@ -41,6 +44,49 @@ void chunktilemanager::removemapobj(chunk& c, ctilepos ctpos)
     c.removechunkobj(ctpos);
 }
 
+void chunktilemanager::interactobjaround(chunkpos cpos, ctilepos ctpos, ctilepos effectoffset, mainchar& mchar)
+{
+    for (int a = 0; a < 6; a++)
+    {
+        wtilepos nwtpos = ctpos + sideoffsets[a] + effectoffset;
+        nwtpos.x += cpos.x * chunkwidth;
+        nwtpos.z += cpos.y * chunkwidth;
+
+        chunkpos ncpos = chunkcoords::wpostocpos(nwtpos);
+        ctilepos nctpos = chunkcoords::wtilepostoctilepos(nwtpos);
+
+        chunk& c = chunkcontroller::getchunk(ncpos);
+
+        if (c.gettag() == chunk::C_READY)
+        {
+            if (c.gettile(nctpos) == 255)
+            {
+                std::shared_ptr<map_obj>& m = c.getmapobj(nctpos);
+                if (m->isindirectlyinteractable())
+                    m->interact(mchar);
+            }
+        }
+    }
+
+}
+
+/*std::shared_ptr<map_obj>& chunktilemanager::getmapobj(wtilepos wtpos) //trengs ikke?
+{
+    chunkpos cpos = chunkcoords::wpostocpos(wtpos);
+    ctilepos ctpos = chunkcoords::wtilepostoctilepos(wtpos);
+
+    chunk& c = chunkcontroller::getchunk(cpos);
+
+    if (c.gettag() == chunk::C_READY)
+    {
+        if (c.gettile(ctpos) == 255)
+        {
+            return c.getmapobj(ctpos);
+        }
+    }
+
+    return shared_ptr<map_obj>(nullptr);
+}*/
 
 void chunktilemanager::changetiles()
 {

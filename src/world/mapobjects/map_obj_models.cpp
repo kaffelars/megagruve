@@ -320,6 +320,190 @@ void map_obj_models::initialize()
     }
 
     obj_models.push_back(table);
+
+
+    map_obj_model door;
+
+    texid = texturemanager::gettiletexturenumber("door_upper");
+    texid2 = texturemanager::gettiletexturenumber("door_lower");
+
+    door.vertexes.push_back(vpos{0.5f, 0, 0});
+    door.vertexes.push_back(vpos{0.5f, 0, 1});
+    door.vertexes.push_back(vpos{0.5f, 1, 0});
+    door.vertexes.push_back(vpos{0.5f, 0, 1});
+    door.vertexes.push_back(vpos{0.5f, 1, 1});
+    door.vertexes.push_back(vpos{0.5f, 1, 0});
+
+    door.vertexes.push_back(vpos{0.5f, 0, 0});
+    door.vertexes.push_back(vpos{0.5f, 1, 0});
+    door.vertexes.push_back(vpos{0.5f, 0, 1});
+    door.vertexes.push_back(vpos{0.5f, 1, 1});
+    door.vertexes.push_back(vpos{0.5f, 0, 1});
+    door.vertexes.push_back(vpos{0.5f, 1, 0});
+
+    door.uv.push_back(uvpos{1, 0});
+    door.uv.push_back(uvpos{0, 0});
+    door.uv.push_back(uvpos{1, 1});
+    door.uv.push_back(uvpos{0, 0});
+    door.uv.push_back(uvpos{0, 1});
+    door.uv.push_back(uvpos{1, 1});
+
+    door.uv.push_back(uvpos{1, 0});
+    door.uv.push_back(uvpos{1, 1});
+    door.uv.push_back(uvpos{0, 0});
+    door.uv.push_back(uvpos{0, 1});
+    door.uv.push_back(uvpos{0, 0});
+    door.uv.push_back(uvpos{1, 1});
+
+    for (int a = 0; a < 12; a++)
+    {
+        door.texids.push_back(texid2);
+        vpos v = door.vertexes[a];
+        uvpos u = door.uv[a];
+        v.y -= 1;
+        door.vertexes.push_back(v);
+        door.uv.push_back(u);
+    }
+    for (int a = 0; a < 12; a++)
+    {
+        door.texids.push_back(texid);
+    }
+    for (int a = 0; a < 6; a++)
+        door.normals.push_back(sidenormals[0]);
+    for (int a = 0; a < 6; a++)
+        door.normals.push_back(sidenormals[1]);
+    for (int a = 0; a < 6; a++)
+        door.normals.push_back(sidenormals[0]);
+    for (int a = 0; a < 6; a++)
+        door.normals.push_back(sidenormals[1]);
+
+    obj_models.push_back(door);
+
+    for (int a = 0; a < 24; a++)
+    {
+        vpos v = door.vertexes[a];
+
+        if (v.z == 0)
+        {
+            v.z = 0.8f;
+            v.x = 1.4f;
+        }
+
+        door.vertexes[a] = v;
+    }
+
+    obj_models.push_back(door);//opendoor
+
+    map_obj_model button;
+
+    button.vertexes.push_back(vpos{0, 0, 0});
+    button.vertexes.push_back(vpos{0, 0, 1});
+    button.vertexes.push_back(vpos{0, 1, 0});
+    button.vertexes.push_back(vpos{0, 0, 1});
+    button.vertexes.push_back(vpos{0, 1, 1});
+    button.vertexes.push_back(vpos{0, 1, 0});
+
+    /*button.vertexes.push_back(vpos{1, 0, 0});
+    button.vertexes.push_back(vpos{1, 1, 0});
+    button.vertexes.push_back(vpos{1, 0, 1});
+    button.vertexes.push_back(vpos{1, 1, 1});
+    button.vertexes.push_back(vpos{1, 0, 1});
+    button.vertexes.push_back(vpos{1, 1, 0});*/
+
+    button.vertexes.push_back(vpos{0, 0, 0});
+    button.vertexes.push_back(vpos{1, 0, 0});
+    button.vertexes.push_back(vpos{1, 0, 1});
+    button.vertexes.push_back(vpos{0, 0, 0});
+    button.vertexes.push_back(vpos{1, 0, 1});
+    button.vertexes.push_back(vpos{0, 0, 1});
+
+    button.vertexes.push_back(vpos{1, 1, 0});
+    button.vertexes.push_back(vpos{0, 1, 0});
+    button.vertexes.push_back(vpos{1, 1, 1});
+    button.vertexes.push_back(vpos{1, 1, 1});
+    button.vertexes.push_back(vpos{0, 1, 0});
+    button.vertexes.push_back(vpos{0, 1, 1});
+
+    button.vertexes.push_back(vpos{0, 0, 0});
+    button.vertexes.push_back(vpos{0, 1, 0});
+    button.vertexes.push_back(vpos{1, 1, 0});
+    button.vertexes.push_back(vpos{0, 0, 0});
+    button.vertexes.push_back(vpos{1, 1, 0});
+    button.vertexes.push_back(vpos{1, 0, 0});
+
+    button.vertexes.push_back(vpos{0, 1, 1});
+    button.vertexes.push_back(vpos{0, 0, 1});
+    button.vertexes.push_back(vpos{1, 1, 1});
+    button.vertexes.push_back(vpos{1, 1, 1});
+    button.vertexes.push_back(vpos{0, 0, 1});
+    button.vertexes.push_back(vpos{1, 0, 1});
+
+    for (vpos& v: button.vertexes)
+    {
+        if (v.x == 0) v.x = 0.7f;
+        if (v.y == 0) v.y = 0.4f;
+        if (v.y == 1) v.y = 0.6f;
+        if (v.z == 0) v.z = 0.4f;
+        if (v.z == 1) v.z = 0.6f;
+    }
+
+    button.uv.push_back(uvpos{1, 0});
+    button.uv.push_back(uvpos{0, 0});
+    button.uv.push_back(uvpos{1, 1});
+    button.uv.push_back(uvpos{0, 0});
+    button.uv.push_back(uvpos{0, 1});
+    button.uv.push_back(uvpos{1, 1});
+
+    /*button.uv.push_back(uvpos{0, 0});
+    button.uv.push_back(uvpos{0, 1});
+    button.uv.push_back(uvpos{1, 0});
+    button.uv.push_back(uvpos{1, 1});
+    button.uv.push_back(uvpos{1, 0});
+    button.uv.push_back(uvpos{0, 1});*/
+
+    button.uv.push_back(uvpos{0, 0});
+    button.uv.push_back(uvpos{0, 1});
+    button.uv.push_back(uvpos{1, 1});
+    button.uv.push_back(uvpos{0, 0});
+    button.uv.push_back(uvpos{1, 1});
+    button.uv.push_back(uvpos{1, 0});
+
+    button.uv.push_back(uvpos{1, 0});
+    button.uv.push_back(uvpos{0, 0});
+    button.uv.push_back(uvpos{1, 1});
+    button.uv.push_back(uvpos{1, 1});
+    button.uv.push_back(uvpos{0, 0});
+    button.uv.push_back(uvpos{0, 1});
+
+    button.uv.push_back(uvpos{0, 0});
+    button.uv.push_back(uvpos{0, 1});
+    button.uv.push_back(uvpos{1, 1});
+    button.uv.push_back(uvpos{0, 0});
+    button.uv.push_back(uvpos{1, 1});
+    button.uv.push_back(uvpos{1, 0});
+
+    button.uv.push_back(uvpos{1, 1});
+    button.uv.push_back(uvpos{1, 0});
+    button.uv.push_back(uvpos{0, 1});
+    button.uv.push_back(uvpos{0, 1});
+    button.uv.push_back(uvpos{1, 0});
+    button.uv.push_back(uvpos{0, 0});
+
+    texid = texturemanager::gettiletexturenumber("planks");
+
+    for (int a = 0; a < 6; a++)
+    {
+        if (a != 1)
+        {
+            for (int b = 0; b < 6; b++)
+            {
+                button.normals.push_back(sidenormals[a]);
+                button.texids.push_back(texid);
+            }
+        }
+    }
+
+    obj_models.push_back(button);
 }
 
 void map_obj_models::addmodel(chunkmesh& cm, ctilepos ctpos, uint32_t modelid, uint8_t forwardside, int32_t texid)

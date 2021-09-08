@@ -88,13 +88,13 @@ void mainchar::fillinv()
 
     mcharinv.additem("i_cactus", 56);
     mcharinv.additem("i_ctable", 13);
-    mcharinv.additem("i_sand", 64);
+    mcharinv.additem("i_door", 64);
     mcharinv.additem("i_flower2", 64);
     mcharinv.additem("i_white_tiles", 64);
     mcharinv.additem("i_rock", 64);
     mcharinv.additem("i_ironaxe", 1);
     mcharinv.additem("i_snow", 1);
-    mcharinv.additem("i_ironpickaxe", 1);
+    mcharinv.additem("i_button", 55);
     mcharinv.additem("i_ironpickaxe", 1);
 
     mcharinv.additem("i_ironpickaxe", 1);

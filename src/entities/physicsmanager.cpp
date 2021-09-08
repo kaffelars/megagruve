@@ -4,6 +4,9 @@
 #include "chunkcontroller.h"
 #include "tiledata.h"
 #include "timekeeper.h"
+#include "chunk.h"
+#include "map_obj.h"
+#include "chunkcoords.h"
 
 namespace physicsmanager
 {
@@ -156,12 +159,13 @@ void physicsmanager::boxphysics(physicsobject& p)
             {
                 wposition nextpos = newpos + points[i];
                 nextpos[a] += vel[a];
-                tileid tid = 0;
+                /*tileid tid = 0;
                 if (nextpos.y >= 0 && nextpos.y < chunkheight) tid = chunkcontroller::gettileid(nextpos);
                 if (!tiledata::ispassable(tid))
                 {
                     passable = false;
-                }
+                }*/
+                if (!ispassable(nextpos)) passable = false;
             }
             //std::cout << "o";
 
@@ -209,4 +213,28 @@ void physicsmanager::boxphysics(physicsobject& p)
     p.position = newpos;
 
     //std::cout << "finitos\n";
+}
+
+
+bool physicsmanager::ispassable(wposition wpos)
+{
+    chunkpos cpos = chunkcoords::wpostocpos(wpos);
+    if (chunkcontroller::chunkexists(cpos))
+    {
+        chunk& c = chunkcontroller::getchunk(cpos);
+        chunk::ctags ctag = c.gettag();
+        if (ctag == chunk::C_READY || ctag == chunk::C_REMESHING || ctag == chunk::C_REMESHED)
+        {
+            ctilepos ctpos = chunkcoords::wpostoctilepos(wpos);
+            tileid tid = c.gettile(ctpos);
+            if (tid == 255)
+            {
+                return c.getmapobj(ctpos)->passable();
+            }
+            else
+            {
+                return tiledata::ispassable(tid);
+            }
+        }
+    }
 }

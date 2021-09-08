@@ -53,7 +53,7 @@ void environment::rain()
     {
         for (int z = -55; z < 55; z+=2)
         {
-            if (utils::randint(0, 140) ==2)
+            if (utils::randint(0, 140) == 2)
             {
                 float px = maincharcontroller::getmaincharposition().x + x + ((float)utils::randint(0, 10) / 10.0f);
                 float pz = maincharcontroller::getmaincharposition().z + z + ((float)utils::randint(0, 10) / 10.0f);

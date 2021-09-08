@@ -8,6 +8,7 @@
 obj_chest::obj_chest(ctilepos ctp, chunkpos cpo, uint8_t forw) : map_obj(ctp, cpo, forw)
 {
     hasmodel = true;
+
 }
 
 obj_chest::~obj_chest()

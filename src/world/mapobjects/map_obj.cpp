@@ -27,3 +27,13 @@ void map_obj::remeshchunk()
 {
     chunkcontroller::addremesh(cpos, ctpos);
 }
+
+bool map_obj::passable()
+{
+    return false;
+}
+
+bool map_obj::isindirectlyinteractable()
+{
+    return false;
+}

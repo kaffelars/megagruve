@@ -95,8 +95,24 @@ void chunk::addchunkobj(ctilepos ctpos, uint8_t mapobjid, uint8_t forwardside)
 
 void chunk::removechunkobj(ctilepos ctpos)
 {
-    getmapobj(ctpos)->destroy();
+    std::shared_ptr<map_obj>& objtoremove = getmapobj(ctpos);
+    uint8_t mapobjid = objtoremove->mapobjid;
+    if (mapobjid == 255) //child
+    {
+        removechunkobj(objtoremove->mother->ctpos);
+        return;
+    }
+
+    objtoremove->destroy();
     chunk_objs.erase(get3dcoord(ctpos));
+    settile(ctpos, 0);
+
+    for (ctilepos& ct : map_obj_manager::getmapobjchildren(mapobjid))
+    {
+        getmapobj(ctpos + ct)->destroy();
+        chunk_objs.erase(get3dcoord(ctpos + ct));
+        settile(ctpos + ct, 0);
+    }
 }
 
 void chunk::interactobj(ctilepos ctpos, mainchar& mchar)
@@ -104,6 +120,15 @@ void chunk::interactobj(ctilepos ctpos, mainchar& mchar)
     getmapobj(ctpos)->interact(mchar);
 }
 
+bool chunk::tryinteractobj(ctilepos ctpos, mainchar& mchar)
+{
+    if (gettile(ctpos) == 255)
+    {
+        getmapobj(ctpos)->interact(mchar);
+        return true;
+    }
+    return false;
+}
 
 void chunk::addlight()
 {

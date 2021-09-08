@@ -96,6 +96,32 @@ void newgenerator::generateworld(chunk& c, std::vector<float>& land, chunkpos cp
         }
     }
 
+    float cavernyx[9];
+    float cavernx[9];
+    float cavsizex[9];
+
+    float cavernyz[9];
+    float cavernz[9];
+    float cavsizez[9];
+
+    int index = 0;
+
+    for (int z = -1; z <= 1; z++)
+    {
+        for (int x = -1; x <= 1; x++)
+        {
+            cavernx[index] = randfunc::noise(c.cpos.x+x, c.cpos.y+z, 3.3f) * 6.0f + 16.0f;
+            cavernyx[index] = randfunc::noise(c.cpos.x+x, (c.cpos.y+z)* 119.5f, 5.3f) * 87.0f + 155.0f;
+            cavsizex[index] = (randfunc::noise(c.cpos.x+x, (c.cpos.y+z) * 137.41f, 19.7f)) * 8.0f;
+
+            cavernz[index] = randfunc::noise(c.cpos.x+x, c.cpos.y+z, 3.3f) * 6.0f + 16.0f;
+            cavernyz[index] = randfunc::noise((c.cpos.x+x) * 76.3f, c.cpos.y+z, 5.3f) * 87.0f + 155.0f;
+            cavsizez[index] = (randfunc::noise((c.cpos.x+x) * 109.3f, c.cpos.y+z, 19.7f)) * 8.0f;
+
+            index++;
+        }
+    }
+
 
     for (ytile y = 0; y < chunkheight; y++) //her ville det vært lurt å ha y som inner loop, siden det er så mye som avhenger kun av x,z - men hmm...
     {
@@ -250,6 +276,11 @@ void newgenerator::generateworld(chunk& c, std::vector<float>& land, chunkpos cp
                     tid = tid_ice;
                 }
 
+                /*if (x > 14 && x < 18 && z > 14 && z < 18 && y == int(64 + (caverny[(x-15) + (z-15)*3]-192.0f) / 4.0f))
+                {
+                    tid = tid_snow;
+                }*/
+
                 //test
                 /*if (y > test.getaverageddata(x,z))
                     tid = 2;
@@ -257,22 +288,73 @@ void newgenerator::generateworld(chunk& c, std::vector<float>& land, chunkpos cp
                     tid = 0;*/
 
                 //caverns?
-                /*if (ry > (128.0f - lh * 32.0f) + 1.0f)
+                //glm::vec2 centercav = glm::vec2(16, caverny[4]);
+                float cyx = 0.0f;
+                float cyz = 0.0f;
+                float cx = 0.0f;
+                float cz = 0.0f;
+                float csizx = 3.0f;
+                float csizz = 3.0f;
+                float factor = 0.0f;
+                float caveblobs = (randfunc::noise(rx, ry, rz, 13.7f)) * 3.0f;
+                if (x < 16)
                 {
-                    float cavsizex = (randfunc::noise(rx+2123, ry+821, rz+345, 83.3f) + 0.5f) * 0.1f;
-                    float cavsizez = (randfunc::noise(rx-412, ry-1123, rz-2541, 87.9f) + 0.5f) * 0.1f;
+                    factor = ((float(x) + 16.0f) / 32.0f);
+                    cyx = cavernyx[3] + (cavernyx[4] - cavernyx[3])*factor;
+                    cx = cavernx[3] + (cavernx[4] - cavernx[3])*factor;
+                    csizx = cavsizex[3] + (cavsizex[4] - cavsizex[3])*factor;
+                    float offset = abs(cyx - y);
+                    csizx = csizx - offset + caveblobs;
+                }
+                else
+                {
+                    factor = ((float(x) - 16.0f) / 32.0f);
+                    cyx = cavernyx[4] + (cavernyx[5] - cavernyx[4])*factor;
+                    cx = cavernx[4] + (cavernx[5] - cavernx[4])*factor;
+                    csizx = cavsizex[4] + (cavsizex[5] - cavsizex[4])*factor;
+                    float offset = abs(cyx - y);
+                    csizx = csizx - offset + caveblobs;
+                }
 
-                    if (cavsizex > 0.0f)
-                    {
-                        float cavx = randfunc::noise(rx, ry + 4238, rz + 1325, 71.1f);
-                        if (cavx > 0.5 - cavsizex && cavx < 0.5 + cavsizex) tid = 0;
-                    }
-                    if (cavsizez > 0.0f)
-                    {
-                        float cavz = randfunc::noise(rx-523, ry + 123, rz, 66.3f);
-                        if (cavz > 0.5 - cavsizez && cavz < 0.5 + cavsizez) tid = 0;
-                    }
+                if (z < 16)
+                {
+                    factor = ((float(z) + 16.0f) / 32.0f);
+                    cyz = cavernyz[1] + (cavernyz[4] - cavernyz[1])*factor;
+                    cz = cavernz[1] + (cavernz[4] - cavernz[1])*factor;
+                    csizz = cavsizez[1] + (cavsizez[4] - cavsizez[1])*factor;
+                    float offset = abs(cyz - y);
+                    csizz = csizz - offset + caveblobs;
+                }
+                else
+                {
+                    factor = ((float(z) - 16.0f) / 32.0f);
+                    cyz = cavernyz[4] + (cavernyz[7] - cavernyz[4])*factor;
+                    cz = cavernz[4] + (cavernz[7] - cavernz[4])*factor;
+                    csizz = cavsizez[4] + (cavsizez[7] - cavsizez[4])*factor;
+                    float offset = abs(cyz - y);
+                    csizz = csizz - offset + caveblobs;
+                }
+
+
+
+                //csiz *= (spotssmall + 1.0f) * 2.0f;
+                if (z > cx- csizx && z < cx+ csizx && y > cyx - csizx*1.3f && y < cyx + csizx*1.3f)
+                {
+                    if (csizx > 2 && y > (128.0f - lh * 32.0f)+csizx + 2)
+                        tid = 0;
+                }
+                else if (x > cz- csizz && x < cz+ csizz && y > cyz - csizz*1.3f && y < cyz + csizz*1.3f)
+                {
+                    if (csizz > 2 && y > (128.0f - lh * 32.0f)+csizz + 2)
+                        tid = 0;
+                }
+
+
+                /*if (z > 16-csiz && z < 16+csiz && x > 16- csiz && x < 16+ csiz && y > caverny[4] - csiz*2 && y < caverny[4] + csiz*2)
+                {
+                    tid = 0;
                 }*/
+
 
                 if (tid == tid_rock)
                 {

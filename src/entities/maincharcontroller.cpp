@@ -375,7 +375,10 @@ void maincharcontroller::movement()
             mchar.moveflying(hmovement);
         }
 
-        physicsmanager::boxphysics(mchar);
+        wposition wp = mchar.getnextposition();
+        mchar.setposition(wp);
+
+        //physicsmanager::boxphysics(mchar);
 
         if (mchar.flying || isunderwater())
         {
