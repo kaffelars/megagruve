@@ -90,9 +90,12 @@ class chunk
         std::unordered_map<uint32_t, std::shared_ptr<map_obj>> chunk_objs;
         void addchunkobj(ctilepos ctpos, uint8_t mapobjid, uint8_t forwardside);
         void interactobj(ctilepos ctpos, mainchar& mchar);
+        bool tryinteractobj(ctilepos ctpos, mainchar& mchar);
         void removechunkobj(ctilepos ctpos);
 
         std::shared_ptr<map_obj>& getmapobj(ctilepos ctpos);
+
+
 
     protected:
 

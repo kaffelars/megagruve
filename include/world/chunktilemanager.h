@@ -13,6 +13,9 @@ namespace chunktilemanager
     bool changectile(wtilepos wtile, tileid newtileid, uint8_t extrainfo, bool breakage);
     void changetiles();
     void removemapobj(chunk& c, ctilepos ctpos);
+    void interactobjaround(chunkpos cpos, ctilepos ctpos, ctilepos effectoffset, mainchar& mchar);
+
+    //std::shared_ptr<map_obj>& getmapobj(wtilepos wtpos);
 
     void addctiletochange(chunkpos cpos, ctilepos ctpos, tileid newtileid, uint8_t extrainfo, bool breakage);
     void addtiletochange(wtilepos wtile, tileid newtileid, uint8_t extrainfo, bool breakage);

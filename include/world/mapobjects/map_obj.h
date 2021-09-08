@@ -12,14 +12,18 @@ class map_obj
 		virtual void addmodel(ctilepos ctp, chunkmesh& cmesh);
 		virtual void interact(mainchar& interactor);
 		virtual void destroy();
+		virtual bool passable();
 		void remeshchunk();
+		virtual bool isindirectlyinteractable();
 
 		ctilepos ctpos {ctilepos{0,0,0}};
 		chunkpos cpos {chunkpos{0,0}};
 		uint8_t forwardside {0};
 
+		uint8_t mapobjid {0};
+
 		std::shared_ptr<map_obj> mother {nullptr};
-		std::vector< std::shared_ptr<map_obj>> children;
+		std::vector<std::shared_ptr<map_obj>> children;
 
 		bool hasmodel {false};
     protected:

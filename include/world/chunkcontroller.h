@@ -45,6 +45,8 @@ namespace chunkcontroller
     void updatechunks();
     int loadedchunksnum();
 
+
+
     void renderchunks(direction dir, wposition maincharposition);
     int32_t getchunksrendered();
 

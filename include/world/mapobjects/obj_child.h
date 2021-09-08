@@ -8,12 +8,16 @@
 class obj_child : public map_obj
 {
     public:
-        obj_child(ctilepos ctp, chunkpos cpo);
+        obj_child(ctilepos ctp, chunkpos cpo, std::shared_ptr<map_obj> motherptr);
         virtual ~obj_child();
 
         void interact(mainchar& interactor);
 
         bool interactable {true};
+
+        bool isindirectlyinteractable();
+
+        bool passable();
 
     protected:
 

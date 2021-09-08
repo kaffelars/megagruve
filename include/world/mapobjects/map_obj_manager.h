@@ -15,6 +15,7 @@ namespace map_obj_manager
     tiledata::tileinfo& getmapobjinfo(uint32_t id);
 
     std::vector<tiledata::tileinfo>& getmapobjlist();
+    std::vector<ctilepos>& getmapobjchildren(uint8_t mapobjid);
 };
 
 #endif // MAP_OBJ_MANAGER_H
