@@ -1,6 +1,6 @@
 # Megagruve
 
-Minecraft ripoff written in c++
+Minecraft ripoff written in c++ just for fun
 
 Work in progress lol (lots of bugs)
 
