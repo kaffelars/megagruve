@@ -25,6 +25,7 @@ Features:
 * clouds and rain
 * many interesting items
 * player inventory
+* doors and buttons
 * chests (just for decoration at the moment)
 * flagpoles (with flags)
 * random crashes
@@ -37,6 +38,17 @@ Missing features:
 * nice animals
 * evil animals (enemies)
 * lots more
+
+## Default keys
+
+* mouse to look around
+* w/a/s/d to move
+* space = jump
+* i = show/hide inventory
+* left mouse button = use selected item
+* right mouse button = interact (with e.g. doors, chests, etc.)
+* scroll wheel or number keys = select item on action bar
+* f = enable noclip fly hax mode
 
 ## Screenshots
 
