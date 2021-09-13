@@ -22,6 +22,7 @@ namespace maincharcontroller
     void updatecamera();
     void movement();
     void toggleflying();
+    void togglenoclip();
     void update();
     wtilepos gettilehover();
     void initialize();
@@ -33,6 +34,7 @@ namespace maincharcontroller
 
     bool isunderwater();
     bool isinwater();
+    void setmaincharcameramoveable(bool moveable);
 
     void togglelight(float lightstr);
     float getmcharlight();

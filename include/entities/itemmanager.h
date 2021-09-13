@@ -10,7 +10,12 @@ namespace itemmanager
 {
     enum itemtypes
     {
-        I_BLOCK, I_DIG, I_USABLE, I_CONSUMABLE, I_INERT, I_PLACEABLEOBJECT, I_FLAG
+        I_BLOCK, I_DIG, I_USABLE, I_CONSUMABLE, I_INERT, I_EQUIPMENT, I_PLACEABLEOBJECT, I_FLAG
+    };
+
+    enum subtypes
+    {
+        IS_HELMET, IS_CHEST, IS_BOOTS, IS_TRINKET, IS_OTHER
     };
 
     struct item
@@ -24,6 +29,7 @@ namespace itemmanager
         uint32_t maxstack {32};
 
         itemtypes itemtype;
+        subtypes subtype;
 
         std::vector<std::shared_ptr<effect>> useeffects; //hmm
 
@@ -38,6 +44,8 @@ namespace itemmanager
     uint32_t getflagidbytextureid(uint32_t texid);
     uint32_t getitemid(std::string itemid);
     void initialize();
+
+    std::string getitemtypename(uint32_t itemnumid);
 };
 
 #endif // ITEMMANAGER_H

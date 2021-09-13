@@ -9,6 +9,7 @@
 #include "scenec.h"
 
 #include "uicontroller.h"
+#include "vaocontainer.h"
 
 class scenemainmenu : public scene
 {
@@ -26,6 +27,7 @@ class scenemainmenu : public scene
     protected:
 
     private:
+        vaocontainer bgicons;
 };
 
 #endif // SCENEMAINMENU_H

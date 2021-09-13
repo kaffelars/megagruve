@@ -77,6 +77,18 @@ class explodeblocks:public effect
         uint32_t power;
 };
 
+class throwexplosive:public effect
+{
+    public:
+        throwexplosive(uint32_t explosionpower, uint32_t textureid, uint32_t spritesize);
+        virtual ~throwexplosive() = default;
+        bool activate(entity* user, entity* target);
+    private:
+        uint32_t power;
+        uint32_t texid;
+        uint32_t ssize;
+};
+
 class attackeffect:public effect
 {
 	public:
@@ -110,12 +122,13 @@ class toggletime:public effect
 class changeblockeffect:public effect
 {
 	public:
-        changeblockeffect(bool onlyemptyblocks, tileid block);
+        changeblockeffect(bool onlyemptyblocks, bool addtheblock, tileid block);
         virtual ~changeblockeffect() = default;
         bool activate(entity* user, entity* target);
     private:
         uint32_t tid;
         bool emptyonly;
+        bool addblock;
 };
 
 class placeobjecteffect:public effect

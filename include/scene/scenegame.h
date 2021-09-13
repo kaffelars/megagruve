@@ -22,7 +22,7 @@ class scenegame : public scene
         bool showinginventory {false};
 
         void shutdownworld();
-        void toggleescbox();
+        void pressedesc();
         void toggleinventory();
         void setkeys();
 

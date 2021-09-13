@@ -2,6 +2,8 @@
 #define PARTICLE_H
 
 #include "physicsobject.h"
+#include "effect.h"
+#include "entity.h"
 
 class particle : public physicsobject
 {
@@ -14,6 +16,9 @@ class particle : public physicsobject
         uint32_t duration;
         uint8_t glow;
         bool destroyedwhenlanding;
+
+        std::vector<std::shared_ptr<effect>> landingeffects;
+        entity* createdby {nullptr};
 
     protected:
 

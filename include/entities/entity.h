@@ -16,6 +16,10 @@ class entity
         virtual bool interact(); //for right click
         virtual bool destroy() ;
         virtual model& getmodel();
+        virtual void setfacingdirection(tilesideid tsid);
+        int32_t getfacingdirectionid();
+        tilesideid facingdirection {tilesideid::xm};
+        virtual direction getviewdir();
 
 };
 

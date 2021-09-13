@@ -35,12 +35,17 @@ class mainchar : public lifeform
         void additem(inventory::invitem iitem);
 
         inventory mcharinv {40};
+
+        inventory equipment {5};
+
         int32_t getitemusecooldown(uint32_t actionbarid);
         void setitemusecooldown(uint32_t actionbarid, uint32_t cooldown);
         void setitemusecooldowndelta(uint32_t actionbarid, uint32_t cooldownchange);
 
         bool flying;
+        bool noclip;
         void toggleflying();
+        void togglenoclip();
 
         void updatecamera();
         void fillinv();
