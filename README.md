@@ -45,7 +45,7 @@ Missing features:
 * w/a/s/d to move
 * space = jump
 * i = show/hide inventory
-* left mouse button = use selected item
+* left mouse button = use selected item (or move items around in inventory/actionbar)
 * right mouse button = interact (with e.g. doors, chests, etc.)
 * scroll wheel or number keys = select item on action bar
 * f = enable noclip fly hax mode
