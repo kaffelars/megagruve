@@ -41,7 +41,8 @@ void shadercontroller::initialize()
     addshader(SH_LINE, "line", {"pv", "vpos", "rgb"});
     addshader(SH_ICONS, "icon", {"screensize"});
     addshader(SH_WATER, "water", {"gbuf_rgb", "gbuf_pos", "gbuf_norm", "tex", "timer", "pv", "vpos", "sundir", "sunlight", "suncolor", "fogcolor", "campos", "mcharlight"});
-    addshader(SH_PARTICLE, "particle", {"pv", "vpos", "sundir", "sunlight", "suncolor", "fogcolor", "campos", "mcharlight"});
+    addshader(SH_PARTICLE, "particle", {"pv", "sundir", "sunlight", "suncolor", "fogcolor", "campos", "mcharlight"});
+    addshader(SH_SIMPLEPARTICLE, "simpleparticle", {});
 
     std::cout << "shaders set up \r\n";
 

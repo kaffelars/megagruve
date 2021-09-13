@@ -23,7 +23,7 @@ void camera::updateviewmatrix(wposition pos, rotation rot)
     viewmatrix = glm::rotate(viewmatrix, key, glm::vec3(1, 0, 0));
     viewmatrix = glm::rotate(viewmatrix, -kex, glm::vec3(0, 1, 0));
 
-    viewmatrix = glm::translate(viewmatrix, -pos);
+    //viewmatrix = glm::translate(viewmatrix, -glm::vec3(0.0f, pos.y, 0.0f)); //flytter heller vertexes
 
     pvmatrix = projection * viewmatrix;
 }

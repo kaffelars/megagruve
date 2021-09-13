@@ -51,6 +51,35 @@ chunk::ctags chunk::gettag()
     return ctag;
 }
 
+bool chunk::allowstilereads()
+{
+    bool allow = false;
+    tagmutex.lock();
+    //C_START, C_GENERATING, C_GENERATED, C_MESHING, C_MESHED, C_READY, C_REMESHING, C_REMESHED
+    if (chunktagpermissions[static_cast<int>(chunktag)] >= 1) allow = true;
+    //if (chunktag == C_GENERATED || chunktag == C_MESHING || chunktag == C_MESHED || chunktag == C_READY || chunktag == C_REMESHING || chunktag == C_REMESHED) allow = true; //lang if...
+    tagmutex.unlock();
+    return allow;
+}
+
+bool chunk::allowstilewrites()
+{
+    bool allow = false;
+    tagmutex.lock();
+    //C_START, C_GENERATING, C_GENERATED, C_MESHING, C_MESHED, C_READY, C_REMESHING, C_REMESHED
+    if (chunktagpermissions[static_cast<int>(chunktag)] == 2) allow = true;
+    //if (chunktag == C_GENERATED || chunktag == C_MESHED || chunktag == C_READY || chunktag == C_REMESHED) allow = true; //lang if...
+    tagmutex.unlock();
+    return allow;
+}
+
+bool chunk::isready()
+{
+    return (gettag() == C_READY);
+}
+
+//bool chunk::is
+
 bool chunk::getremesh(int toremesh)
 {
     remeshmutex.lock();

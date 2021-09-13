@@ -22,7 +22,7 @@ void scenegame::initialize()
 
 void scenegame::setkeys()
 {
-    inputmanager::setkeyfunction(inputmanager::KEY_ESCAPE, [&](){toggleescbox();}, inputmanager::KE_CLICKED);
+    inputmanager::setkeyfunction(inputmanager::KEY_ESCAPE, [&](){pressedesc();}, inputmanager::KE_CLICKED);
 
     inputmanager::setkeyfunction(inputmanager::KEY_ZOOMIN, [&](){maincharcontroller::changeselectiondelta(-1);}, inputmanager::KE_CLICKED);
     inputmanager::setkeyfunction(inputmanager::KEY_ZOOMOUT, [&](){maincharcontroller::changeselectiondelta(1);}, inputmanager::KE_CLICKED);
@@ -49,7 +49,7 @@ void scenegame::setkeys()
     inputmanager::setkeyfunction(inputmanager::KEY_INTERACT, [&](){maincharcontroller::interact();}, inputmanager::KE_CLICKED);
 
     inputmanager::setkeyfunction(inputmanager::KEY_INV, [&](){toggleinventory();}, inputmanager::KE_CLICKED);
-    inputmanager::setkeyfunction(inputmanager::KEY_TOGGLEFLYING, [&](){maincharcontroller::toggleflying();}, inputmanager::KE_CLICKED);
+    inputmanager::setkeyfunction(inputmanager::KEY_TOGGLEFLYING, [&](){maincharcontroller::toggleflying();maincharcontroller::togglenoclip();}, inputmanager::KE_CLICKED);
     inputmanager::setkeyfunction(inputmanager::KEY_JUMP, [&](){maincharcontroller::mcharjump();}, inputmanager::KE_CLICKED);
     inputmanager::setkeyfunction(inputmanager::KEY_JUMP, [&](){maincharcontroller::mcharjump();}, inputmanager::KE_HELD);
 }
@@ -62,13 +62,15 @@ void scenegame::show()
 
     if (showingescbox)
     {
-        inputmanager::pausekeyfunctions();
+        inputmanager::pausekeyfunctionsexcept(std::vector<inputmanager::keys_enum> {inputmanager::KEY_ESCAPE});
+        maincharcontroller::setmaincharcameramoveable(false);
         inputmanager::showmouse();
     }
     else
     {
         inputmanager::hidemouse();
-        inputmanager::resumekeyfunctions();
+        maincharcontroller::setmaincharcameramoveable(true);
+        inputmanager::resumeallkeyfunctions();
     }
 }
 
@@ -126,23 +128,33 @@ void scenegame::shutdownworld()
     //blabla save chunks unload shit etc
 }
 
-void scenegame::toggleescbox()
+void scenegame::pressedesc()
 {
-    showingescbox = !showingescbox;
-
-    if (showingescbox)
+    if (showinginventory)
     {
-        if (showinginventory)
-        {
-            toggleinventory();
-        }
-        inputmanager::pausekeyfunctions();
-        inputmanager::showmouse();
+        toggleinventory();
     }
     else
     {
-        inputmanager::hidemouse();
-        inputmanager::resumekeyfunctions();
+        showingescbox = !showingescbox;
+
+        if (showingescbox)
+        {
+            /*if (showinginventory)
+            {
+                toggleinventory();
+            }*/
+            //inputmanager::pausekeyfunctions();
+            inputmanager::pausekeyfunctionsexcept(std::vector<inputmanager::keys_enum> {inputmanager::KEY_ESCAPE});
+            maincharcontroller::setmaincharcameramoveable(false);
+            inputmanager::showmouse();
+        }
+        else
+        {
+            inputmanager::hidemouse();
+            maincharcontroller::setmaincharcameramoveable(true);
+            inputmanager::resumeallkeyfunctions();
+        }
     }
 
 }
@@ -153,21 +165,21 @@ void scenegame::toggleinventory()
 
     if (showinginventory)
     {
+        inputmanager::pausekeyfunctionsexcept(std::vector<inputmanager::keys_enum> {inputmanager::KEY_SELECT, inputmanager::KEY_ESCAPE, inputmanager::KEY_INV});
         inputmanager::setkeyfunction(inputmanager::KEY_SELECT, [&](){uiingame::click();}, inputmanager::KE_CLICKED);
         inputmanager::setkeyfunction(inputmanager::KEY_SELECT, [&](){}, inputmanager::KE_HELD);
         uiingame::toggleinventory();
+        maincharcontroller::setmaincharcameramoveable(false);
         inputmanager::showmouse();
-        //inputmanager::setkeyfunction(inputmanager::KEY_SELECT, [&](){maincharcontroller::useselecteditem();}, inputmanager::KE_CLICKED);
-        //inputmanager::setkeyfunction(inputmanager::KEY_SELECT, [&](){maincharcontroller::useselecteditem();}, inputmanager::KE_HELD);
     }
     else
     {
         setkeys();
+        inputmanager::resumeallkeyfunctions();
+        maincharcontroller::setmaincharcameramoveable(true);
         uiingame::toggleinventory();
         inputmanager::hidemouse();
         //inputmanager::resumekeyfunctions();
-        //inputmanager::setkeyfunction(inputmanager::KEY_SELECT, [&](){maincharcontroller::useselecteditem();}, inputmanager::KE_CLICKED);
-        //inputmanager::setkeyfunction(inputmanager::KEY_SELECT, [&](){maincharcontroller::useselecteditem();}, inputmanager::KE_HELD);
     }
 }
 
@@ -188,23 +200,23 @@ void scenegame::update()
         }
         if (sel == escbox::selection::BACK)
         {
-            toggleescbox();
+            pressedesc();
         }
         if (sel == escbox::selection::SETTINGS)
         {
             scenec::changeactivescene(scenec::S_SETTINGS);
         }
     }
-    else if (showinginventory)
+    else// if (showinginventory)
     {
 
-    }
+    /*}
     else
-    {
+    {*/
         //std::cout << "\n1";
         environment::updatetime();
         //std::cout << "2";
-        maincharcontroller::update(); //her kræsjer det - eller kanskje ikke??
+        maincharcontroller::update();
         //std::cout << "3";
         particlemanager::updateparticles();
         //std::cout << "4";

@@ -8,6 +8,7 @@
 #include "chunkcontroller.h"
 #include "chunk.h"
 #include "physicsmanager.h"
+#include "entity.h"
 
 namespace particlemanager
 {
@@ -20,6 +21,19 @@ void particlemanager::addparticle(wposition p, velocity v, uint8_t ptex, uint8_t
     particles.emplace_back(particle(p, v, ptex, psiz, dur, glo, gravity, destro));
 }
 
+void particlemanager::addcomplexparticle(wposition p, velocity v, uint8_t ptex, uint8_t psiz, uint32_t dur, uint8_t glo, float gravity, bool destro, entity* caster, std::vector<std::shared_ptr<effect>> landingeffects)
+{
+    particles.emplace_back(particle(p, v, ptex, psiz, dur, glo, gravity, destro));
+    int pid = particles.size() - 1;
+
+    particles[pid].createdby = caster;
+
+    for (std::shared_ptr<effect> le : landingeffects)
+    {
+        particles[pid].landingeffects.push_back(le);
+    }
+}
+
 void particlemanager::initialize()
 {
 
@@ -27,20 +41,42 @@ void particlemanager::initialize()
 
 void particlemanager::updateparticles()
 {
-    //std::vector<particle> ps; //ikke helt bra
+    std::vector<particle> ps; //ikke helt bra
+    ps.reserve(particles.size());
     //updates particles
     for (particle& p: particles)
     {
-        p.duration -= timekeeper::getdeltatime();
+        p.duration -= timekeeper::getcappeddeltatime();
         if (p.duration > 0)
         {
             physicsmanager::pointphysics(p);
             //p.dophysics();
         }
+
+        if (p.duration <= 0 || (p.onfloor && p.destroyedwhenlanding))
+        {
+            if (!p.landingeffects.empty())
+            {
+                //landing effects
+                for (std::shared_ptr<effect>& le : p.landingeffects)
+                {
+                    wposition wpos = p.getposition();
+                    blockentity b(wtilepos(wpos.x, wpos.y, wpos.z));
+                    le->activate(p.createdby, &b);
+                }
+            }
+        }
         else
         {
-
+            ps.push_back(std::move(p));
         }
+    }
+
+    particles.clear();
+
+    for (particle& p : ps)
+    {
+        particles.push_back(std::move(p));
     }
 
     /*particles.clear();
@@ -53,18 +89,28 @@ void particlemanager::updateparticles()
     //std::remove_if(particles.begin(), particles.end(), [](const particle &p) { return (p.duration <= 0); }); //tregt
 
     //renser vekk døde particles //tregt
-    auto vit = particles.begin();
+    /*auto vit = particles.begin();
     while (vit != particles.end())
     {
         if ((*vit).duration <= 0 || ((*vit).onfloor && (*vit).destroyedwhenlanding))
         {
+            if (!(*vit).landingeffects.empty())
+            {
+                //landing effects
+                for (std::shared_ptr<effect>& le : (*vit).landingeffects)
+                {
+                    wposition wpos = (*vit).getposition();
+                    blockentity b(wtilepos(wpos.x, wpos.y, wpos.z));
+                    le->activate((*vit).createdby, &b);
+                }
+            }
             vit = particles.erase(vit);
         }
         else
         {
             ++vit;
         }
-    }
+    }*/
 }
 
 bool particlemanager::anyactiveparticles()

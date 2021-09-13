@@ -23,7 +23,7 @@ namespace texturemanager
     "logtop", "grasstuft1", "grasstuft2", "planks", "cactus_side", "cactus_top", "littlegrass", "bookcase", "flower1", "flower2", "flower3",
     "chest_top", "chest_bottom", "chest_side", "chest_front", "chest_inside", "destroy1", "destroy2", "destroy3", "destroy4", "glowstone", "snow", "gravel", "ice", "green", "orb",
     "bedrock", "diamond_ore", "iron_ore", "coal_ore", "log_birch", "log_birch_top", "grass_side_overlay", "clay", "clay_hard", "brick", "door_lower", "door_upper", "grass_bottom", "grass_top",
-    "flag1", "flag2", "flag3", "flag4", "flagpole", "crafting_table", "table_side", "white_tiles", "sandstone_block", "button"};
+    "flag1", "flag2", "flag3", "flag4", "flagpole", "crafting_table", "table_side", "white_tiles", "sandstone_block", "button", "lava", "fireball"};
 }
 
 
@@ -77,7 +77,8 @@ void texturemanager::loadicontextures()
     int sizes[3] = {10, 16, 24};
     std::vector<std::string> filenames[3]= {
     {"debug", "redheart", "halfheart", "halfblackheart", "blackheart", "yellowheart", "greenheart", "blueheart", "silverheart", "shield"},
-    {"debug", "iron_pickaxe", "iron_axe", "iron_sword", "diamond_pickaxe", "apple", "apple_golden", "lightbulb", "green_wand", "red_wand", "totem", "fireball", "diamond", "wings", "star"},
+    {"debug", "iron_pickaxe", "iron_axe", "iron_sword", "diamond_pickaxe", "apple", "apple_golden", "lightbulb", "green_wand", "red_wand", "totem", "fireball", "diamond", "wings",
+     "star", "helmet_iron", "ring_green", "ring_red", "skull_skeleton", "boots_blue", "boots_iron", "boots_leather", "chestplate_iron", "fireballhot", "fireballhot2"},
     {"debug", "border", "selectedborder", "clickedborder"}
     };
 

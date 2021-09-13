@@ -6,6 +6,7 @@
 #include "particlemanager.h"
 #include "maincharcontroller.h"
 #include "chunktilemanager.h"
+#include "chunkcoords.h"
 
 healeffect::healeffect(int32_t healstr) : healstrength{healstr}
 {
@@ -63,6 +64,7 @@ bool shootparticle::activate(entity* user, entity* target)
         wposition pos = target->getposition();
         particlemanager::addparticle(pos, velocity(randx, randy, randz), texid, 15, 5000, 0, 0.5f, true);
     }
+    return true;
 }
 
 
@@ -125,23 +127,53 @@ bool explodeblocks::activate(entity* user, entity* target)
 {
     wtilepos wt = target->getposition();
     chunktilemanager::explodetiles(wt, power);
+    return true;
 }
 
 
-changeblockeffect::changeblockeffect(bool onlyemptyblocks, tileid block) : emptyonly{onlyemptyblocks}, tid{block}
+throwexplosive::throwexplosive(uint32_t explosionpower, uint32_t textureid, uint32_t spritesize) : power{explosionpower}, texid{textureid}, ssize{spritesize}
+{
+
+}
+
+bool throwexplosive::activate(entity* user, entity* target)
+{
+    particlemanager::addcomplexparticle(user->getposition(), user->getviewdir(), texid, ssize, 20000, 0, 1.0f, true, user,
+                                         std::vector<std::shared_ptr<effect>> {std::make_shared<explodeblocks>(power)});
+
+    return true;
+}
+
+
+
+changeblockeffect::changeblockeffect(bool onlyemptyblocks, bool addtheblock, tileid block) : emptyonly{onlyemptyblocks}, addblock{addtheblock}, tid{block}
 {
 
 }
 
 bool changeblockeffect::activate(entity* user, entity* target)
 {
+    tileid targettileid;
+    wtilepos wt = target->getposition();
+    if (!chunkcoords::withinworld(wt)) return false;
+
+    if (addblock)
+    {
+        wt = wt + sideoffsets[target->getfacingdirectionid()];
+        if (!chunkcoords::withinworld(wt)) return false;
+        targettileid = chunkcontroller::gettileid(wt);
+    }
+    else
+    {
+        targettileid = target->getid(); //gettileid blockentity pos
+    }
     //target er blockentity, sjekk om luft?
     if (emptyonly) //uncomment dis
     {
-        if (!tiledata::isempty(target->getid())) return false;
+        if (!tiledata::isempty(targettileid)) return false;
     }
     //std::cout << target->getposition().x << " " << target->getposition().y << " " << target->getposition().z << "\n";
-    wtilepos wt = target->getposition();//chunkcontroller::wpostowtilepos(target->getposition());
+    //wtilepos wt = target->getposition();//chunkcontroller::wpostowtilepos(target->getposition());
     //std::cout << wt.x << " " << wt.y << " " << wt.z << "\n";
     target->heal(99999); //kan dette by på problemer?
 
@@ -159,12 +191,15 @@ placeobjecteffect::placeobjecteffect(bool onlyemptyblocks, uint32_t objid) : emp
 
 bool placeobjecteffect::activate(entity* user, entity* target)
 {
+    wtilepos wt = target->getposition();
+    wt = wt + sideoffsets[target->getfacingdirectionid()];
+
+    if (!chunkcoords::withinworld(wt)) return false;
+
     if (emptyonly) //uncomment dis
     {
-        if (!tiledata::isempty(target->getid())) return false;
+        if (!tiledata::isempty(chunkcontroller::gettileid(wt))) return false;
     }
-
-    wtilepos wt = target->getposition();
 
     target->heal(99999);
 

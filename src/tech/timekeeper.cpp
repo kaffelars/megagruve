@@ -23,10 +23,15 @@ float timekeeper::getdeltatime()
     return deltatime;
 }
 
+float timekeeper::getcappeddeltatime()
+{
+    return (deltatime > 33.333333f) ? 33.3333333f : deltatime;
+}
+
 float timekeeper::gettimefactor() //returnerer faktor i forhold til 60 fps
 {
-    float factor = deltatime / 16.66667f;
-    if (factor > 1.0) factor = 1.0; //60 fps min
+    float factor = getcappeddeltatime() / 16.66667f;
+    //if (factor > 2.0) factor = 2.0; //30 fps min
     if (factor == 0.0f) factor = 0.1f; //bøgg?
     return factor;
 }

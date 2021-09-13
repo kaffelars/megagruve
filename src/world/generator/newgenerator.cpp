@@ -38,6 +38,7 @@ void newgenerator::generateworld(chunk& c, std::vector<float>& land, chunkpos cp
     tileid tid_dirt = tiledata::gettileid("t_dirt");
 
     tileid tid_sand = tiledata::gettileid("t_sand");
+    tileid tid_lava = tiledata::gettileid("t_lava");
     tileid tid_rock = tiledata::gettileid("t_rock");
     tileid tid_clay = tiledata::gettileid("t_clay");
 
@@ -170,7 +171,7 @@ void newgenerator::generateworld(chunk& c, std::vector<float>& land, chunkpos cp
                         //lh = 5.0f;
                         rfactor = 1.0f - (rfactor / rivw);
                         lh = lh * (1.0f - rfactor) + (-0.4f) * rfactor;
-                        if (lh < -0.08f) lh = -0.08f;
+                        if (lh < -0.12f) lh = -0.12f;
                         isriver = true;
                     }
                 }
@@ -236,7 +237,7 @@ void newgenerator::generateworld(chunk& c, std::vector<float>& land, chunkpos cp
                     }
                 }
 
-                if (isriver) //river clay deposits
+                if (isriver) //river side clay deposits
                 {
                     if (tid > 1 && (ry == 129 || ry == 130 || ry == 131) && spotssmall > 0.5f)
                         tid = tid_clay;
@@ -271,9 +272,14 @@ void newgenerator::generateworld(chunk& c, std::vector<float>& land, chunkpos cp
                     if (spotssmall < -0.5) tid = tid_ice;
                 }
 
-                if (y > 0 && tid == 1 && biome.temperature < 59 && c.gettile(ctilepos{x,y-1,z}) == 0)
+                if (y > 0 && tid == 1 && biome.temperature < 59 && c.gettile(ctilepos{x,y-1,z}) == 0) //is på kaldt vann
                 {
                     tid = tid_ice;
+                }
+
+                if (y > 0 && tid == tid_rock && c.gettile(ctilepos{x,y-1,z}) == 1)
+                {
+                    tid = tid_sand;
                 }
 
                 /*if (x > 14 && x < 18 && z > 14 && z < 18 && y == int(64 + (caverny[(x-15) + (z-15)*3]-192.0f) / 4.0f))
@@ -373,6 +379,8 @@ void newgenerator::generateworld(chunk& c, std::vector<float>& land, chunkpos cp
                 }
 
                 if (y == 255) tid = tid_bedrock;
+
+                if (tid == 0 && y > 230) tid = tid_lava;
 
                 c.settile(ctilepos{x,y,z}, tid);
             }

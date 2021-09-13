@@ -11,6 +11,7 @@ mainchar::mainchar() : lifeform(wposition{50.5f, 78.0f, 0.5f},
             1.0f)
 {
     flying = true;
+    noclip = false;
     toggleflying();
 
 }
@@ -18,6 +19,11 @@ mainchar::mainchar() : lifeform(wposition{50.5f, 78.0f, 0.5f},
 mainchar::~mainchar()
 {
     //dtor
+}
+
+void mainchar::togglenoclip()
+{
+    noclip = !noclip;
 }
 
 void mainchar::toggleflying()
@@ -92,15 +98,15 @@ void mainchar::fillinv()
     mcharinv.additem("i_flower2", 64);
     mcharinv.additem("i_white_tiles", 64);
     mcharinv.additem("i_rock", 64);
-    mcharinv.additem("i_ironaxe", 1);
+    mcharinv.additem("i_fireballlarge", 33);
     mcharinv.additem("i_snow", 1);
     mcharinv.additem("i_button", 55);
     mcharinv.additem("i_ironpickaxe", 1);
 
     mcharinv.additem("i_ironpickaxe", 1);
-    mcharinv.additem("i_ironpickaxe", 1);
+    mcharinv.additem("i_fireballhumongous", 66);
     mcharinv.additem("i_ironsword", 1);
-    mcharinv.additem("i_fireball", 1);
+    mcharinv.additem("i_fireball", 44);
     mcharinv.additem("i_diamond", 33);
     mcharinv.additem("i_planks", 64);
     mcharinv.additem("i_planks", 64);
@@ -115,7 +121,11 @@ void mainchar::fillinv()
     mcharinv.additem("i_flag4", 64);
     mcharinv.additem("i_flagpole", 64);
 
-
+    equipment.additem("i_helmet_iron", 1);
+    equipment.additem("i_chest_iron", 1);
+    equipment.additem("i_boots_iron", 1);
+    equipment.additem("i_trinket_ringred", 1);
+    equipment.additem("i_trinket_skull", 1);
 }
 
 wposition mainchar::geteyeposition()

@@ -190,7 +190,8 @@ bool chunktilemanager::changectile(chunkpos cpos, ctilepos ctpos, tileid newtile
                     float randz = utils::randint(-3, 3);
                     randx /= 30.0f;
                     randz /= 30.0f;
-                    particlemanager::addparticle(wposition(tilepos.x + 0.5f, tilepos.y + 0.5f, tilepos.z + 0.5f), velocity(randx, -0.05f, randz), textureid, 15, 2000, glow, 0.5f, false);
+                    int duration = 2000 + utils::randint(-500, 500);
+                    particlemanager::addparticle(wposition(tilepos.x + 0.5f, tilepos.y + 0.5f, tilepos.z + 0.5f), velocity(randx, -0.05f, randz), textureid, 15, duration, glow, 0.5f, false);
                 }
 
                 //water

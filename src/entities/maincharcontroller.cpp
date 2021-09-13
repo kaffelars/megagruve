@@ -13,6 +13,7 @@
 #include "chunkmesh.h"
 #include "settings.h"
 #include "physicsmanager.h"
+#include "blocktracer.h"
 
 #include "chunkcoords.h"
 
@@ -21,7 +22,9 @@ namespace maincharcontroller
     mainchar mchar;
     wtilepos tilehover = wtilepos(0,0,0);
     wtilepos oldtilehover = wtilepos(0,0,0);
-    wtilepos tileinteract = wtilepos(0,0,0);
+
+    tilesideid tilesidehover = tilesideid::xm;
+    tilesideid oldtilesidehover = tilesideid::xm;
 
     vaocontainer selection;
     smode selectionmode = SEL_BLOCK;
@@ -30,20 +33,26 @@ namespace maincharcontroller
 
     blockentity tilehoverentity (wtilepos(0, 0, 0));
 
+    bool cameramoveable = true;
 
     chunkmesh destructorblock[4];
 
     float mcharlight = 0.0f;
 }
 
-mainchar& maincharcontroller::getmainchar() //trengs denne nå?
+void maincharcontroller::setmaincharcameramoveable(bool moveable)
+{
+    cameramoveable = moveable;
+}
+
+mainchar& maincharcontroller::getmainchar() //trengs denne nå? ja, brukes i uiingame stats
 {
     return mchar;
 }
 
 void maincharcontroller::interact()
 {
-    chunkcontroller::interactobj(tileinteract, mchar);
+    chunkcontroller::interactobj(tilehover, mchar);
 }
 
 void maincharcontroller::togglelight(float lightstr)
@@ -98,9 +107,10 @@ void maincharcontroller::renderselection()
 {
     wtilepos selpos = maincharcontroller::gettilehover();
 
-    if (selpos.y != 0)
+    if (selpos.y != -1)
     {
-        glUniform3f(shadercontroller::getuniformid("vpos"), selpos.x, selpos.y, selpos.z);
+        wposition vpos = wposition(selpos) - mchar.geteyeposition();
+        glUniform3f(shadercontroller::getuniformid("vpos"), vpos.x, vpos.y, vpos.z);
 
         if (settings::getisetting(settings::SET_MBOX) && getselectionmode() == SEL_BLOCK)
         {
@@ -121,6 +131,11 @@ void maincharcontroller::renderselection()
 void maincharcontroller::toggleflying()
 {
     mchar.toggleflying();
+}
+
+void maincharcontroller::togglenoclip() //hax!
+{
+    mchar.togglenoclip();
 }
 
 void maincharcontroller::renderdestroyblock()
@@ -277,11 +292,11 @@ void maincharcontroller::useselecteditem()
         {
             mchar.setitemusecooldown(mchar.actionbarselection, iteminfo.speed);
 
-            if (iteminfo.itemtype == itemmanager::I_BLOCK)
+            /*if (iteminfo.itemtype == itemmanager::I_BLOCK)
             {
                 mchar.usecurrentlyselecteditem(false);
                 //tilehoverentity.resethealth(); //funker ikke fordi block blir updated på et senere tidspunkt
-            }
+            }*/
 
             if ((iteminfo.itemtype == itemmanager::I_CONSUMABLE || iteminfo.itemtype == itemmanager::I_BLOCK || iteminfo.itemtype == itemmanager::I_PLACEABLEOBJECT || iteminfo.itemtype == itemmanager::I_FLAG))
             {
@@ -299,30 +314,54 @@ void maincharcontroller::update()
 
     for (int a = 0; a < 10; a++)
     {
-        mchar.setitemusecooldowndelta(a, -timekeeper::getdeltatime());
+        mchar.setitemusecooldowndelta(a, -timekeeper::getcappeddeltatime());
     }
 
     mchar.lifeform::update();
 
     //std::cout << "B";
 
-    glm::vec4 mdata = renderer::getmousedata();
+    /*glm::vec4 mdata = renderer::getmousedata();
 
     tileinteract = chunkcoords::wpostowtilepos(wposition(mdata.x, mdata.y, mdata.z) + (getviewdir() / 10.0f));
 
     if (getselectionmode() == SEL_BLOCK)
         tilehover = chunkcoords::wpostowtilepos(wposition(mdata.x, mdata.y, mdata.z) + (getviewdir() / 10.0f)); //negativ viewdir hvis lufttile skal selectes (SEL_AIR)
     else
-        tilehover = chunkcoords::wpostowtilepos(wposition(mdata.x, mdata.y, mdata.z) - (getviewdir() / 10.0f));
+        tilehover = chunkcoords::wpostowtilepos(wposition(mdata.x, mdata.y, mdata.z) - (getviewdir() / 10.0f));*/
+
+    blocktracer::hitblock hit = blocktracer::traceblocks(mchar.geteyeposition(), mchar.getviewdir(), 25.0f);
+
+    /*
+    chunkpos cpos {chunkpos{0,0}};
+        ctilepos ctpos {ctilepos{0,-1,0}};
+        tilesideid hitside {tilesideid::xm};
+    */
+
+    if (chunkcoords::withinworld(hit.ctpos))
+    {
+        tilehover = wposition(hit.cpos.x * chunkwidth + hit.ctpos.x, hit.ctpos.y, hit.cpos.y * chunkwidth + hit.ctpos.z);
+        tilesidehover = hit.hitside;
+    }
+    else
+    {
+        tilehover = wposition(0.0f, -1.0f, 0.0f);
+    }
 
     //std::cout << "C";
 
     if (tilehover != oldtilehover)
     {
         oldtilehover = tilehover;
-        if (chunkcoords::wtileposwithinworldbounds(tilehover))
-            tilehoverentity.setposition(tilehover);
+        //if (chunkcoords::wtileposwithinworldbounds(tilehover))
+        tilehoverentity.setposition(tilehover);
     }
+    if (tilesidehover != oldtilesidehover)
+    {
+        oldtilesidehover = tilesidehover;
+        tilehoverentity.setfacingdirection(tilesidehover); //hitside
+    }
+
 
     //std::cout << "D";
 
@@ -375,10 +414,14 @@ void maincharcontroller::movement()
             mchar.moveflying(hmovement);
         }
 
-        wposition wp = mchar.getnextposition();
-        mchar.setposition(wp);
+        /*wposition wp = mchar.getnextposition();
+        mchar.setposition(wp);*/
 
-        //physicsmanager::boxphysics(mchar);
+        if (!mchar.noclip) physicsmanager::boxphysics(mchar);
+        else
+        {
+            mchar.setposition(mchar.getnextposition());
+        }
 
         if (mchar.flying || isunderwater())
         {
@@ -395,14 +438,13 @@ void maincharcontroller::movement()
         }
 
         //mchar.updateposition();
-        physicsmanager::boxphysics(mchar);
+        if (!mchar.noclip) physicsmanager::boxphysics(mchar);
 
         //mchar.setvelocity(velocity{0.0f,0.0f,0.0f});
     }
 
-    mchar.rotateview(inputmanager::getmousedelta());
+    if (cameramoveable)
+        mchar.rotateview(inputmanager::getmousedelta());
 
     hmovement = hdirection(0.0f,0.0f);
-
-    //std::cout << "eff\n";
 }

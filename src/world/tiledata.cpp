@@ -24,6 +24,7 @@ void tiledata::initialize()
     tileinfolist.emplace_back(tileinfo{.name="t_air", .fullname="Air block", .ttype = T_EMPTY, .defaultshape = SHAPE_NONE,                  .hardness = 0,  .glow = 0, .needssupport = false, .passable = true, .biometint = false, .breaktexture = "", .sidetextures = {"debug"}});
     tileinfolist.emplace_back(tileinfo{.name="t_water", .fullname="Water block", .ttype = T_WATER, .defaultshape = SHAPE_BLOCK,             .hardness = 0,  .glow = 0, .needssupport = false, .passable = true, .biometint = false, .breaktexture = "water", .sidetextures = {"water_side","water_side","water","water","water_side","water_side"}});
     tileinfolist.emplace_back(tileinfo{.name="t_dirt", .fullname="Dirt block", .ttype = T_SOLID, .defaultshape = SHAPE_BLOCK,               .hardness = 20, .glow = 0, .needssupport = false, .passable = false, .biometint = false, .breaktexture = "dirt", .sidetextures = {"dirt"}});
+    tileinfolist.emplace_back(tileinfo{.name="t_lava", .fullname="Lava block", .ttype = T_LAVA, .defaultshape = SHAPE_BLOCK,               .hardness = 0,  .glow = 255, .needssupport = false, .passable = true, .biometint = false, .breaktexture = "lava", .sidetextures = {"lava"}});
     tileinfolist.emplace_back(tileinfo{.name="t_grass", .fullname="Grass block", .ttype = T_SOLID, .defaultshape = SHAPE_BLOCK,             .hardness = 20, .glow = 0, .needssupport = false, .passable = false, .biometint = true, .breaktexture = "dirt", .sidetextures = {"dirt", "dirt", "grass", "dirt", "dirt", "dirt"}, .overlaytextures = {"grass_side_overlay", "grass_side_overlay", "", "", "grass_side_overlay", "grass_side_overlay"}});
     tileinfolist.emplace_back(tileinfo{.name="t_grass2", .fullname="Grass block 2", .ttype = T_SOLID, .defaultshape = SHAPE_BLOCK,          .hardness = 20, .glow = 0, .needssupport = false, .passable = false, .biometint = true, .breaktexture = "dirt", .sidetextures = {"dirt", "dirt", "grass2", "dirt", "dirt", "dirt"}, .overlaytextures = {"grass_side_overlay", "grass_side_overlay", "", "", "grass_side_overlay", "grass_side_overlay"}});
     tileinfolist.emplace_back(tileinfo{.name="t_snow", .fullname="Snow block", .ttype = T_SOLID, .defaultshape = SHAPE_BLOCK,               .hardness = 20, .glow = 0, .needssupport = false, .passable = false, .biometint = false, .breaktexture = "snow", .sidetextures = {"snow"}});
@@ -138,7 +139,7 @@ inline tiledata::tileinfo& tiledata::gettileinfo(tileid tile)
 {
     if (tile == 255)
     {
-        return map_obj_manager::getmapobjinfo(0); //hmmmmm
+        return tileinfolist[0];//map_obj_manager::getmapobjinfo(0); //hmmmmm
     }
     return tileinfolist[tile];
 }
@@ -155,7 +156,7 @@ bool tiledata::ispassable(tileid tile)
 {
     if (tile == 255)
     {
-        return map_obj_manager::getmapobjinfo(0).passable;
+        return false;//map_obj_manager::getmapobjinfo(0).passable;//hmm
     }
     return gettileinfo(tile).passable;
 }
@@ -209,23 +210,26 @@ bool tiledata::renderside(tileid tile, tileid neighbour, uint8_t side)
             if (side != 2 && side != 3) return true;
             if (side == 2 || side == 3)
             {
-                if (tnb == T_TRANSPARENT || tnb == T_WATER || tnb == T_DISCARD || tnb == T_OBJECT || isempty(neighbour)) return true;
+                if (tnb == T_TRANSPARENT || tnb == T_WATER || tnb == T_DISCARD || tnb == T_OBJECT || tnb == T_LAVA || isempty(neighbour)) return true;
             }
             break;
         case T_SOLID:
-            if (tnb == T_TRANSPARENT || tnb == T_WATER || tnb == T_DISCARD || tnb == T_OBJECT || isempty(neighbour) || tnb == T_SOLID_VERT) return true;
+            if (tnb == T_TRANSPARENT || tnb == T_WATER || tnb == T_DISCARD || tnb == T_OBJECT || isempty(neighbour) || tnb == T_LAVA || tnb == T_SOLID_VERT) return true;
             break;
         case T_OBJECT:
             return true;
             break;
         case T_TRANSPARENT:
-            if (isempty(neighbour) || tnb == T_WATER || tnb == T_OBJECT || tnb == T_SOLID_VERT || tnb == T_DISCARD) return true;
+            if (isempty(neighbour) || tnb == T_WATER || tnb == T_OBJECT || tnb == T_SOLID_VERT || tnb == T_LAVA || tnb == T_DISCARD) return true;
             break;
         case T_DISCARD:
-            if (isempty(neighbour) || tnb == T_WATER || tnb == T_OBJECT || tnb == T_SOLID_VERT) return true;
+            if (isempty(neighbour) || tnb == T_WATER || tnb == T_OBJECT || tnb == T_LAVA || tnb == T_SOLID_VERT) return true;
             break;
         case T_WATER:
-            if (isempty(neighbour) || tnb == T_OBJECT || tnb == T_SOLID_VERT || tnb == T_DISCARD || tnb == T_SOLID) return true; //hmm, vann under is?
+            if (isempty(neighbour) || tnb == T_OBJECT || tnb == T_SOLID_VERT || tnb == T_DISCARD || tnb == T_LAVA || tnb == T_SOLID) return true; //hmm, vann under is?
+            break;
+        case T_LAVA:
+            if (isempty(neighbour) || tnb == T_OBJECT || tnb == T_SOLID_VERT || tnb == T_DISCARD || tnb == T_WATER || tnb == T_SOLID) return true;
             break;
     }
 

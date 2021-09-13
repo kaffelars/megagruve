@@ -12,13 +12,24 @@
 
 namespace map_obj_manager
 {
-    std::vector<tiledata::tileinfo> mapobjectsinfo;
+    std::vector<mapobjinfo> mapobjectsinfo;
     std::vector<std::vector<ctilepos>> mapobjchildren;
 }
 
 void map_obj_manager::initialize()
 {
-    mapobjectsinfo.emplace_back(tiledata::tileinfo{.name="o_chest", .fullname="Chest", .ttype = tiledata::T_SOLID, .defaultshape = tiledata::SHAPE_BLOCK,               .hardness = 100, .glow = 0, .needssupport = false, .passable = false, .biometint = false, .breaktexture = "planks", .sidetextures = {"chest_front"}});
+    mapobjectsinfo.emplace_back(mapobjinfo{.name="o_chest", .fullname="Chest", .description = "Use to store items", .hardness = 100, .glow = 0, .needssupport = false, .breaktexture = "planks", .icontexture = "chest_front"});
+    mapobjchildren.push_back(std::vector<ctilepos> {});
+    mapobjectsinfo.emplace_back(mapobjinfo{.name="o_flagpole", .fullname="Flagpole", .description = "Select flag and right click to hoist flag",  .hardness = 150, .glow = 0, .needssupport = false, .breaktexture = "flagpole", .icontexture = "flagpole"});
+    mapobjchildren.push_back(std::vector<ctilepos> {});
+    mapobjectsinfo.emplace_back(mapobjinfo{.name="o_ctable", .fullname="Crafting table", .description = "Craft items and stuff",  .hardness = 100, .glow = 0, .needssupport = false, .breaktexture = "planks", .icontexture = "crafting_table"});
+    mapobjchildren.push_back(std::vector<ctilepos> {});
+    mapobjectsinfo.emplace_back(mapobjinfo{.name="o_door", .fullname="Door", .description = "Can be opened and closed", .hardness = 100, .glow = 0, .needssupport = false, .breaktexture = "planks", .icontexture = "door_upper"});
+    mapobjchildren.push_back(std::vector<ctilepos> {ctilepos{0,-1,0}});
+    mapobjectsinfo.emplace_back(mapobjinfo{.name="o_button", .fullname="Button", .description = "Activates nearby doors etc. when right-clicked",  .hardness = 100, .glow = 0, .needssupport = false, .breaktexture = "planks", .icontexture = "button"});
+    mapobjchildren.push_back(std::vector<ctilepos> {});
+
+    /*mapobjectsinfo.emplace_back(tiledata::tileinfo{.name="o_chest", .fullname="Chest", .ttype = tiledata::T_SOLID, .defaultshape = tiledata::SHAPE_BLOCK,               .hardness = 100, .glow = 0, .needssupport = false, .passable = false, .biometint = false, .breaktexture = "planks", .sidetextures = {"chest_front"}});
     mapobjchildren.push_back(std::vector<ctilepos> {});
     mapobjectsinfo.emplace_back(tiledata::tileinfo{.name="o_flagpole", .fullname="Flagpole", .ttype = tiledata::T_SOLID, .defaultshape = tiledata::SHAPE_BLOCK,               .hardness = 150, .glow = 0, .needssupport = false, .passable = false, .biometint = false, .breaktexture = "flagpole", .sidetextures = {"flagpole"}});
     mapobjchildren.push_back(std::vector<ctilepos> {});
@@ -27,12 +38,23 @@ void map_obj_manager::initialize()
     mapobjectsinfo.emplace_back(tiledata::tileinfo{.name="o_door", .fullname="Door", .ttype = tiledata::T_SOLID, .defaultshape = tiledata::SHAPE_BLOCK,               .hardness = 100, .glow = 0, .needssupport = false, .passable = false, .biometint = false, .breaktexture = "planks", .sidetextures = {"door_upper"}});
     mapobjchildren.push_back(std::vector<ctilepos> {ctilepos{0,-1,0}});
     mapobjectsinfo.emplace_back(tiledata::tileinfo{.name="o_button", .fullname="Button", .ttype = tiledata::T_SOLID, .defaultshape = tiledata::SHAPE_BLOCK,               .hardness = 100, .glow = 0, .needssupport = false, .passable = false, .biometint = false, .breaktexture = "planks", .sidetextures = {"button"}});
-    mapobjchildren.push_back(std::vector<ctilepos> {});
+    mapobjchildren.push_back(std::vector<ctilepos> {});*/
 
-    tiledata::finalizetileinfos(mapobjectsinfo);
+    for (mapobjinfo& t : mapobjectsinfo)
+    {
+        int texid = 0;
+
+        t.icontextureid = texturemanager::gettiletexturenumber(t.icontexture);
+
+        if (t.breaktexture != "")
+        {
+            texid = texturemanager::gettiletexturenumber(t.breaktexture);
+        }
+        t.breaktextureid = texid;
+    }
 }
 
-std::vector<tiledata::tileinfo>& map_obj_manager::getmapobjlist()
+std::vector<map_obj_manager::mapobjinfo>& map_obj_manager::getmapobjlist()
 {
     return mapobjectsinfo;
 }
@@ -84,7 +106,7 @@ uint8_t map_obj_manager::getfacingside()
     return 0;
 }
 
-tiledata::tileinfo& map_obj_manager::getmapobjinfo(uint32_t id)
+map_obj_manager::mapobjinfo& map_obj_manager::getmapobjinfo(uint32_t id)
 {
     return mapobjectsinfo[id];
 }

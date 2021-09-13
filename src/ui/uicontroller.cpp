@@ -9,7 +9,7 @@ namespace uicontroller
     namespace
     {
         ImGuiIO* io = nullptr;
-        ImFont* font[2] = {nullptr, nullptr};//
+        ImFont* font[3] = {nullptr, nullptr, nullptr};//
 
         bool windowbegun = false;
         glm::vec2 curwindowsize = glm::vec2(0.0f);
@@ -127,8 +127,9 @@ void uicontroller::setupimgui()
 
     (io->Fonts)->AddFontDefault();
 
-    font[0] = (io->Fonts)->AddFontFromFileTTF("data/rob.ttf", 20.0f);//, NULL, (io->Fonts)->GetGlyphRangesJapanese());
-    font[1] = (io->Fonts)->AddFontFromFileTTF("data/rob.ttf", 42.0f);
+    font[0] = (io->Fonts)->AddFontFromFileTTF("data/mine.ttf", 20.0f);//, NULL, (io->Fonts)->GetGlyphRangesJapanese());
+    font[1] = (io->Fonts)->AddFontFromFileTTF("data/mine.ttf", 30.0f);
+    font[2] = (io->Fonts)->AddFontFromFileTTF("data/mine.ttf", 62.0f);
 
     (io->Fonts)->Build();
 

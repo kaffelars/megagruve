@@ -15,6 +15,21 @@ int32_t entity::getid() {return 0;};
 bool entity::interact() {return false;}; //for right click
 bool entity::destroy() {return false;};
 model& entity::getmodel() {return modelmanager::getemptymodel();}
+void entity::setfacingdirection(tilesideid tsid)
+{
+    facingdirection = tsid;
+}
+
+direction entity::getviewdir()
+{
+    glm::ivec3 of = sideoffsets[static_cast<int>(facingdirection)];
+    return direction{of.x, of.y, of.z};
+};
+
+int32_t entity::getfacingdirectionid()
+{
+    return static_cast<int32_t>(facingdirection);
+}
 
 
 blockentity::blockentity(wtilepos tilepos) {

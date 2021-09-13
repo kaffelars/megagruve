@@ -128,7 +128,7 @@ void tiledata::initializetileshapes()
     x.vertexes[6].push_back(vpos{0.8535f, 0, 0.1465f});
     x.vertexes[6].push_back(vpos{0.1465f, 1, 0.8535f});
 
-    for (int a=0; a < 6; a++)
+    /*for (int a=0; a < 6; a++)
         x.normals.push_back(vnorm{-0.707f, 0.0f, 0.707f});
 
     for (int a=0; a < 6; a++)
@@ -138,7 +138,12 @@ void tiledata::initializetileshapes()
         x.normals.push_back(vnorm{0.707f, 0.0f, 0.707f});
 
     for (int a=0; a < 6; a++)
-        x.normals.push_back(vnorm{-0.707f, 0.0f, -0.707f});
+        x.normals.push_back(vnorm{-0.707f, 0.0f, -0.707f});*/
+
+    for (int a =0; a < 24; a++)
+    {
+        x.normals.push_back(vnorm{0.0f, -1.0f, 0.0f});
+    }
 
     for (int a = 0; a < 2; a++)
     {

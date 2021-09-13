@@ -8,8 +8,11 @@
 #include "itemmanager.h"
 #include "inventory.h"
 #include "settings.h"
+#include "statnumbers.h"
 
 #include "inputmanager.h"
+
+//kaos, må re-implementeres mer oversiktlig
 
 namespace uiingame
 {
@@ -31,6 +34,9 @@ namespace uiingame
 
     vaocontainer inventorybg;
     vaocontainer inventoryitems;
+
+    vaocontainer equipment;
+    vaocontainer equipmentgrid;
 
     bool showinventory = false;
 
@@ -63,6 +69,10 @@ namespace uiingame
     hitem hoveritem {0,0};
 
     int32_t invpositiontoswap = -1;
+
+    void renderstatbox();
+    void renderequipment(bool updateeq);
+    void renderequipmentgrid();
 }
 
 void uiingame::initialize()
@@ -361,15 +371,116 @@ void uiingame::renderiteminfobox()
         if (winwidth < 100.0f) winwidth = 100.0f;
 
         glm::ivec2 position = inputmanager::getcursorpos() + glm::ivec2(1,1);
-        uielement::beginwindow("hoveritem", position, glm::vec2(winwidth, 60));
+
+        uielement::beginwindow("hoveritem", position, glm::vec2(winwidth, 80));
 
         std::stringstream infotext;
         infotext << itemmanager::getitem(hoveritem.itemid).name << "\n";
+        infotext << itemmanager::getitemtypename(hoveritem.itemid) << "\n";
         infotext << itemmanager::getitem(hoveritem.itemid).description << "\n";
         infotext << "Quantity: " << hoveritem.quantity;
         uielement::text(infotext.str(), glm::vec2(10.0f, 0.0f));
+
         uielement::endwindow();
     }
+}
+
+void uiingame::renderstatbox()
+{
+    glm::vec2 winsize = glm::vec2(226.0f, 250.0f);
+    float ypos = screensizey - positionvalues.iconsize * 5.5f - winsize.y;
+
+    uielement::beginwindow("statbox", glm::ivec2(positionvalues.startbar - positionvalues.iconsize * 0.5f, ypos), winsize);
+
+    uicontroller::changefont(uicontroller::FONT_LARGE);
+    uielement::text("Player stats", glm::vec2(10.0f, 10.0f));
+
+    uicontroller::changefont(uicontroller::FONT_NORMAL);
+
+    uielement::text("HP:\n\nAttack:\nDefense:\nMove speed:\nUse speed:\n\nCrabs killed:", glm::vec2(10.0f, 60.0f));
+
+    std::stringstream stattext;
+    statnumbers& stats = maincharcontroller::getmainchar().actualstats;
+    stattext << maincharcontroller::getcurrenthealth() << "/" << maincharcontroller::getmaxhealth() << "\n\n";
+
+    stattext << stats.statvalues[1] << " + held item\n";
+    stattext << stats.statvalues[2] << "\n";
+    stattext << stats.statvalues[3] << "\n";
+    stattext << stats.statvalues[4] << "\n\n";
+    stattext << "0";
+
+    uielement::text(stattext.str(), glm::vec2(120.0f, 60.0f));
+
+    uielement::endwindow();
+}
+
+void uiingame::renderequipment(bool updateeq)
+{
+    if (equipment.isempty() || updateeq)
+    {
+        inventory& mchareq = maincharcontroller::getmainchar().equipment;
+
+        equipment.cleanvbos();
+        equipment.initialize(1, vaocontainer::typo::POINTS, 4);
+
+        float ypos = screensizey - positionvalues.iconsize * 5.5f - 250.0f;
+        float xpos = positionvalues.startbar - positionvalues.iconsize * 0.5f + 236.0f;
+        uint32_t texid;
+        float iiconsize = (positionvalues.iconsize / 24.0f) * 16.0f;
+
+        for (int a = 0; a < 5; a++)
+        {
+            if (a == 3) xpos += positionvalues.iconsize + positionvalues.spacer;
+            if (a == 3) ypos -= positionvalues.iconsize * 2.0f;
+
+            inventory::invitem i = mchareq.getinvitem(a);
+
+            texid = itemmanager::getitem(i.itemid).textureid;
+
+            if (texid)
+                additemicon(equipment, xpos + 80.0f + (positionvalues.iconsize * 0.5f), ypos + (a + 0.5f) * positionvalues.iconsize, texid , i.quantity, iiconsize);
+        }
+
+        equipment.setvbos();
+    }
+
+    equipment.render();
+}
+
+void uiingame::renderequipmentgrid()
+{
+    glm::vec2 winsize = glm::vec2(80.0f, 250.0f);
+    float ypos = screensizey - positionvalues.iconsize * 5.5f - winsize.y;
+    float xpos = positionvalues.startbar - positionvalues.iconsize * 0.5f + 236.0f;
+    uielement::beginwindow("equipmentinfo", glm::ivec2(xpos, ypos), winsize);
+
+    uielement::text("Helmet:", glm::vec2(10.0f, -4.0f + positionvalues.iconsize * 0.5f));
+    uielement::text("Chest:", glm::vec2(10.0f, -4.0f + (positionvalues.iconsize) * 1.5f));
+    uielement::text("Boots:", glm::vec2(10.0f, -4.0f + (positionvalues.iconsize) * 2.5f));
+
+    uielement::endwindow();
+
+    uielement::beginwindow("trinkets", glm::ivec2(xpos+80.0f +positionvalues.iconsize + positionvalues.spacer, ypos + 2.0f + positionvalues.iconsize*0.5f), glm::vec2(80.0f, 30.0f));
+    uielement::text("Trinkets:", glm::vec2(5.0f, 5.0f));
+    uielement::endwindow();
+
+    if (equipmentgrid.isempty())
+    {
+        equipmentgrid.cleanvbos();
+        equipmentgrid.initialize(1, vaocontainer::typo::POINTS, 4);
+
+        for (int a = 0; a < 5; a++)
+        {
+            if (a == 3) xpos += positionvalues.iconsize + positionvalues.spacer;
+            if (a == 3) ypos -= positionvalues.iconsize * 2.0f;
+            equipmentgrid.addvalues(0, xpos + 80.0f + (positionvalues.iconsize * 0.5f), ypos + (a + 0.5f) * positionvalues.iconsize,
+                                          texturemanager::geticontexturenumber("border", texturemanager::ICONS_LARGE),positionvalues.iconsize);
+        }
+
+        equipmentgrid.setvbos();
+    }
+
+    equipmentgrid.render();
 }
 
 void uiingame::updateactionbaritems(bool updatebar)
@@ -461,6 +572,11 @@ void uiingame::rendergameui()
             clickedbox.render();
         }
         renderiteminfobox();
+        renderstatbox();
+        texturemanager::bindiconstexture(texturemanager::ICONS_LARGE, 0);
+        renderequipmentgrid();
+        texturemanager::bindiconstexture(texturemanager::ICONS_MEDIUM, 0);
+        renderequipment(false);
     }
 
 }

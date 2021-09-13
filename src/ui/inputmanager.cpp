@@ -28,6 +28,8 @@ namespace inputmanager
     std::vector<keydata> keymap;
     std::unordered_map<uint32_t, uint32_t> keyidtokeymap;
     std::unordered_map<uint32_t, uint32_t> keyenumtokeymap;
+
+    std::vector<bool> keypaused;
 }
 
 uint32_t inputmanager::getkeyid(keytype ktype, int32_t keypress, key_mods kmod)
@@ -75,7 +77,7 @@ void inputmanager::processheldkeys()
     for (uint32_t k_id : heldkeys)
     {
         keydata& key = keymap[k_id];
-        if (keyfunctionsactive && key.keyfunction[KE_HELD])
+        if (!keypaused[k_id] && key.keyfunction[KE_HELD])
             key.keyfunction[KE_HELD]();
     }
 }
@@ -95,7 +97,7 @@ void inputmanager::processkey(keytype ktype, int32_t keypress, key_mods kmod, ke
         if (key.held == false)
         {
             key.clicked = true;
-            if (keyfunctionsactive && key.keyfunction[KE_CLICKED])
+            if (!keypaused[k_id] && key.keyfunction[KE_CLICKED])
                 key.keyfunction[KE_CLICKED]();
         }
         heldkeys.push_back(k_id);
@@ -108,7 +110,7 @@ void inputmanager::processkey(keytype ktype, int32_t keypress, key_mods kmod, ke
         heldkeys.erase(std::remove(heldkeys.begin(), heldkeys.end(), k_id), heldkeys.end());
         key.held = false;
         key.clicked = false;
-        if (keyfunctionsactive && key.keyfunction[KE_RELEASED])
+        if (!keypaused[k_id] && key.keyfunction[KE_RELEASED])
             key.keyfunction[KE_RELEASED]();
     }
 }
@@ -188,9 +190,44 @@ void inputmanager::clearallkeyfunctions()
     }
 }
 
+void inputmanager::pausekeyfunctionsexcept(std::vector<keys_enum> exceptionkeys)
+{
+    std::vector<uint32_t> exceptionkeysids;
+    for (keys_enum& k : exceptionkeys)
+    {
+        exceptionkeysids.push_back(keyenumtokeymap[k]);
+    }
+    for (int a = 0; a < keymap.size(); a++)
+    {
+        if (std::find(exceptionkeysids.begin(), exceptionkeysids.end(), a) == exceptionkeysids.end())
+        {
+            keypaused[a] = true;
+        }
+        else
+        {
+            keypaused[a] = false;
+        }
+    }
+}
+
+void inputmanager::pauseallkeyfunctions()
+{
+    std::fill(keypaused.begin(), keypaused.end(), true);
+}
+
+void inputmanager::resumeallkeyfunctions()
+{
+    std::fill(keypaused.begin(), keypaused.end(), false);
+}
+
 void inputmanager::pausekeyfunctions()
 {
     keyfunctionsactive = false;
+}
+
+void inputmanager::unpausekey(keys_enum)
+{
+
 }
 
 void inputmanager::resumekeyfunctions()
@@ -229,7 +266,8 @@ void inputmanager::initialize()
     addkey(KEYTYPE_KEYBOARD, KEY_TOGGLEFLYING, SDL_SCANCODE_F, mod_none, "toggle flying");
     addkey(KEYTYPE_KEYBOARD, KEY_JUMP, SDL_SCANCODE_SPACE, mod_none, "jump");
 
-
+    for (int a =0 ; a < keymap.size(); a++)
+        keypaused.push_back(false);
 
     std::cout << "done\n";
 }

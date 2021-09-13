@@ -148,6 +148,12 @@ void chunkcoords::getvertexoffset(tiledata::tilesides ts, ctilepos (&around)[4])
     }
 }
 
+bool chunkcoords::withinworld(wtilepos wpos)
+{
+    if (wpos.y < 0 || wpos.y > chunkheight-1) return false;
+    return true;
+}
+
 bool chunkcoords::withinchunkbounds(ctilepos cpos)
 {
     if (cpos.x < 0 || cpos.x > chunkwidth-1) return false;

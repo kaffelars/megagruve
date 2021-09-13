@@ -89,10 +89,10 @@ void renderer::rendergame()
     //tar 0.4 ms ... ------------------
     //reading pixel data!! alert!
     //https://www.roxlu.com/2014/048/fast-pixel-transfers-with-pixel-buffer-objects ?
-    glm::ivec2 mousepos = inputmanager::getcursorpos();
+    /*glm::ivec2 mousepos = inputmanager::getcursorpos();
     glReadBuffer(GL_COLOR_ATTACHMENT1);
     glReadPixels(settings::getisetting(settings::SET_SCREENX)/2,settings::getisetting(settings::SET_SCREENY)/2,1,1,GL_RGBA, GL_FLOAT, &mousedata);
-    glReadBuffer(0);
+    glReadBuffer(0);*/ //endret til blocktracer
     // --------------------------------
 
 
