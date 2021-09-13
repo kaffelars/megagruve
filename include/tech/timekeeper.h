@@ -10,6 +10,7 @@ namespace timekeeper
 
     float getdeltatime();
     float gettimefactor();
+    float getcappeddeltatime();
 };
 
 #endif // TIMEKEEPER_H

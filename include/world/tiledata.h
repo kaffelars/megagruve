@@ -9,7 +9,7 @@ namespace tiledata
 {
     enum tiletype
     {
-        T_EMPTY, T_TRANSPARENT, T_DISCARD, T_SOLID, T_SOLID_VERT, T_WATER, T_OBJECT, T_MAP_OBJ
+        T_EMPTY, T_TRANSPARENT, T_DISCARD, T_SOLID, T_SOLID_VERT, T_WATER, T_LAVA, T_OBJECT, T_MAP_OBJ
     };
 
     enum blockshape

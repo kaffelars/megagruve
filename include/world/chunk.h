@@ -15,7 +15,7 @@ class chunk
 
         enum ctags
         {
-            C_START, C_GENERATING, C_GENERATED, C_MESHING, C_MESHED, C_READY, C_REMESHING, C_REMESHED
+            C_START, C_GENERATING, C_GENERATED, C_MESHING, C_MESHED, C_READY, C_REMESHING, C_REMESHED, C_KAPUT
         };
 
         struct tlight
@@ -93,6 +93,10 @@ class chunk
         bool tryinteractobj(ctilepos ctpos, mainchar& mchar);
         void removechunkobj(ctilepos ctpos);
 
+        bool allowstilewrites();
+        bool allowstilereads();
+        bool isready();
+
         std::shared_ptr<map_obj>& getmapobj(ctilepos ctpos);
 
 
@@ -100,9 +104,11 @@ class chunk
     protected:
 
     private:
+        uint8_t chunktagpermissions[9] = {0, 0, 2, 1, 2, 2, 1, 2, 0};
+
         std::mutex tagmutex;//brukes ved lesing og setting av tags
         std::mutex remeshmutex;//brukes ved remesh
-        std::shared_mutex lock; //https://en.cppreference.com/w/cpp/thread/shared_mutex
+        //std::shared_mutex lock; //https://en.cppreference.com/w/cpp/thread/shared_mutex
         bool activemesh;
 
         std::vector<biomedata> biomes;

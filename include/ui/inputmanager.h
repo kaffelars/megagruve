@@ -89,7 +89,13 @@ namespace inputmanager
 
     void clearallkeyfunctions();
     void pausekeyfunctions();
+    void unpausekey(keys_enum);
     void resumekeyfunctions();
+
+    void resumeallkeyfunctions();
+    void pauseallkeyfunctions();
+    void pausekeyfunctionsexcept(std::vector<keys_enum> keys);
+
     void setkeyfunction(keys_enum keyid, std::function<void()> kclick, keyevent kevent);
 
     void processevent(SDL_Event& e);

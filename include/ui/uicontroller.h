@@ -44,7 +44,8 @@ namespace uicontroller
     {
         FONT_NONE,
         FONT_NORMAL,
-        FONT_LARGE
+        FONT_LARGE,
+        FONT_HUGE
     };
 }
 
