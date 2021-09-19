@@ -6,11 +6,13 @@
 
 namespace map_obj_manager
 {
+
     struct mapobjinfo
     {
         std::string name;
         std::string fullname;
         std::string description;
+        mapobjplacement placement;
         uint8_t hardness;
         uint8_t glow;
         bool needssupport;

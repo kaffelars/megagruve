@@ -1,7 +1,12 @@
 
 enum class itemtype
 {
-    block, dig, usable, consumable, inert, placeableobject, flag
+    block, tool, usable, consumable, inert, equipment, placeableobject, flag, none
+};
+
+enum class itemsubtype
+{
+    helmet, chest, boots, trinket, other, none
 };
 
 enum class s_effect
@@ -67,4 +72,14 @@ enum class tilesideflag
 enum class tilesideid
 {
     xm = 0, xp = 1, ym = 2, yp = 3, zm = 4, zp = 5, noside = 6
+};
+
+enum class mapobjplacement
+{
+    ground, surface, verticalsurface, horizontalsurface
+};
+
+enum class inventorytype
+{
+    none, chest, craftingtable
 };

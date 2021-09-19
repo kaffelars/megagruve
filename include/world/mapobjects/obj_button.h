@@ -13,6 +13,7 @@ class obj_button : public map_obj
 
         void addmodel(ctilepos ctp, chunkmesh& cmesh);
 		void interact(mainchar& interactor);
+		bool passable();
 
     protected:
 

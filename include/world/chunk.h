@@ -104,7 +104,7 @@ class chunk
     protected:
 
     private:
-        uint8_t chunktagpermissions[9] = {0, 0, 2, 1, 2, 2, 1, 2, 0};
+        int8_t chunktagpermissions[9] = {-1, 0, 2, 1, 2, 2, 1, 2, 0};
 
         std::mutex tagmutex;//brukes ved lesing og setting av tags
         std::mutex remeshmutex;//brukes ved remesh

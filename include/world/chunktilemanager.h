@@ -9,8 +9,8 @@ namespace chunktilemanager
     uint8_t getforwardside(chunkpos cpos, ctilepos ctpos);
     void breaktile(wtilepos wtile);
     void explodetiles(wtilepos wtile, int32_t explosionpower);
-    bool changectile(chunkpos cpos, ctilepos ctpos, tileid newtileid, uint8_t extrainfo, bool breakage);
-    bool changectile(wtilepos wtile, tileid newtileid, uint8_t extrainfo, bool breakage);
+    bool changectile(chunkpos cpos, ctilepos ctpos, tileid newtileid, uint8_t extrainfo, bool breakage, uint8_t forwardside = 0);
+    bool changectile(wtilepos wtile, tileid newtileid, uint8_t extrainfo, bool breakage, uint8_t forwardside = 0);
     void changetiles();
     void removemapobj(chunk& c, ctilepos ctpos);
     void interactobjaround(chunkpos cpos, ctilepos ctpos, ctilepos effectoffset, mainchar& mchar);

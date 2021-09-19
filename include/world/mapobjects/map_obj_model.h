@@ -14,6 +14,8 @@ class map_obj_model
         std::vector<vnorm> normals;
         std::vector<tileid> texids;
 
+        std::vector<uint8_t> glow;
+
     protected:
 
     private:

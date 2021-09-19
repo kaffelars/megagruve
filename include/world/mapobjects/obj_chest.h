@@ -9,12 +9,13 @@
 class obj_chest : public map_obj
 {
     public:
-        obj_chest(ctilepos ctp, chunkpos cpo, uint8_t forw);
+        obj_chest(ctilepos ctp, chunkpos cpo, uint8_t forw, uint8_t chestsize);
         virtual ~obj_chest();
 
         void addmodel(ctilepos ctp, chunkmesh& cmesh);
 		void interact(mainchar& interactor);
 		void destroy();
+		void trycloselid();
 
         inventory chestinv;
         bool lidopen {false};
