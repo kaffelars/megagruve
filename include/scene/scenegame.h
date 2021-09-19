@@ -23,7 +23,7 @@ class scenegame : public scene
 
         void shutdownworld();
         void pressedesc();
-        void toggleinventory();
+        void toggleinventory(inventorytype invtype = inventorytype::none);
         void setkeys();
 
         void render();

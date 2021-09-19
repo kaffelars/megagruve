@@ -6,10 +6,10 @@
 class inventory
 {
     public:
-        inventory(int32_t invsiz = 32);
+        inventory(int32_t invsiz = 16);
         virtual ~inventory();
 
-        uint32_t invsize {32};
+        uint32_t invsize {16};
         uint32_t getinvsize();
 
         //bool additem(uint32_t itemid, uint32_t quantity);

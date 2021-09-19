@@ -8,7 +8,7 @@
 
 namespace itemmanager
 {
-    enum itemtypes
+    /*enum itemtypes
     {
         I_BLOCK, I_DIG, I_USABLE, I_CONSUMABLE, I_INERT, I_EQUIPMENT, I_PLACEABLEOBJECT, I_FLAG
     };
@@ -16,7 +16,7 @@ namespace itemmanager
     enum subtypes
     {
         IS_HELMET, IS_CHEST, IS_BOOTS, IS_TRINKET, IS_OTHER
-    };
+    };*/
 
     struct item
     {
@@ -28,8 +28,8 @@ namespace itemmanager
 
         uint32_t maxstack {32};
 
-        itemtypes itemtype;
-        subtypes subtype;
+        itemtype itemtype;
+        itemsubtype subtype;
 
         std::vector<std::shared_ptr<effect>> useeffects; //hmm
 
