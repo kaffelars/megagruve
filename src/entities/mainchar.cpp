@@ -85,7 +85,7 @@ void mainchar::fillinv()
     mcharinv.additem("i_greenwand", 1);
     mcharinv.additem("i_planks", 64);
     mcharinv.additem("i_chest", 27);
-    mcharinv.additem("i_wings", 1);
+    mcharinv.additem("i_mossydirt", 1);
     mcharinv.additem("i_water", 64);
     mcharinv.additem("i_redwand", 1);
     mcharinv.additem("i_glowstone", 65);
@@ -101,14 +101,14 @@ void mainchar::fillinv()
     mcharinv.additem("i_fireballlarge", 33);
     mcharinv.additem("i_snow", 1);
     mcharinv.additem("i_button", 55);
-    mcharinv.additem("i_ironpickaxe", 1);
+    mcharinv.additem("i_wings", 1);
 
     mcharinv.additem("i_ironpickaxe", 1);
     mcharinv.additem("i_fireballhumongous", 66);
     mcharinv.additem("i_ironsword", 1);
     mcharinv.additem("i_fireball", 44);
     mcharinv.additem("i_diamond", 33);
-    mcharinv.additem("i_planks", 64);
+    mcharinv.additem("i_mossydirt", 64);
     mcharinv.additem("i_planks", 64);
     mcharinv.additem("i_planks", 64);
     mcharinv.additem("i_flag", 64);
@@ -120,6 +120,7 @@ void mainchar::fillinv()
     mcharinv.additem("i_flag3", 64);
     mcharinv.additem("i_flag4", 64);
     mcharinv.additem("i_flagpole", 64);
+    mcharinv.additem("i_lightbulb", 64);
 
     equipment.additem("i_helmet_iron", 1);
     equipment.additem("i_chest_iron", 1);

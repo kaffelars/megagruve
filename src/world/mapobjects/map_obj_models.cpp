@@ -119,6 +119,7 @@ void map_obj_models::initialize()
         {
             t.normals.push_back(sidenormals[a]);
             t.texids.push_back(texids[a]);
+            t.glow.push_back(0);
         }
     }
 
@@ -207,6 +208,7 @@ void map_obj_models::initialize()
                 {
                     f.normals.push_back(sidenormals[a]);
                     f.texids.push_back(texid);
+                    f.glow.push_back(0);
                 }
             }
         }
@@ -278,11 +280,13 @@ void map_obj_models::initialize()
     {
         ff.normals.push_back(sidenormals[4]);
         ff.texids.push_back(texid);
+        ff.glow.push_back(0);
     }
     for (int b = 0; b < 6; b++)
     {
         ff.normals.push_back(sidenormals[5]);
         ff.texids.push_back(texid);
+        ff.glow.push_back(0);
     }
 
     obj_models.push_back(ff);
@@ -299,6 +303,7 @@ void map_obj_models::initialize()
         table.vertexes.push_back(t.vertexes[i]);
         table.uv.push_back(t.uv[i]);
         table.normals.push_back(t.normals[i]);
+        table.glow.push_back(0);
 
         i++;
     }
@@ -363,10 +368,12 @@ void map_obj_models::initialize()
         v.y -= 1;
         door.vertexes.push_back(v);
         door.uv.push_back(u);
+        door.glow.push_back(0);
     }
     for (int a = 0; a < 12; a++)
     {
         door.texids.push_back(texid);
+        door.glow.push_back(0);
     }
     for (int a = 0; a < 6; a++)
         door.normals.push_back(sidenormals[0]);
@@ -499,11 +506,36 @@ void map_obj_models::initialize()
             {
                 button.normals.push_back(sidenormals[a]);
                 button.texids.push_back(texid);
+                button.glow.push_back(0);
             }
         }
     }
 
-    obj_models.push_back(button);
+    obj_models.push_back(button); //7
+
+
+
+    texid = texturemanager::gettiletexturenumber("lightbulb");
+
+    for (vpos& v : button.vertexes)
+    {
+        if (v.x == 0.7f) v.x = 0.8f;
+    }
+
+    for (tileid& tid : button.texids)
+        tid = texid;
+    for (uint8_t& glow : button.glow)
+        glow = 128;
+
+    for (uvpos& uv:button.uv)
+    {
+        if (uv.x == 0) uv.x = 0.2f; //0.1875f;
+        if (uv.x == 1) uv.x = 0.8f; //0.8125f;
+        if (uv.y == 0) uv.y = 0.2f; //0.1875f;
+        if (uv.y == 1) uv.y = 0.8f; //0.8125f;
+    }
+
+    obj_models.push_back(button); //lightbulb 8
 }
 
 void map_obj_models::addmodel(chunkmesh& cm, ctilepos ctpos, uint32_t modelid, uint8_t forwardside, int32_t texid)
@@ -527,7 +559,7 @@ void map_obj_models::addmodel(chunkmesh& cm, ctilepos ctpos, uint32_t modelid, u
 
         //std::cout << "hamberder " << texid << "\n";
 
-        cm.addvertex(vp, n, obj_models[modelid].uv[index], textureid, 255, notint, 0.0f, 0.0f, notint);//sunlight[corner], light[corner], glow, ambocc[corner], notint);
+        cm.addvertex(vp, n, obj_models[modelid].uv[index], textureid, 255, notint, obj_models[modelid].glow[index], 0.0f, notint);//sunlight[corner], light[corner], glow, ambocc[corner], notint);
     }
 }
 
@@ -539,6 +571,10 @@ vpos map_obj_models::rotatevertexes(vpos v, uint8_t forwardside)
         return v;
     case 1:
         return vpos{-v.x + 1.0f, v.y, -v.z + 1.0f};
+    case 2:
+        return vpos{v.y, v.x, -v.z + 1.0f};
+    case 3:
+        return vpos{v.y, -v.x + 1.0f, v.z};
     case 4:
         return vpos{v.z, v.y, v.x};
     case 5:
@@ -559,6 +595,19 @@ vnorm map_obj_models::rotatenormal(vnorm n, uint8_t forwardside)
         n.x = -n.x;
         n.z = -n.z;
         return n;
+    case 2:
+        {
+            float g = n.x;
+            n.x = n.y;
+            n.y = g;
+            n.z = -n.z;
+        }
+    case 3:
+        {
+            float g = n.x;
+            n.x = n.y;
+            n.y = -g;
+        }
     case 4:
         {
             float g = n.x;

@@ -18,11 +18,10 @@ namespace chunkcontroller
     uint32_t cpostoid(chunkpos cpos);
     bool newchunk(chunkpos cpos);
     bool removechunk(chunkpos cpos);
-    namespace
-    {
-        std::unordered_map<uint32_t, chunk> chunks;
-        dimensions chunkdimensions = glm::ivec3(chunkwidth,chunkheight,chunkwidth);
-    }
+
+    std::unordered_map<uint32_t, chunk> chunks;
+    dimensions chunkdimensions = glm::ivec3(chunkwidth,chunkheight,chunkwidth);
+
 
     std::atomic<uint32_t> threadcounter = 0;
     std::vector<chunkpos> loadedchunks; //loop heller bare gjennom elementene i unordered map

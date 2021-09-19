@@ -23,3 +23,8 @@ void obj_button::interact(mainchar& interactor)
 {
     chunktilemanager::interactobjaround(cpos, ctpos, -sideoffsets[forwardside], interactor);
 }
+
+bool obj_button::passable()
+{
+    return true;
+}

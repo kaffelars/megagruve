@@ -9,6 +9,7 @@
 #include "obj_door.h"
 #include "obj_child.h"
 #include "obj_button.h"
+#include "obj_lightbulb.h"
 
 namespace map_obj_manager
 {
@@ -18,15 +19,17 @@ namespace map_obj_manager
 
 void map_obj_manager::initialize()
 {
-    mapobjectsinfo.emplace_back(mapobjinfo{.name="o_chest", .fullname="Chest", .description = "Use to store items", .hardness = 100, .glow = 0, .needssupport = false, .breaktexture = "planks", .icontexture = "chest_front"});
+    mapobjectsinfo.emplace_back(mapobjinfo{.name="o_chest", .fullname="Chest", .description = "Use to store items", .placement = mapobjplacement::ground, .hardness = 100, .glow = 0, .needssupport = false, .breaktexture = "planks", .icontexture = "chest_front"});
     mapobjchildren.push_back(std::vector<ctilepos> {});
-    mapobjectsinfo.emplace_back(mapobjinfo{.name="o_flagpole", .fullname="Flagpole", .description = "Select flag and right click to hoist flag",  .hardness = 150, .glow = 0, .needssupport = false, .breaktexture = "flagpole", .icontexture = "flagpole"});
+    mapobjectsinfo.emplace_back(mapobjinfo{.name="o_flagpole", .fullname="Flagpole", .description = "Select flag and right click to hoist flag",  .placement = mapobjplacement::ground, .hardness = 150, .glow = 0, .needssupport = true, .breaktexture = "flagpole", .icontexture = "flagpole"});
     mapobjchildren.push_back(std::vector<ctilepos> {});
-    mapobjectsinfo.emplace_back(mapobjinfo{.name="o_ctable", .fullname="Crafting table", .description = "Craft items and stuff",  .hardness = 100, .glow = 0, .needssupport = false, .breaktexture = "planks", .icontexture = "crafting_table"});
+    mapobjectsinfo.emplace_back(mapobjinfo{.name="o_ctable", .fullname="Crafting table", .description = "Craft items and stuff", .placement = mapobjplacement::ground, .hardness = 100, .glow = 0, .needssupport = true, .breaktexture = "planks", .icontexture = "crafting_table"});
     mapobjchildren.push_back(std::vector<ctilepos> {});
-    mapobjectsinfo.emplace_back(mapobjinfo{.name="o_door", .fullname="Door", .description = "Can be opened and closed", .hardness = 100, .glow = 0, .needssupport = false, .breaktexture = "planks", .icontexture = "door_upper"});
+    mapobjectsinfo.emplace_back(mapobjinfo{.name="o_door", .fullname="Door", .description = "Can be opened and closed", .placement = mapobjplacement::ground, .hardness = 100, .glow = 0, .needssupport = true, .breaktexture = "planks", .icontexture = "door_upper"});
     mapobjchildren.push_back(std::vector<ctilepos> {ctilepos{0,-1,0}});
-    mapobjectsinfo.emplace_back(mapobjinfo{.name="o_button", .fullname="Button", .description = "Activates nearby doors etc. when right-clicked",  .hardness = 100, .glow = 0, .needssupport = false, .breaktexture = "planks", .icontexture = "button"});
+    mapobjectsinfo.emplace_back(mapobjinfo{.name="o_button", .fullname="Button", .description = "Activates nearby doors etc. when right-clicked", .placement = mapobjplacement::verticalsurface, .hardness = 100, .glow = 0, .needssupport = true, .breaktexture = "planks", .icontexture = "button"});
+    mapobjchildren.push_back(std::vector<ctilepos> {});
+    mapobjectsinfo.emplace_back(mapobjinfo{.name="o_lightbulb", .fullname="Lightbulb", .description = "Emits a pleasant light", .placement = mapobjplacement::surface, .hardness = 100, .glow = 255, .needssupport = true, .breaktexture = "lightbulb", .icontexture = "lightbulb"});
     mapobjchildren.push_back(std::vector<ctilepos> {});
 
     /*mapobjectsinfo.emplace_back(tiledata::tileinfo{.name="o_chest", .fullname="Chest", .ttype = tiledata::T_SOLID, .defaultshape = tiledata::SHAPE_BLOCK,               .hardness = 100, .glow = 0, .needssupport = false, .passable = false, .biometint = false, .breaktexture = "planks", .sidetextures = {"chest_front"}});
@@ -73,7 +76,7 @@ void map_obj_manager::addmapobj(chunk& c, ctilepos ctpos, uint8_t mapobjid, uint
     switch (mapobjid)
     {
     case 0:
-        objecttoadd = std::make_shared<obj_chest> (ctpos, c.cpos, forwardside);
+        objecttoadd = std::make_shared<obj_chest> (ctpos, c.cpos, forwardside, 30);
         break;
     case 1:
         objecttoadd = std::make_shared<obj_flagpole> (ctpos, c.cpos, forwardside);
@@ -86,6 +89,9 @@ void map_obj_manager::addmapobj(chunk& c, ctilepos ctpos, uint8_t mapobjid, uint
         break;
     case 4:
         objecttoadd = std::make_shared<obj_button> (ctpos, c.cpos, forwardside);
+        break;
+    case 5:
+        objecttoadd = std::make_shared<obj_lightbulb> (ctpos, c.cpos, forwardside);
         break;
     }
 

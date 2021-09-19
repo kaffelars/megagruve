@@ -192,6 +192,7 @@ placeobjecteffect::placeobjecteffect(bool onlyemptyblocks, uint32_t objid) : emp
 bool placeobjecteffect::activate(entity* user, entity* target)
 {
     wtilepos wt = target->getposition();
+    if (target->getid() == 255) return false;//kan ikke plassere objects på objects
     wt = wt + sideoffsets[target->getfacingdirectionid()];
 
     if (!chunkcoords::withinworld(wt)) return false;
@@ -203,5 +204,5 @@ bool placeobjecteffect::activate(entity* user, entity* target)
 
     target->heal(99999);
 
-    return chunktilemanager::changectile(wt, 255, tid, false);
+    return chunktilemanager::changectile(wt, 255, tid, false, target->getfacingdirectionid());
 }

@@ -265,17 +265,17 @@ void maincharcontroller::useselecteditem()
         entity* user = nullptr;
         entity* target = nullptr;
 
-        if (iteminfo.itemtype == itemmanager::I_CONSUMABLE || iteminfo.itemtype == itemmanager::I_USABLE)
+        if (iteminfo.itemtype == itemtype::consumable || iteminfo.itemtype == itemtype::usable)
         {
             user = &mchar;
             target = &mchar;
         }
-        if (iteminfo.itemtype == itemmanager::I_BLOCK || iteminfo.itemtype == itemmanager::I_PLACEABLEOBJECT || iteminfo.itemtype == itemmanager::I_FLAG)
+        if (iteminfo.itemtype == itemtype::block || iteminfo.itemtype == itemtype::placeableobject || iteminfo.itemtype == itemtype::flag)
         {
             user = &mchar;
             target = &tilehoverentity;
         }
-        if (iteminfo.itemtype == itemmanager::I_DIG)
+        if (iteminfo.itemtype == itemtype::tool)
         {
             user = &mchar;
             target = &tilehoverentity; //
@@ -298,7 +298,7 @@ void maincharcontroller::useselecteditem()
                 //tilehoverentity.resethealth(); //funker ikke fordi block blir updated på et senere tidspunkt
             }*/
 
-            if ((iteminfo.itemtype == itemmanager::I_CONSUMABLE || iteminfo.itemtype == itemmanager::I_BLOCK || iteminfo.itemtype == itemmanager::I_PLACEABLEOBJECT || iteminfo.itemtype == itemmanager::I_FLAG))
+            if ((iteminfo.itemtype == itemtype::consumable || iteminfo.itemtype == itemtype::block || iteminfo.itemtype == itemtype::placeableobject || iteminfo.itemtype == itemtype::flag))
             {
                 mchar.usecurrentlyselecteditem(true);
                 //iitem.quantity -= 1;
@@ -330,7 +330,7 @@ void maincharcontroller::update()
     else
         tilehover = chunkcoords::wpostowtilepos(wposition(mdata.x, mdata.y, mdata.z) - (getviewdir() / 10.0f));*/
 
-    blocktracer::hitblock hit = blocktracer::traceblocks(mchar.geteyeposition(), mchar.getviewdir(), 25.0f);
+    blocktracer::hitblock hit = blocktracer::traceblocks(mchar.geteyeposition(), mchar.getviewdir(), 6.0f);
 
     /*
     chunkpos cpos {chunkpos{0,0}};

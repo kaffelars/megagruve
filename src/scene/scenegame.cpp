@@ -4,6 +4,9 @@
 #include "chunkcoords.h"
 #include "uiingame.h"
 #include "particlemanager.h"
+#include "uiinventory.h"
+#include "scenegamehelperfunctions.h"
+#include "timedfunctions.h"
 
 scenegame::scenegame()
 {
@@ -17,7 +20,7 @@ scenegame::~scenegame()
 
 void scenegame::initialize()
 {
-
+    scenegamehelperfunctions::setscenepointer(this);
 }
 
 void scenegame::setkeys()
@@ -159,28 +162,9 @@ void scenegame::pressedesc()
 
 }
 
-void scenegame::toggleinventory()
+void scenegame::toggleinventory(inventorytype invtype)
 {
-    showinginventory = !showinginventory;
-
-    if (showinginventory)
-    {
-        inputmanager::pausekeyfunctionsexcept(std::vector<inputmanager::keys_enum> {inputmanager::KEY_SELECT, inputmanager::KEY_ESCAPE, inputmanager::KEY_INV});
-        inputmanager::setkeyfunction(inputmanager::KEY_SELECT, [&](){uiingame::click();}, inputmanager::KE_CLICKED);
-        inputmanager::setkeyfunction(inputmanager::KEY_SELECT, [&](){}, inputmanager::KE_HELD);
-        uiingame::toggleinventory();
-        maincharcontroller::setmaincharcameramoveable(false);
-        inputmanager::showmouse();
-    }
-    else
-    {
-        setkeys();
-        inputmanager::resumeallkeyfunctions();
-        maincharcontroller::setmaincharcameramoveable(true);
-        uiingame::toggleinventory();
-        inputmanager::hidemouse();
-        //inputmanager::resumekeyfunctions();
-    }
+    scenegamehelperfunctions::toggleinventory(invtype);
 }
 
 void scenegame::update()
@@ -212,7 +196,7 @@ void scenegame::update()
 
     /*}
     else
-    {*/
+    {*/ timedfunctions::update();
         //std::cout << "\n1";
         environment::updatetime();
         //std::cout << "2";

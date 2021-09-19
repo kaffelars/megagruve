@@ -12,6 +12,8 @@
 #include "tiledata.h"
 #include "particlemanager.h"
 
+#include "maincharcontroller.h"
+
 namespace chunktilemanager
 {
     struct cchangetile
@@ -21,6 +23,7 @@ namespace chunktilemanager
         tileid tid;
         uint8_t extrainfo; //f.eks. mapobj id
         bool breakage {false};
+        //uint8_t forwardside {0};
     };
 
     std::vector<cchangetile> ctilestochange;
@@ -113,22 +116,27 @@ void chunktilemanager::changetiles()
     }
 }
 
-bool chunktilemanager::changectile(wtilepos wtile, tileid newtileid, uint8_t extrainfo, bool breakage)
+bool chunktilemanager::changectile(wtilepos wtile, tileid newtileid, uint8_t extrainfo, bool breakage, uint8_t forwardside)
 {
     chunkpos cpos = chunkcoords::wpostocpos(wtile);
     ctilepos ctpos = chunkcoords::wtilepostoctilepos(wtile);
-    changectile(cpos, ctpos, newtileid, extrainfo, breakage);
+    changectile(cpos, ctpos, newtileid, extrainfo, breakage, forwardside);
 }
 
-bool chunktilemanager::changectile(chunkpos cpos, ctilepos ctpos, tileid newtileid, uint8_t extrainfo, bool breakage)
+bool chunktilemanager::changectile(chunkpos cpos, ctilepos ctpos, tileid newtileid, uint8_t extrainfo, bool breakage, uint8_t forwardside)
 {
     if (!chunkcontroller::chunkexists(cpos)) return false;
     chunk& c = chunkcontroller::getchunk(cpos);
     if (c.gettag() == chunk::C_READY)
     {
         tileid oldtile = c.gettile(ctpos);
+        tileid oldmapobj = 0;
 
-        if (oldtile == mapobjtileid) removemapobj(c, ctpos); //
+        if (oldtile == mapobjtileid)
+        {
+            oldmapobj = c.getmapobj(ctpos)->mapobjid;
+            removemapobj(c, ctpos); //
+        }
 
         c.settile(ctpos, newtileid);
 
@@ -143,7 +151,32 @@ bool chunktilemanager::changectile(chunkpos cpos, ctilepos ctpos, tileid newtile
 
             //chunklight::updatesunlight(c, ctpos, false);
 
-            c.addchunkobj(ctpos, extrainfo, getforwardside(cpos, ctpos));
+            mapobjplacement placement = map_obj_manager::getmapobjinfo(extrainfo).placement;
+
+            switch (placement)
+            {
+            case mapobjplacement::ground:
+                {
+                    c.addchunkobj(ctpos, extrainfo, getforwardside(cpos, ctpos));
+                }
+            case mapobjplacement::surface:
+                {
+
+                    c.addchunkobj(ctpos, extrainfo, forwardside);
+                }
+            case mapobjplacement::verticalsurface:
+                {
+                    if (forwardside != 2 && forwardside != 3)
+                        c.addchunkobj(ctpos, extrainfo, forwardside);
+                }
+            case mapobjplacement::horizontalsurface:
+                {
+                    if (forwardside == 2 && forwardside == 3)
+                        c.addchunkobj(ctpos, extrainfo, forwardside);
+                }
+            }
+
+
 
             return true;
         }
@@ -179,11 +212,21 @@ bool chunktilemanager::changectile(chunkpos cpos, ctilepos ctpos, tileid newtile
 
             if (breakage)
             {
-                uint8_t textureid = tiledata::gettileinfo(oldtile).breaktextureid;
-                uint8_t glow = tiledata::gettileinfo(oldtile).glow;
+                uint8_t textureid;
+                uint8_t glow;
+                if (oldtile == 255)
+                {
+                    textureid = map_obj_manager::getmapobjinfo(oldmapobj).breaktextureid;
+                    glow = map_obj_manager::getmapobjinfo(oldmapobj).glow;
+                }
+                else
+                {
+                    textureid = tiledata::gettileinfo(oldtile).breaktextureid;
+                    glow = tiledata::gettileinfo(oldtile).glow;
+                }
                 wposition tilepos = wposition(cpos.x * chunkwidth + ctpos.x, ctpos.y, cpos.y * chunkwidth + ctpos.z);
 
-                for (int a =0 ; a < 3; a++)
+                for (int a =0 ; a < 2; a++)
                 {
                     //direction chardir = (-maincharcontroller::getviewdir() / 10.0f);
                     float randx = utils::randint(-3, 3);
@@ -191,7 +234,7 @@ bool chunktilemanager::changectile(chunkpos cpos, ctilepos ctpos, tileid newtile
                     randx /= 30.0f;
                     randz /= 30.0f;
                     int duration = 2000 + utils::randint(-500, 500);
-                    particlemanager::addparticle(wposition(tilepos.x + 0.5f, tilepos.y + 0.5f, tilepos.z + 0.5f), velocity(randx, -0.05f, randz), textureid, 15, duration, glow, 0.5f, false);
+                    particlemanager::addparticle(wposition(tilepos.x + 0.5f, tilepos.y + 0.5f, tilepos.z + 0.5f), velocity(randx, -0.1f, randz), textureid, 15, duration, glow, 0.5f, false);
                 }
 
                 //water

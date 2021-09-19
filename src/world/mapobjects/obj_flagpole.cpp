@@ -44,7 +44,7 @@ void obj_flagpole::interact(mainchar& interactor)
         if (interactor.getitemusecooldown(interactor.actionbarselection) == 0 && iitem.quantity > 0)
         {
             itemmanager::item& iteminfo = itemmanager::getitem(iitem.itemid);
-            if (iteminfo.itemtype == itemmanager::I_FLAG)
+            if (iteminfo.itemtype == itemtype::flag)
             {
                 flagitemid = iitem.itemid;
                 flagtextureid = texturemanager::gettiletexturefromitemtexture(iteminfo.textureid);

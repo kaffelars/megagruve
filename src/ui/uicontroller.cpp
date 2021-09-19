@@ -133,8 +133,9 @@ void uicontroller::setupimgui()
 
     (io->Fonts)->Build();
 
-    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 12.0f);
+    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 0.0f);
     ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 4.0f);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
     //ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0, 0.2, 0.2, 1.0));
 }
 

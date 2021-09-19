@@ -5,10 +5,15 @@
 #include "map_obj_models.h"
 #include "tiledata.h"
 
-obj_chest::obj_chest(ctilepos ctp, chunkpos cpo, uint8_t forw) : map_obj(ctp, cpo, forw)
+#include "scenegamehelperfunctions.h"
+#include "uiinventory.h"
+#include "timedfunctions.h"
+#include "uiingame.h"
+
+obj_chest::obj_chest(ctilepos ctp, chunkpos cpo, uint8_t forw, uint8_t chestsize) : map_obj(ctp, cpo, forw)
 {
     hasmodel = true;
-
+    chestinv.resizeinv(chestsize);
 }
 
 obj_chest::~obj_chest()
@@ -27,8 +32,24 @@ void obj_chest::addmodel(ctilepos ctp, chunkmesh& cmesh)
 
 void obj_chest::interact(mainchar& interactor)
 {
-    lidopen = !lidopen;
+    lidopen = true;
     remeshchunk();
+    uiinventory::setextrainventory(chestinv);
+    scenegamehelperfunctions::toggleinventory(inventorytype::chest);
+    timedfunctions::addtimedfunction(500.0f, [&](){trycloselid();});
+}
+
+void obj_chest::trycloselid()
+{
+    if (!uiingame::showinginventory())
+    {
+        lidopen = false;
+        remeshchunk();
+    }
+    else
+    {
+        timedfunctions::addtimedfunction(500.0f, [&](){trycloselid();});
+    }
 }
 
 void obj_chest::destroy()

@@ -11,6 +11,8 @@
 #include "statnumbers.h"
 
 #include "inputmanager.h"
+#include "uiinventory.h"
+#include "uiicons.h"
 
 //kaos, må re-implementeres mer oversiktlig
 
@@ -18,8 +20,6 @@ namespace uiingame
 {
     void updatehearts(bool screensizeupdated);
     void updateactionbar(bool screensizeupdated);
-
-    void additemicon(vaocontainer& vaoc, float xpos, float ypos, uint32_t textureid, uint32_t quantity, float iconsize);
 
     int oldhearts = 0;
     int oldmaxhearts = 0;
@@ -30,13 +30,6 @@ namespace uiingame
 
     vaocontainer clickedbox;
 
-    vaocontainer selecteditem;
-
-    vaocontainer inventorybg;
-    vaocontainer inventoryitems;
-
-    vaocontainer equipment;
-    vaocontainer equipmentgrid;
 
     bool showinventory = false;
 
@@ -47,7 +40,6 @@ namespace uiingame
 
     std::vector<uint32_t> numbertotexid;
 
-    void updateclickedbox();
 
     struct positiondata
     {
@@ -70,9 +62,11 @@ namespace uiingame
 
     int32_t invpositiontoswap = -1;
 
-    void renderstatbox();
-    void renderequipment(bool updateeq);
-    void renderequipmentgrid();
+}
+
+bool uiingame::showinginventory()
+{
+    return showinventory;
 }
 
 void uiingame::initialize()
@@ -82,37 +76,17 @@ void uiingame::initialize()
         uint32_t texid = texturemanager::geticontexturenumber(std::to_string(a), texturemanager::ICONS_MEDIUM);
         numbertotexid.push_back(texid);
     }
+
+    uiicons::initialize();
 }
 
-void uiingame::toggleinventory()
+void uiingame::toggleinventory(inventorytype invtype)
 {
     showinventory = !showinventory;
     invpositiontoswap = -1;
-}
-
-void uiingame::additemicon(vaocontainer& vaoc, float xpos, float ypos, uint32_t textureid, uint32_t quantity, float iconsize)
-{
-    vaoc.addvalues(0, xpos, ypos, textureid, iconsize);
-    if (quantity > 1)
+    if (showinventory)
     {
-        int8_t digits[3] {-1, -1, -1};
-        digits[2] = quantity % 10;
-        if (quantity > 9)
-        {
-            digits[1] = quantity / 10 %10;
-        }
-        if (quantity > 99) {
-            digits[0] = quantity / 100 %10;
-        }
-
-        float numbericonsize = iconsize / 3.0f;
-
-        for (int a = 0; a < 3; a++)
-        {
-            if (digits[a] != -1)
-                vaoc.addvalues(0, (xpos+numbericonsize*(a-1)), ypos+numbericonsize*1.1f, numbertotexid[digits[a]], numbericonsize);
-        }
-
+        uiinventory::showinventory(invtype);
     }
 }
 
@@ -191,297 +165,6 @@ void uiingame::updatevalues()
     positionvalues.startbar = ((float)screensizex - (positionvalues.iconsize * 9.0f) - (positionvalues.spacer * 9.0f)) / 2.0f;
 }
 
-void uiingame::updateinventory(bool update, bool alsobg)
-{
-    if (update)
-    {
-        inventory& inv = maincharcontroller::getmcharinventory();
-        int rows = inv.getinvsize() / 10;
-
-        float deltay = screensizey - positionvalues.iconsize * 5.5f;
-        float dy;
-
-        if (alsobg)
-        {
-            inventorybg.cleanvbos();
-            inventorybg.initialize(1, vaocontainer::typo::POINTS, 4);
-
-            for (int y = 1; y < rows; y++)
-            {
-                for (int x = 0; x < 10; x++)
-                {
-                    dy = deltay;
-
-                    inventorybg.addvalues(0, positionvalues.startbar + x * (positionvalues.iconsize + positionvalues.spacer), dy + y * positionvalues.iconsize,
-                                          texturemanager::geticontexturenumber("border", texturemanager::ICONS_LARGE),positionvalues.iconsize);
-                }
-            }
-
-            inventorybg.setvbos();
-        }
-
-        inventoryitems.cleanvbos();
-        inventoryitems.initialize(1, vaocontainer::typo::POINTS, 4);
-
-        uint32_t itemtexture;
-        uint32_t itemquantity;
-        float iiconsize = (positionvalues.iconsize / 24.0f) * 16.0f;
-
-        uint32_t index = 10;
-        uint32_t texid;
-
-        for (int y = 1; y < rows; y++)
-        {
-            for (int x = 0; x < 10; x++)
-            {
-                dy = deltay;
-
-                inventory::invitem i = inv.getinvitem(index);
-
-                texid = itemmanager::getitem(i.itemid).textureid;
-
-                if (texid)
-                    additemicon(inventoryitems, positionvalues.startbar + x * (positionvalues.iconsize + positionvalues.spacer), dy + y * positionvalues.iconsize, texid , i.quantity, iiconsize);
-
-                index++;
-            }
-        }
-
-        inventoryitems.setvbos();
-    }
-}
-
-void uiingame::hover()
-{
-    hoveritem.itemid = 0;
-    hoveritem.quantity = 0;
-
-    if (showinventory)
-    {
-        glm::ivec2 position = inputmanager::getcursorpos();
-        float deltay = screensizey - positionvalues.iconsize * 5.5f;
-        if (position.x > (positionvalues.startbar - positionvalues.iconsize / 2) && position.x < screensizex - (positionvalues.startbar - positionvalues.iconsize / 2) && position.y > deltay)
-        {
-
-            int32_t index = getinvitemidbyposition(position);
-
-            if (index >= 0)
-            {
-                inventory& i = maincharcontroller::getmcharinventory();
-                inventory::invitem item = i.getinvitem(index);
-                hoveritem.itemid = item.itemid;
-                hoveritem.quantity = item.quantity;
-            }
-        }
-    }
-}
-
-int32_t uiingame::getinvitemidbyposition(glm::ivec2 position)
-{
-    inventory& i = maincharcontroller::getmcharinventory();
-
-    uint32_t index = 0;
-    int rows = i.getinvsize() / 10;
-    float deltay = screensizey - positionvalues.iconsize * 5.5f;
-    uint32_t dy = deltay;
-
-    float halficonsize= positionvalues.iconsize / 2.0f;
-
-    for (int y = 0; y < rows; y++)
-    {
-        for (int x = 0; x < 10; x++)
-        {
-            if (y == 0) dy = (float)screensizey - positionvalues.iconsize;
-            else dy = deltay;
-
-            uint32_t px = positionvalues.startbar + x * (positionvalues.iconsize + positionvalues.spacer);
-            uint32_t py = dy + y * positionvalues.iconsize;
-            if (position.x > px - halficonsize && position.x < px + halficonsize && position.y > py - halficonsize && position.y < py + halficonsize)
-            {
-                return index;
-            }
-
-            index++;
-        }
-    }
-
-    return -1;
-}
-
-void uiingame::click()
-{
-    glm::ivec2 position = inputmanager::getcursorpos();
-    int32_t index = getinvitemidbyposition(position);
-
-    if (index >= 0)
-    {
-        if (invpositiontoswap != -1)
-        {
-            inventory& i = maincharcontroller::getmcharinventory();
-            i.swaporcombineitems(invpositiontoswap, index);
-            invpositiontoswap = -1;
-            updateactionbaritems(true);
-            updateinventory(true, false);
-        }
-        else
-        {
-            invpositiontoswap = index;
-            updateclickedbox();
-        }
-    }
-    else
-    {
-        invpositiontoswap = -1;
-    }
-}
-
-void uiingame::updateclickedbox()
-{
-    clickedbox.cleanvbos();
-    clickedbox.initialize(1, vaocontainer::typo::POINTS, 4);
-
-    float deltay = screensizey - positionvalues.iconsize * 5.5f;
-    float dy = deltay;
-
-    if (invpositiontoswap >= 0)
-    {
-        float x = invpositiontoswap % 10;
-        float y = invpositiontoswap / 10;
-
-        if (y == 0) dy = (float)screensizey - positionvalues.iconsize;
-        else dy = deltay;
-
-        float px = positionvalues.startbar + x * (positionvalues.iconsize + positionvalues.spacer);
-        float py = dy + y * positionvalues.iconsize;
-
-        clickedbox.addvalues(0, px, py, texturemanager::geticontexturenumber("clickedborder", texturemanager::ICONS_LARGE),positionvalues.iconsize);
-    }
-
-    clickedbox.setvbos();
-}
-
-void uiingame::renderiteminfobox()
-{
-    if (hoveritem.itemid)
-    {
-        uicontroller::changefont(uicontroller::FONT_NORMAL);
-        float winwidth = ImGui::CalcTextSize(itemmanager::getitem(hoveritem.itemid).description.c_str(), nullptr).x + 20.0f;
-        float nwidth = ImGui::CalcTextSize(itemmanager::getitem(hoveritem.itemid).name.c_str(), nullptr).x + 20.0f;
-        if (nwidth > winwidth) winwidth = nwidth;
-        if (winwidth < 100.0f) winwidth = 100.0f;
-
-        glm::ivec2 position = inputmanager::getcursorpos() + glm::ivec2(1,1);
-
-        uielement::beginwindow("hoveritem", position, glm::vec2(winwidth, 80));
-
-        std::stringstream infotext;
-        infotext << itemmanager::getitem(hoveritem.itemid).name << "\n";
-        infotext << itemmanager::getitemtypename(hoveritem.itemid) << "\n";
-        infotext << itemmanager::getitem(hoveritem.itemid).description << "\n";
-        infotext << "Quantity: " << hoveritem.quantity;
-        uielement::text(infotext.str(), glm::vec2(10.0f, 0.0f));
-
-        uielement::endwindow();
-    }
-}
-
-void uiingame::renderstatbox()
-{
-    glm::vec2 winsize = glm::vec2(226.0f, 250.0f);
-    float ypos = screensizey - positionvalues.iconsize * 5.5f - winsize.y;
-
-    uielement::beginwindow("statbox", glm::ivec2(positionvalues.startbar - positionvalues.iconsize * 0.5f, ypos), winsize);
-
-    uicontroller::changefont(uicontroller::FONT_LARGE);
-    uielement::text("Player stats", glm::vec2(10.0f, 10.0f));
-
-    uicontroller::changefont(uicontroller::FONT_NORMAL);
-
-    uielement::text("HP:\n\nAttack:\nDefense:\nMove speed:\nUse speed:\n\nCrabs killed:", glm::vec2(10.0f, 60.0f));
-
-    std::stringstream stattext;
-    statnumbers& stats = maincharcontroller::getmainchar().actualstats;
-    stattext << maincharcontroller::getcurrenthealth() << "/" << maincharcontroller::getmaxhealth() << "\n\n";
-
-    stattext << stats.statvalues[1] << " + held item\n";
-    stattext << stats.statvalues[2] << "\n";
-    stattext << stats.statvalues[3] << "\n";
-    stattext << stats.statvalues[4] << "\n\n";
-    stattext << "0";
-
-    uielement::text(stattext.str(), glm::vec2(120.0f, 60.0f));
-
-    uielement::endwindow();
-}
-
-void uiingame::renderequipment(bool updateeq)
-{
-    if (equipment.isempty() || updateeq)
-    {
-        inventory& mchareq = maincharcontroller::getmainchar().equipment;
-
-        equipment.cleanvbos();
-        equipment.initialize(1, vaocontainer::typo::POINTS, 4);
-
-        float ypos = screensizey - positionvalues.iconsize * 5.5f - 250.0f;
-        float xpos = positionvalues.startbar - positionvalues.iconsize * 0.5f + 236.0f;
-        uint32_t texid;
-        float iiconsize = (positionvalues.iconsize / 24.0f) * 16.0f;
-
-        for (int a = 0; a < 5; a++)
-        {
-            if (a == 3) xpos += positionvalues.iconsize + positionvalues.spacer;
-            if (a == 3) ypos -= positionvalues.iconsize * 2.0f;
-
-            inventory::invitem i = mchareq.getinvitem(a);
-
-            texid = itemmanager::getitem(i.itemid).textureid;
-
-            if (texid)
-                additemicon(equipment, xpos + 80.0f + (positionvalues.iconsize * 0.5f), ypos + (a + 0.5f) * positionvalues.iconsize, texid , i.quantity, iiconsize);
-        }
-
-        equipment.setvbos();
-    }
-
-    equipment.render();
-}
-
-void uiingame::renderequipmentgrid()
-{
-    glm::vec2 winsize = glm::vec2(80.0f, 250.0f);
-    float ypos = screensizey - positionvalues.iconsize * 5.5f - winsize.y;
-    float xpos = positionvalues.startbar - positionvalues.iconsize * 0.5f + 236.0f;
-    uielement::beginwindow("equipmentinfo", glm::ivec2(xpos, ypos), winsize);
-
-    uielement::text("Helmet:", glm::vec2(10.0f, -4.0f + positionvalues.iconsize * 0.5f));
-    uielement::text("Chest:", glm::vec2(10.0f, -4.0f + (positionvalues.iconsize) * 1.5f));
-    uielement::text("Boots:", glm::vec2(10.0f, -4.0f + (positionvalues.iconsize) * 2.5f));
-
-    uielement::endwindow();
-
-    uielement::beginwindow("trinkets", glm::ivec2(xpos+80.0f +positionvalues.iconsize + positionvalues.spacer, ypos + 2.0f + positionvalues.iconsize*0.5f), glm::vec2(80.0f, 30.0f));
-    uielement::text("Trinkets:", glm::vec2(5.0f, 5.0f));
-    uielement::endwindow();
-
-    if (equipmentgrid.isempty())
-    {
-        equipmentgrid.cleanvbos();
-        equipmentgrid.initialize(1, vaocontainer::typo::POINTS, 4);
-
-        for (int a = 0; a < 5; a++)
-        {
-            if (a == 3) xpos += positionvalues.iconsize + positionvalues.spacer;
-            if (a == 3) ypos -= positionvalues.iconsize * 2.0f;
-            equipmentgrid.addvalues(0, xpos + 80.0f + (positionvalues.iconsize * 0.5f), ypos + (a + 0.5f) * positionvalues.iconsize,
-                                          texturemanager::geticontexturenumber("border", texturemanager::ICONS_LARGE),positionvalues.iconsize);
-        }
-
-        equipmentgrid.setvbos();
-    }
-
-    equipmentgrid.render();
-}
 
 void uiingame::updateactionbaritems(bool updatebar)
 {
@@ -519,7 +202,7 @@ void uiingame::updateactionbaritems(bool updatebar)
         for (int a = 0; a < 10; a++)
         {
             if (itemtextures[a] != 0)
-                additemicon(actionbaritems, positionvalues.startbar + (float)a*(positionvalues.iconsize + positionvalues.spacer), ypos, itemtextures[a], quantity[a], aiconsize);
+                uiicons::additemicon(actionbaritems, positionvalues.startbar + (float)a*(positionvalues.iconsize + positionvalues.spacer), ypos, itemtextures[a], quantity[a], aiconsize);
         }
 
         actionbaritems.setvbos();
@@ -528,8 +211,6 @@ void uiingame::updateactionbaritems(bool updatebar)
 
 void uiingame::rendergameui()
 {
-    hover();
-
     bool screensizeupdated = false;
     if (screensizex != settings::getscreenx() || screensizey != settings::getscreeny())
     {
@@ -543,7 +224,7 @@ void uiingame::rendergameui()
     updatehearts(screensizeupdated);
     updateactionbar(screensizeupdated);
     updateactionbaritems(screensizeupdated);
-    updateinventory(screensizeupdated, true);
+    //updateinventory(screensizeupdated, true);
 
     shadercontroller::activateshader(shadercontroller::SH_ICONS);
     glUniform2f(shadercontroller::getuniformid("screensize"), screensizex, screensizey);
@@ -562,21 +243,12 @@ void uiingame::rendergameui()
 
     if (showinventory)
     {
-        texturemanager::bindiconstexture(texturemanager::ICONS_LARGE, 0);
-        inventorybg.render();
-        texturemanager::bindiconstexture(texturemanager::ICONS_MEDIUM, 0);
-        inventoryitems.render();
-        if (invpositiontoswap >= 0)
+        if (uiinventory::inventoryitemsupdated())
         {
-            texturemanager::bindiconstexture(texturemanager::ICONS_LARGE, 0);
-            clickedbox.render();
+            updateactionbaritems(true);
         }
-        renderiteminfobox();
-        renderstatbox();
-        texturemanager::bindiconstexture(texturemanager::ICONS_LARGE, 0);
-        renderequipmentgrid();
-        texturemanager::bindiconstexture(texturemanager::ICONS_MEDIUM, 0);
-        renderequipment(false);
+
+        uiinventory::renderinventory();
     }
 
 }

@@ -53,6 +53,8 @@ void newgenerator::generateworld(chunk& c, std::vector<float>& land, chunkpos cp
 
     tileid tid_bedrock = tiledata::gettileid("t_bedrock");
 
+    tileid tid_mossydirt = tiledata::gettileid("t_mossydirt");
+
     int rx, ry, rz;
 
     /*int coarsewid = ((chunkwidth + 2) / 3) + 1;
@@ -188,6 +190,7 @@ void newgenerator::generateworld(chunk& c, std::vector<float>& land, chunkpos cp
                     mt = 0.2f + 0.2f * factor;
                 }
                 utils::clamp(mtsteep, 0.5f, 2.0f);
+                int h = 255;
 
                 if (ry > 128) //oceans
                 {
@@ -207,7 +210,7 @@ void newgenerator::generateworld(chunk& c, std::vector<float>& land, chunkpos cp
                     {
                         float hinc = lh * 10.0f;
                         utils::clamp(hinc, 0.0f, 1.0f);
-                        int h = (128.0f - mtsteep * granulation * mt * lh * 64.0f - terr * 6.0f * lh) - hinc * avgh * 14.0f;
+                        h = (128.0f - mtsteep * granulation * mt * lh * 64.0f - terr * 6.0f * lh) - hinc * avgh * 14.0f;
 
                         if (high > 0.5f) //highlands
                         {
@@ -253,6 +256,15 @@ void newgenerator::generateworld(chunk& c, std::vector<float>& land, chunkpos cp
                         if (spotssmall > 0.8f) tid = tid_ice;
                     }
 
+                }
+
+                if (biome.humidity < 59 && biome.temperature < 59) //dirt mounds
+                {
+                    float mounds = (randfunc::noise(rx, ry/16, rz, 21.37f) - 0.5f) * 15.0f;
+                    if (tid == 0 && ry > h - (mounds))
+                    {
+                        tid = tid_mossydirt;
+                    }
                 }
 
                 if (y > 0 && tid == tid_dirt && c.gettile(ctilepos{x,y-1,z}) == 0) //top tile
@@ -362,7 +374,7 @@ void newgenerator::generateworld(chunk& c, std::vector<float>& land, chunkpos cp
                 }*/
 
 
-                if (tid == tid_rock)
+                if (tid == tid_rock) //ore veins
                 {
                     float coalore = randfunc::noise(rx-523, ry + 123, rz-21, 17.3f);
                     if (coalore > 0.9f || coalore < -0.9f) tid = tid_coalore;
@@ -378,9 +390,9 @@ void newgenerator::generateworld(chunk& c, std::vector<float>& land, chunkpos cp
                     }
                 }
 
-                if (y == 255) tid = tid_bedrock;
+                if (y == 255) tid = tid_bedrock; //bedrock at complete bottom of world
 
-                if (tid == 0 && y > 230) tid = tid_lava;
+                if (tid == 0 && y > 230) tid = tid_lava; //lava at bottom of world
 
                 c.settile(ctilepos{x,y,z}, tid);
             }

@@ -51,6 +51,11 @@ chunk::ctags chunk::gettag()
     return ctag;
 }
 
+bool chunk::safetodelete()
+{
+    return (allowstilewrites() || gettag() == C_START);
+}
+
 bool chunk::allowstilereads()
 {
     bool allow = false;
@@ -312,11 +317,7 @@ void chunk::addhighest(ytile value)
     highesttile.push_back(value);
 }
 
-bool chunk::safetodelete()
-{
-    if (gettag() == C_START || gettag()==C_READY) return true; //burde være noenlunde trygt
-    return false;
-}
+
 
 void chunk::render()
 {
