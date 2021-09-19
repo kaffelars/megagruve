@@ -26,7 +26,7 @@ Features:
 * many interesting items
 * player inventory
 * doors and buttons
-* chests (just for decoration at the moment)
+* working chests
 * flagpoles (with flags)
 * random crashes
 
