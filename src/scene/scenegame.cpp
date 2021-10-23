@@ -191,24 +191,19 @@ void scenegame::update()
             scenec::changeactivescene(scenec::S_SETTINGS);
         }
     }
-    else// if (showinginventory)
-    {
-
-    /*}
     else
-    {*/ timedfunctions::update();
-        //std::cout << "\n1";
+    {
+        timedfunctions::update();
+
         environment::updatetime();
-        //std::cout << "2";
+
         maincharcontroller::update();
-        //std::cout << "3";
-        particlemanager::updateparticles();
-        //std::cout << "4";
     }
 
     chunkcontroller::updatechunks();
 
-    //std::cout << "5\n";
+    if (!showingescbox)
+        particlemanager::updateparticles();
 }
 
 void scenegame::destroy()

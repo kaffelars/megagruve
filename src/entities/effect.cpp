@@ -177,7 +177,8 @@ bool changeblockeffect::activate(entity* user, entity* target)
     //std::cout << wt.x << " " << wt.y << " " << wt.z << "\n";
     target->heal(99999); //kan dette by på problemer?
 
-    return chunktilemanager::changectile(wt, tid, 0, false);
+    chunktilemanager::breakageinfo b;
+    return chunktilemanager::changectile(wt, tid, 0, b);
     //chunkcontroller::addtiletochange(wt, tid, false);
 
     //return true;
@@ -204,5 +205,6 @@ bool placeobjecteffect::activate(entity* user, entity* target)
 
     target->heal(99999);
 
-    return chunktilemanager::changectile(wt, 255, tid, false, target->getfacingdirectionid());
+    chunktilemanager::breakageinfo b;
+    return chunktilemanager::changectile(wt, 255, tid, b, target->getfacingdirectionid());
 }
