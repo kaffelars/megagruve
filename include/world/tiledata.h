@@ -31,6 +31,7 @@ namespace tiledata
         std::string fullname;
         tiletype ttype;
         blockshape defaultshape;
+        uint8_t lightattenuation;
         uint8_t hardness;
         uint8_t glow;
         bool needssupport;

@@ -25,6 +25,8 @@ class chunkmesh
         GLuint vao[1] {0};
         std::vector<GLfloat> vertexes[2];
 
+        bool vbosset {false};
+
         uint32_t vertexnum;
 
 };
