@@ -225,11 +225,12 @@ void chunk::setremeshedvbos()
 void chunk::setonevbo(uint8_t meshnum)
 {
     toggleactivemesh(meshnum);
+    cmesh[meshnum][getinactivemesh(meshnum)].cleanall();
     cmesh[meshnum][getactivemesh(meshnum)].setvbos();
-    cmesh[meshnum][!getactivemesh(meshnum)].cleanall();
 
+    wmesh[meshnum][getinactivemesh(meshnum)].cleanall();
     wmesh[meshnum][getactivemesh(meshnum)].setvbos();
-    wmesh[meshnum][!getactivemesh(meshnum)].cleanall();
+
 }
 
 void chunk::setbiome(biomedata b, chtilepos chpos)

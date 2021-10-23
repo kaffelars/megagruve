@@ -60,9 +60,7 @@ bool chunkmesh::setvbos()
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
 
-
-        //vertexes[0].clear();
-        //vertexes[1].clear();
+        vbosset = true;
 
         return true;
     }
@@ -81,14 +79,17 @@ bool chunkmesh::isempty()
 
 void chunkmesh::cleanbuffers() //renser buffere uten å slette vectorer
 {
-    glDeleteBuffers(2, vbo);
-
-    glDeleteVertexArrays(1, vao);
+    if (vbosset)
+    {
+        glDeleteBuffers(2, vbo);
+        glDeleteVertexArrays(1, vao);
+        vbosset = false;
+    }
 }
 
 void chunkmesh::cleanall() //renser alt
 {
-    if (!isempty())
+    if (vbosset)
     {
         cleanbuffers();
         for (int a = 0; a < 2; a++)
@@ -100,7 +101,7 @@ void chunkmesh::cleanall() //renser alt
 
 void chunkmesh::render()
 {
-    if (!isempty())
+    if (vbosset && !isempty())
     {
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(vao[0]);

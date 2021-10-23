@@ -39,7 +39,8 @@ void chunkwatermanager::updateactivewatertiles()
                             tileid tid = c.gettile(a.ctpos + sideoffsets[i]);
                             if (tiledata::isempty(tid))
                             {
-                                chunktilemanager::addctiletochange(a.cpos, a.ctpos + sideoffsets[i], 1, 0, false);
+                                chunktilemanager::breakageinfo b;
+                                chunktilemanager::addctiletochange(a.cpos, a.ctpos + sideoffsets[i], 1, 0, b);
                             }
                         }
                     }

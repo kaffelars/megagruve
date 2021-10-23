@@ -22,7 +22,7 @@ namespace chunktilemanager
         ctilepos ctpos;
         tileid tid;
         uint8_t extrainfo; //f.eks. mapobj id
-        bool breakage {false};
+        breakageinfo breakage;
         //uint8_t forwardside {0};
     };
 
@@ -30,14 +30,14 @@ namespace chunktilemanager
     std::vector<cchangetile> ctilestochangequeue;
 }
 
-void chunktilemanager::addtiletochange(wtilepos wtile, tileid newtileid, uint8_t extrainfo, bool breakage)
+void chunktilemanager::addtiletochange(wtilepos wtile, tileid newtileid, uint8_t extrainfo, breakageinfo breakage)
 {
     chunkpos cpos = chunkcoords::wpostocpos(wtile);
     ctilepos ctpos = chunkcoords::wtilepostoctilepos(wtile);
     addctiletochange(cpos, ctpos, newtileid, extrainfo, breakage);
 }
 
-void chunktilemanager::addctiletochange(chunkpos cpos, ctilepos ctpos, tileid newtileid, uint8_t extrainfo, bool breakage)
+void chunktilemanager::addctiletochange(chunkpos cpos, ctilepos ctpos, tileid newtileid, uint8_t extrainfo, breakageinfo breakage)
 {
     ctilestochangequeue.emplace_back(cchangetile{cpos, ctpos, newtileid, extrainfo, breakage});
 }
@@ -116,15 +116,16 @@ void chunktilemanager::changetiles()
     }
 }
 
-bool chunktilemanager::changectile(wtilepos wtile, tileid newtileid, uint8_t extrainfo, bool breakage, uint8_t forwardside)
+bool chunktilemanager::changectile(wtilepos wtile, tileid newtileid, uint8_t extrainfo, breakageinfo breakage, uint8_t forwardside)
 {
     chunkpos cpos = chunkcoords::wpostocpos(wtile);
     ctilepos ctpos = chunkcoords::wtilepostoctilepos(wtile);
     changectile(cpos, ctpos, newtileid, extrainfo, breakage, forwardside);
 }
 
-bool chunktilemanager::changectile(chunkpos cpos, ctilepos ctpos, tileid newtileid, uint8_t extrainfo, bool breakage, uint8_t forwardside)
+bool chunktilemanager::changectile(chunkpos cpos, ctilepos ctpos, tileid newtileid, uint8_t extrainfo, breakageinfo breakage, uint8_t forwardside)
 {
+    //er det et problem med map objs på border? maybe, map objs bruker coord3d - nå blir ikke map objs satt i nabochunks inntil videre, kan bli problems med lys?
     if (!chunkcontroller::chunkexists(cpos)) return false;
     chunk& c = chunkcontroller::getchunk(cpos);
     if (c.gettag() == chunk::C_READY)
@@ -158,21 +159,24 @@ bool chunktilemanager::changectile(chunkpos cpos, ctilepos ctpos, tileid newtile
             case mapobjplacement::ground:
                 {
                     c.addchunkobj(ctpos, extrainfo, getforwardside(cpos, ctpos));
+                    break;
                 }
             case mapobjplacement::surface:
                 {
-
                     c.addchunkobj(ctpos, extrainfo, forwardside);
+                    break;
                 }
             case mapobjplacement::verticalsurface:
                 {
                     if (forwardside != 2 && forwardside != 3)
                         c.addchunkobj(ctpos, extrainfo, forwardside);
+                    break;
                 }
             case mapobjplacement::horizontalsurface:
                 {
                     if (forwardside == 2 && forwardside == 3)
                         c.addchunkobj(ctpos, extrainfo, forwardside);
+                    break;
                 }
             }
 
@@ -197,20 +201,21 @@ bool chunktilemanager::changectile(chunkpos cpos, ctilepos ctpos, tileid newtile
                 if (ctpos.y < chunkheight-2) c.setremeshy(ctpos.y+1);
             }
 
-            if (tiledata::gettiletype(oldtile) != tiledata::gettiletype(newtileid)) //check if side updates = necessary
+            if (tiledata::gettiletype(oldtile) != tiledata::gettiletype(newtileid)) //check if sunupdates = necessary
             {
                 chunklight::updatesunlight(c, ctpos, false);
             }
 
             if (chunkcoords::withinchunkbounds(ctpos))
             {
-                if (ctpos.x == 0) addctiletochange(chunkpos{cpos.x-1, cpos.y}, ctilepos{chunkwidth, ctpos.y, ctpos.z}, newtileid, extrainfo, false);
-                if (ctpos.x == chunkwidth-1) addctiletochange(chunkpos{cpos.x+1, cpos.y}, ctilepos{-1, ctpos.y, ctpos.z}, newtileid, extrainfo, false);
-                if (ctpos.z == 0) addctiletochange(chunkpos{cpos.x, cpos.y-1}, ctilepos{ctpos.x, ctpos.y, chunkwidth}, newtileid, extrainfo, false);
-                if (ctpos.z == chunkwidth-1) addctiletochange(chunkpos{cpos.x, cpos.y+1}, ctilepos{ctpos.x, ctpos.y, -1}, newtileid, extrainfo, false);
+                breakageinfo b;
+                if (ctpos.x == 0) addctiletochange(chunkpos{cpos.x-1, cpos.y}, ctilepos{chunkwidth, ctpos.y, ctpos.z}, newtileid, extrainfo, b);
+                if (ctpos.x == chunkwidth-1) addctiletochange(chunkpos{cpos.x+1, cpos.y}, ctilepos{-1, ctpos.y, ctpos.z}, newtileid, extrainfo, b);
+                if (ctpos.z == 0) addctiletochange(chunkpos{cpos.x, cpos.y-1}, ctilepos{ctpos.x, ctpos.y, chunkwidth}, newtileid, extrainfo, b);
+                if (ctpos.z == chunkwidth-1) addctiletochange(chunkpos{cpos.x, cpos.y+1}, ctilepos{ctpos.x, ctpos.y, -1}, newtileid, extrainfo, b);
             }
 
-            if (breakage)
+            if (breakage.breakage)
             {
                 uint8_t textureid;
                 uint8_t glow;
@@ -226,7 +231,7 @@ bool chunktilemanager::changectile(chunkpos cpos, ctilepos ctpos, tileid newtile
                 }
                 wposition tilepos = wposition(cpos.x * chunkwidth + ctpos.x, ctpos.y, cpos.y * chunkwidth + ctpos.z);
 
-                for (int a =0 ; a < 2; a++)
+                for (int a =0 ; a < breakage.particlenum; a++)
                 {
                     //direction chardir = (-maincharcontroller::getviewdir() / 10.0f);
                     float randx = utils::randint(-3, 3);
@@ -234,7 +239,7 @@ bool chunktilemanager::changectile(chunkpos cpos, ctilepos ctpos, tileid newtile
                     randx /= 30.0f;
                     randz /= 30.0f;
                     int duration = 2000 + utils::randint(-500, 500);
-                    particlemanager::addparticle(wposition(tilepos.x + 0.5f, tilepos.y + 0.5f, tilepos.z + 0.5f), velocity(randx, -0.1f, randz), textureid, 15, duration, glow, 0.5f, false);
+                    particlemanager::addparticle(wposition(tilepos.x + 0.5f, tilepos.y + 0.5f, tilepos.z + 0.5f), breakage.particlevel + velocity(randx, -0.1f, randz), textureid, 15, duration, glow, 1.0f, false);
                 }
 
                 //water
@@ -271,20 +276,24 @@ void chunktilemanager::explodetiles(wtilepos wtile, int32_t explosionpower)
                 {
                     tileid tid = chunkcontroller::gettileid(wtile + wtilepos{x,y,z});
                     if (!tiledata::needssupport(tid) && tiledata::gettileinfo(tid).hardness != 255)
-                        breaktile(wtile + wtilepos{x,y,z}); //blir debug particles fordi busker og sånt legges med - fixed
+                    {
+                        velocity partvel = velocity{x,y,z};
+                        partvel /= 10.0f;
+                        breakageinfo b {true, partvel, 2};
+                        breaktilewithinfo(wtile + wtilepos{x,y,z}, b);
+                    }
                 }
             }
         }
     }
 }
 
-void chunktilemanager::breaktile(wtilepos wtile)
+void chunktilemanager::breaktilewithinfo(wtilepos wtile, breakageinfo b)
 {
-    //drop stuff?
     tileid tid = chunkcontroller::gettileid(wtile);
     if (tid > 1) //air and water cannot be broken normally
     {
-        addtiletochange(wtile, 0, 0, true);
+        addtiletochange(wtile, 0, 0, b);
 
         if (wtile.y > 0)
         {
@@ -296,6 +305,14 @@ void chunktilemanager::breaktile(wtilepos wtile)
             }
         }
     }
+}
+
+
+void chunktilemanager::breaktile(wtilepos wtile)
+{
+    //drop stuff?
+    chunktilemanager::breakageinfo b {true};
+    breaktilewithinfo(wtile, b);
 }
 
 uint8_t chunktilemanager::getforwardside(chunkpos cpos, ctilepos ctpos)

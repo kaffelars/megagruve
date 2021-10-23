@@ -31,45 +31,26 @@ void chunklight::generatesunlight(chunk& c)
 
 void chunklight::updatesunlight(chunk& c, ctilepos ctpos, bool initial) //dette funker bare av og til
 {
-    //chunkexists guard? neh
-    //messy stuff
     if (ctpos.y <= 0) return;
     ctilepos currentpos = ctilepos{ctpos.x,ctpos.y-1, ctpos.z};
     int32_t sunlight = c.getsunlight(currentpos);
     if (sunlight == 0) return;
 
-    uint8_t oldsunlight = c.getsunlight(currentpos);
-
-    while (oldsunlight > 0)
+    while (true)
     {
+        currentpos.y ++;
+        if (currentpos.y == chunkheight) break;
         tileid tid = c.gettile(currentpos);
+        uint8_t lightattenuation = tiledata::gettileinfo(tid).lightattenuation;
 
-        //duplicated no good
-        if (tiledata::gettiletype(tid) == tiledata::T_SOLID)
-            sunlight = 0;
-        if (tiledata::gettiletype(tid) == tiledata::T_TRANSPARENT)
-            sunlight -= 16;
-        if (tiledata::gettiletype(tid) == tiledata::T_WATER)
-            sunlight -= 64;
-        if (tiledata::gettiletype(tid) == tiledata::T_DISCARD)
-            sunlight -= 32;
-        if (tiledata::gettiletype(tid) == tiledata::T_OBJECT)
-            sunlight -= 16;
-
-        if (sunlight < 0) sunlight = 0;
-
-        if (initial)
-            oldsunlight = sunlight;
-        else
-            oldsunlight = c.getsunlight(currentpos);
+        sunlight -= lightattenuation;
+        if (sunlight <0) sunlight=0;
 
         c.setsunlight(currentpos, sunlight);
 
-        if (!initial) c.setremeshy(currentpos.y);
+        if (!initial) c.setremeshy(currentpos.y); //for å unngå at remesh trigges når chunk genereres
 
-        currentpos.y++;
-        if (currentpos.y == chunkheight) break;
+        if (sunlight <= 0) break;
     }
-
 
 }
