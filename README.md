@@ -60,9 +60,11 @@ Missing features:
 
 ![screenshot](https://github.com/kaffelars/megagruve/blob/main/screenshots/screenshot6.png)
 
-## Using
+## Using/compiling
 * [SDL2](https://www.libsdl.org/)
-* OpenGL
+* [glew](http://glew.sourceforge.net/)
 * [GLM](https://github.com/g-truc/glm)
 * [Dear ImGui](https://github.com/ocornut/imgui)
 * [pugixml](https://pugixml.org/)
+
+Dear ImGui and pugixml are included in the repo. SDL2, glew and GLM has to be downloaded separately and included and linked (SDL2 and glew) to compile. I compile (windows) through [Code::Blocks](https://www.codeblocks.org/) with the included mingw-w64 (GCC) set to C++17. Necessary dll-files to run the compiled program are in the zip in the builds folder. SDL2 has wide platform support, so compiling for other platforms should be doable (I haven't tried). Let me know if you have issues compiling.
