@@ -37,6 +37,11 @@ bool chunkmesh::setvbos()
     {
         vertexnum = vertexes[0].size() / 4;
 
+        if (vbosset)
+        {
+            cleanbuffers();
+        }
+
         glGenBuffers(2, vbo);
 
         glGenVertexArrays(1, vao);
