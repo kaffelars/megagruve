@@ -76,28 +76,21 @@ void scenesettings::game()
 {
     uielement::text("Render block placement helper box: ", glm::vec2(65.0f, 25.0f));
     bool bbox = settings::getisetting(settings::SET_BBOX);
-    uielement::checkbox(bbox, glm::vec2(20.0f, 25.0f));
-    if (bbox != settings::getisetting(settings::SET_BBOX))
-    {
-        settings::setisetting(settings::SET_BBOX, bbox);
-    }
+    if (uielement::checkbox(bbox, glm::vec2(20.0f, 25.0f))) settings::setisetting(settings::SET_BBOX, bbox);
 
     uielement::text("Render mining helper box: ", glm::vec2(65.0f, 55.0f));
-    bool mbox = settings::getisetting(settings::SET_MBOX);
-    uielement::checkbox(mbox, glm::vec2(20.0f, 55.0f));
-    if (mbox != settings::getisetting(settings::SET_MBOX))
-    {
-        settings::setisetting(settings::SET_MBOX, mbox);
-    }
+    bbox = settings::getisetting(settings::SET_MBOX);
+    if (uielement::checkbox(bbox, glm::vec2(20.0f, 55.0f))) settings::setisetting(settings::SET_MBOX, bbox);
 
     uielement::text("Max threads (in addition to main thread): ", glm::vec2(25.0f, 95.0f));
     int maxt = settings::getisetting(settings::SET_MAXTHREADS);
     uielement::setposition(25.0f, 115.0f);
-    uielement::sliderint(1, 32, maxt, 1);
-    if (maxt != settings::getisetting(settings::SET_MAXTHREADS))
-    {
-        settings::setisetting(settings::SET_MAXTHREADS, maxt);
-    }
+    if (uielement::sliderint(1, 32, maxt, 1)) settings::setisetting(settings::SET_MAXTHREADS, maxt);
+
+    uielement::text("Mouse sensitivity: ", glm::vec2(25.0f, 155.0f));
+    maxt = settings::getisetting(settings::SET_MOUSESENS);
+    uielement::setposition(25.0f, 175.0f);
+    if (uielement::sliderint(1, 100, maxt, 1)) settings::setisetting(settings::SET_MOUSESENS, maxt);
 }
 
 void scenesettings::video()
@@ -105,11 +98,7 @@ void scenesettings::video()
     uielement::text("Render distance: ", glm::vec2(25.0f, 25.0f));
     int renderdist = settings::getisetting(settings::SET_CDIST);
     uielement::setposition(100.0f, 25.0f);
-    uielement::sliderint(5, 32, renderdist, 1);
-    if (renderdist != settings::getisetting(settings::SET_CDIST))
-    {
-        settings::setisetting(settings::SET_CDIST, renderdist);
-    }
+    if (uielement::sliderint(5, 32, renderdist, 1)) settings::setisetting(settings::SET_CDIST, renderdist);
 
     uielement::text("Vsync: ", glm::vec2(25.0f, 95.0f));
     bool vsync = settings::getisetting(settings::SET_VSYNC);
@@ -177,6 +166,16 @@ void scenesettings::keybinds()
 }
 
 void scenesettings::update()
+{
+
+}
+
+void scenesettings::changewindowsize()
+{
+
+}
+
+void scenesettings::hiddenupdate()
 {
 
 }

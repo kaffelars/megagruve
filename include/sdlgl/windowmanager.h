@@ -25,7 +25,7 @@ namespace windowmanager
 
     void initialize();
 
-    void processevent(SDL_Event& e);
+    uint8_t processevent(SDL_Event& e);
 
 };
 

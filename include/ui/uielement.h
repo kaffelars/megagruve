@@ -9,7 +9,7 @@ namespace uielement
 {
     void resetcounter();
 
-    void sliderint(int from, int to, int& into, int division = 0);
+    bool sliderint(int from, int to, int& into, int division = 0);
 
     void setposition(int x, int y);
 
@@ -31,7 +31,7 @@ namespace uielement
 
     void addrect(glm::vec2 start, glm::vec2 rectsize, glm::vec3 col);
 
-    void checkbox(bool &checked, glm::vec2 position);
+    bool checkbox(bool &checked, glm::vec2 position);
 }
 
 #endif // UIELEMENT_H

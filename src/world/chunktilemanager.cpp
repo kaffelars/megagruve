@@ -30,6 +30,12 @@ namespace chunktilemanager
     std::vector<cchangetile> ctilestochangequeue;
 }
 
+void chunktilemanager::cleartilestochange()
+{
+    ctilestochange.clear();
+    ctilestochangequeue.clear();
+}
+
 void chunktilemanager::addtiletochange(wtilepos wtile, tileid newtileid, uint8_t extrainfo, breakageinfo breakage)
 {
     chunkpos cpos = chunkcoords::wpostocpos(wtile);

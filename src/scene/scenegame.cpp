@@ -53,6 +53,8 @@ void scenegame::setkeys()
 
     inputmanager::setkeyfunction(inputmanager::KEY_INV, [&](){toggleinventory();}, inputmanager::KE_CLICKED);
     inputmanager::setkeyfunction(inputmanager::KEY_TOGGLEFLYING, [&](){maincharcontroller::toggleflying();maincharcontroller::togglenoclip();}, inputmanager::KE_CLICKED);
+    inputmanager::setkeyfunction(inputmanager::KEY_TOGGLEINFOBOX, [&](){showinfobox = !showinfobox;}, inputmanager::KE_CLICKED);
+    inputmanager::setkeyfunction(inputmanager::KEY_RUNNING, [&](){maincharcontroller::currentlyrunning();}, inputmanager::KE_HELD);
     inputmanager::setkeyfunction(inputmanager::KEY_JUMP, [&](){maincharcontroller::mcharjump();}, inputmanager::KE_CLICKED);
     inputmanager::setkeyfunction(inputmanager::KEY_JUMP, [&](){maincharcontroller::mcharjump();}, inputmanager::KE_HELD);
 }
@@ -62,6 +64,12 @@ void scenegame::show()
     camera::updateperspective();
 
     setkeys();
+
+    if (startnewworld)
+    {
+        showingescbox = false;
+        startnewworld = false;
+    }
 
     if (showingescbox)
     {
@@ -83,47 +91,54 @@ void scenegame::hide()
     inputmanager::clearallkeyfunctions();
 }
 
+
+
 void scenegame::render()
 {
     renderer::rendergame();
 
-    uielement::beginwindow("infobox", glm::vec2(1.0f), glm::vec2(190.0f, 180.0f));
-
-    wposition mcpos = maincharcontroller::getmaincharposition();
-    std::stringstream infotext;
-    infotext << "x:" << std::roundf(mcpos.x) << " y:" << std::roundf(mcpos.y) << " z:" << std::roundf(mcpos.z) << "\n";
-
-    wtilepos selectedtile = maincharcontroller::gettilehover();
-
-    infotext << "tile coords: " << selectedtile.x << " " << selectedtile.y << " " << selectedtile.z << "\n";
-
-    wtilepos wtpos = maincharcontroller::gettilehoverentityposition();
-
-    infotext << "ctilepos: " << wtpos.x << " " << wtpos.y << " " << wtpos.z << "\n";
-
-    chunkpos cpos = chunkcoords::wpostocpos(wposition{wtpos} + wposition{0.5f});
-    ctilepos ctpos = chunkcoords::wpostoctilepos(wposition{wtpos} + wposition{0.5f});
-
-    infotext << "chunk: " << cpos.x << " " << cpos.y << "\n";
-    infotext << "ctpos: " << ctpos.x << " " << ctpos.y << " " << ctpos.z << "\n";
-
-    tileid tid = chunkcontroller::gettileid(selectedtile);
-    infotext << "tilename: " << tiledata::gettilename(tid) << "\n";
-
-    if (chunkcontroller::chunkexists(cpos))
+    if (showinfobox)
     {
-        chunk& c = chunkcontroller::getchunk(cpos);
-        if (c.gettag()==chunk::C_READY)
+        uielement::beginwindow("infobox", glm::vec2(1.0f), glm::vec2(190.0f, 200.0f));
+
+        wposition mcpos = maincharcontroller::getmaincharposition();
+        std::stringstream infotext;
+        infotext << "x:" << std::roundf(mcpos.x) << " y:" << std::roundf(mcpos.y) << " z:" << std::roundf(mcpos.z) << "\n";
+
+        wtilepos selectedtile = maincharcontroller::gettilehover();
+
+        infotext << "tile coords: " << selectedtile.x << " " << selectedtile.y << " " << selectedtile.z << "\n";
+
+        wtilepos wtpos = maincharcontroller::gettilehoverentityposition();
+
+        infotext << "ctilepos: " << wtpos.x << " " << wtpos.y << " " << wtpos.z << "\n";
+
+        chunkpos cpos = chunkcoords::wpostocpos(wposition{wtpos} + wposition{0.5f});
+        ctilepos ctpos = chunkcoords::wpostoctilepos(wposition{wtpos} + wposition{0.5f});
+
+        infotext << "chunk: " << cpos.x << " " << cpos.y << "\n";
+        infotext << "ctpos: " << ctpos.x << " " << ctpos.y << " " << ctpos.z << "\n";
+
+        tileid tid = chunkcontroller::gettileid(selectedtile);
+        infotext << "tilename: " << tiledata::gettilename(tid) << "\n";
+
+        if (chunkcontroller::chunkexists(cpos))
         {
-            chunk::biomedata biome = c.getbiome(ctpos);
-            infotext << "temp: " << int(biome.temperature) << " humid: " << int(biome.humidity) << "\n";
+            chunk& c = chunkcontroller::getchunk(cpos);
+            if (c.gettag()==chunk::C_READY)
+            {
+                chunk::biomedata biome = c.getbiome(ctpos);
+                infotext << "temp: " << int(biome.temperature) << " humid: " << int(biome.humidity) << "\n";
+            }
         }
+        infotext << "loaded: " << chunkcontroller::loadedchunksnum() << "\nrendered: " << chunkcontroller::getchunksrendered() << "\n";
+
+        infotext << "time: " << std::round(environment::getcurrenttime() * 100) / 100.0f;
+
+        uielement::text(infotext.str(), glm::vec2(10.0f, 0.0f));
+
+        uielement::endwindow();
     }
-    infotext << "loaded: " << chunkcontroller::loadedchunksnum() << "\nrendered: " << chunkcontroller::getchunksrendered();
-
-    uielement::text(infotext.str(), glm::vec2(10.0f, 0.0f));
-
-    uielement::endwindow();
 }
 
 void scenegame::shutdownworld()
@@ -167,8 +182,23 @@ void scenegame::toggleinventory(inventorytype invtype)
     scenegamehelperfunctions::toggleinventory(invtype);
 }
 
+void scenegame::hiddenupdate()
+{
+    if (lastwasfocus)
+    {
+        inputmanager::showmouse();
+        lastwasfocus = false;
+    }
+}
+
 void scenegame::update()
 {
+    if (!lastwasfocus)
+    {
+        inputmanager::hidemouse();
+        lastwasfocus = true;
+    }
+
     if (showingescbox)
     {
         escbox::selection sel = escbox::showescbox();
@@ -179,6 +209,7 @@ void scenegame::update()
         }
         if (sel == escbox::selection::MENU)
         {
+            startnewworld = true;
             shutdownworld();
             scenec::changeactivescene(scenec::S_MAINMENU);
         }
@@ -207,6 +238,11 @@ void scenegame::update()
 }
 
 void scenegame::destroy()
+{
+
+}
+
+void scenegame::changewindowsize()
 {
 
 }

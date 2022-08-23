@@ -16,9 +16,14 @@
 #include "itemmanager.h"
 #include "uiingame.h"
 #include "biomecontroller.h"
+#include "map_obj_models.h"
+#include "environment.h"
+#include "particlemanager.h"
 
 int main( int argc, char* args[] )
 {
+    std::cout << "starting megagruve ...\n";
+
     settings::loadsettings(); //loader inn settings, må være først
 
     windowmanager::initialize();
@@ -33,6 +38,8 @@ int main( int argc, char* args[] )
 
     biomecontroller::initialize();
 
+    particlemanager::initialize();
+
     std::cout << "initializing skybox & scenequad... ";
     skybox::initialize();
     std::cout << "skybox done... ";
@@ -45,7 +52,11 @@ int main( int argc, char* args[] )
     inputmanager::initialize();
     //
 
+    environment::initialize();
+
     scenec::initialize();
+
+    map_obj_models::initialize();
 
     maincharcontroller::initialize();
 

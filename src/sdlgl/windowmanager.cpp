@@ -89,7 +89,6 @@ bool windowmanager::setupopengl()
     glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
     glEnable(GL_PROGRAM_POINT_SIZE);
 
-    //husk å reenable
     glEnable (GL_CULL_FACE); // cull face //disable for billboards??
     glCullFace (GL_BACK); // cull back face
     glFrontFace (GL_CCW); //ccw er standard
@@ -145,23 +144,25 @@ void windowmanager::setvsync(bool on)
     SDL_GL_SetSwapInterval(on);
 }
 
-void windowmanager::processevent(SDL_Event& e)
+uint8_t windowmanager::processevent(SDL_Event& e)
 {
     if (e.type == SDL_WINDOWEVENT)
     {
         switch (e.window.event)
         {
             case SDL_WINDOWEVENT_RESIZED:
-                resizewindow(e.window.data1, e.window.data2); break;
+                resizewindow(e.window.data1, e.window.data2); return 1; break;
             case SDL_WINDOWEVENT_MINIMIZED:
-                windowmanager::window_focus = false; break;
+                windowmanager::window_focus = false; return 2; break;
             case SDL_WINDOWEVENT_RESTORED:
-                windowmanager::window_focus = true; break;
+                windowmanager::window_focus = true; return 3; break;
             case SDL_WINDOWEVENT_FOCUS_LOST:
-                windowmanager::window_focus = false; break;
+                windowmanager::window_focus = false; return 4; break;
             case SDL_WINDOWEVENT_FOCUS_GAINED:
-                windowmanager::window_focus = true; break;
+                windowmanager::window_focus = true; return 5; break;
 
         }
     }
+
+    return 0;
 }

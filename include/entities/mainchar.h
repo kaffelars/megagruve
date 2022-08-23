@@ -44,11 +44,16 @@ class mainchar : public lifeform
 
         bool flying;
         bool noclip;
+        bool running;
+        void activaterunning();
+        void deactivaterunning();
+
         void toggleflying();
         void togglenoclip();
 
         void updatecamera();
         void fillinv();
+        void clearinv();
 
         direction getviewdir();
         hdirection gethviewdir();

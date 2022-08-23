@@ -17,6 +17,7 @@ namespace environment
     rgbcolor getsuncolor();
 
     void initialize();
+    void resetenvironment();
 
     void changecloudcover(float change);
 

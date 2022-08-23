@@ -68,7 +68,17 @@ void physicsmanager::pointphysics(physicsobject& p)
     p.vel = vel / timefactor;
 }
 
-void physicsmanager::boxphysics(physicsobject& p)
+void physicsmanager::moveboxtofloor(physicsobject& p)
+{
+    p.onfloor = false;
+
+    do
+    {
+        boxphysics(p, false);
+    } while (!p.onfloor);
+}
+
+void physicsmanager::boxphysics(physicsobject& p, bool takefalldamage)
 {
     //std::cout << "coolio ";
 
@@ -186,7 +196,7 @@ void physicsmanager::boxphysics(physicsobject& p)
 
                 if (a == 1)
                 {
-                    if (vel.y > 0.8f)
+                    if (vel.y > 0.8f && takefalldamage)
                         p.falldamage = vel.y * 5.0f;
 
                     p.onfloor = true;
@@ -237,4 +247,6 @@ bool physicsmanager::ispassable(wposition wpos)
             }
         }
     }
+
+    return false;
 }

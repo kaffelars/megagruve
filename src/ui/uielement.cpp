@@ -17,16 +17,18 @@ void uielement::resetcounter()
     counter = 0;
 }
 
-void uielement::sliderint(int from, int to, int& into, int division)
+bool uielement::sliderint(int from, int to, int& into, int division)
 {
     std::string crab = "##slider"+counterstr();
-    ImGui::SliderInt(crab.c_str(), &into, from, to);
+    bool changed;
+    changed = ImGui::SliderInt(crab.c_str(), &into, from, to);
     if (division)
     {
         into /= division;
         into *= division;
     }
-    //ImGui::SliderInt(crab.c_str(), &into, from, to);
+
+    return changed;
 }
 
 std::string uielement::counterstr()
@@ -84,13 +86,15 @@ bool uielement::button(std::string text, glm::vec2 pos, glm::ivec2 buttonsize, b
     }
 }
 
-void uielement::checkbox(bool &checked, glm::vec2 position)
+bool uielement::checkbox(bool &checked, glm::vec2 position)
 {
+    bool changed;
     setposition(position.x, position.y);
 
     std::string flepsi = "##c" + counterstr();
 
-    ImGui::Checkbox(flepsi.c_str(), &checked);
+    changed = ImGui::Checkbox(flepsi.c_str(), &checked);
+    return changed;
 }
 
 void uielement::addrect(glm::vec2 rectstart, glm::vec2 rectend, glm::vec3 col)

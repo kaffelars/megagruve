@@ -23,11 +23,42 @@ namespace environment
     float wind = 0.1f;
 
     uint32_t raintexid = 0;
+
+    rgbcolor skycolors[9] = {
+    rgbcolor{0.0f, 0.0f, 0.0f}, //0
+    rgbcolor{0.0f, 0.0f, 0.0f}, //3
+    rgbcolor{0.2f, 0.0f, 0.4f}, //6
+    rgbcolor{0.2f, 0.4f, 0.8f}, //9
+    rgbcolor{0.2f, 0.5f, 0.9f}, //12
+    rgbcolor{0.2f, 0.5f, 0.9f}, //15
+    rgbcolor{0.3f, 0.2f, 0.4f}, //18
+    rgbcolor{0.0f, 0.0f, 0.2f}, //21
+    rgbcolor{0.0f, 0.0f, 0.0f}}; //24
+
+    rgbcolor suncolors[9] = {
+    rgbcolor{0.0f, 0.0f, 0.0f}, //0
+    rgbcolor{0.0f, 0.0f, 0.0f}, //3
+    rgbcolor{0.9f, 0.0f, 0.0f}, //6
+    rgbcolor{0.9f, 0.9f, 0.9f}, //9
+    rgbcolor{1.0f, 1.0f, 1.0f}, //12
+    rgbcolor{1.0f, 1.0f, 1.0f}, //15
+    rgbcolor{1.0f, 0.2f, 0.2f}, //18
+    rgbcolor{0.0f, 0.0f, 0.0f}, //21
+    rgbcolor{0.0f, 0.0f, 0.0f}}; //24
+}
+
+void environment::resetenvironment()
+{
+    currenttime = 9.0f;
+    cloudposition = 0.0f;
+    cloudcover = 0.2f;
+    wind = 0.1f;
 }
 
 void environment::initialize()
 {
     raintexid = texturemanager::gettiletexturenumber("rain");
+    resetenvironment();
 }
 
 void environment::toggletimemoving()
@@ -87,35 +118,14 @@ direction environment::getsundir()
 
 rgbcolor environment::getsuncolor()
 {
-    rgbcolor suncolmax = rgbcolor(1.8f);
-    direction sundir = getsundir();
-    rgbcolor suncol = rgbcolor(0.0f);
+    float curtime = getcurrenttime();
 
-    sundir.y += 0.2f;
+    uint8_t ptone = (curtime / 3);
+    uint8_t pttwo = ptone + 1;
 
-    utils::clamp(sundir.y, 0.0f, 1.0f);
+    float factor = (curtime - (3.0f * ptone)) / 3.0f;
 
-    if (sundir.y > 0.0f)
-    {
-        if (sundir.y < 0.5f)
-        {
-            suncol.r = 0.9f;
-            suncol.g = suncolmax.g*sundir.y;
-            suncol.b = suncolmax.b*sundir.y;
-
-            float factor = glm::clamp((sundir.y-0.3f) / 0.2f, 0.0f, 1.0f);
-
-            suncol.g *= factor;//*factor;
-            suncol.b *= factor;//*factor;
-            //suncol.r *= factor;
-        }
-        else
-        {
-            suncol = suncolmax * sundir.y;
-        }
-    }
-
-    utils::clamp(suncol, 0.0f, 1.0f);
+    rgbcolor suncol = suncolors[ptone] * (1.0f - factor) + suncolors[pttwo] * (factor);
 
     if (cloudcover > 0.5f)
     {
@@ -134,13 +144,14 @@ float environment::getcloudcover()
 
 rgbcolor environment::getskycolor()
 {
-    rgbcolor skycolor = glm::vec3(0.2f, 0.5f, 0.9f);
+    float curtime = getcurrenttime();
 
-    direction sundir = getsundir();
-    sundir.y += 0.5f;
-    sundir.y = glm::clamp(sundir.y, 0.0f, 1.0f);
+    uint8_t ptone = (curtime / 3);
+    uint8_t pttwo = ptone + 1;
 
-    return skycolor * sundir.y;
+    float factor = (curtime - (3.0f * ptone)) / 3.0f;
+
+    return skycolors[ptone] * (1.0f - factor) + skycolors[pttwo] * (factor);
 }
 
 rgbcolor environment::getfogcolor()

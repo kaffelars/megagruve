@@ -34,6 +34,8 @@ class inventory
         bool additem(std::string itemid, uint32_t quantity);
 
         std::vector<invitem> invitems;
+
+        void clearinventory();
 };
 
 #endif // INVENTORY_H

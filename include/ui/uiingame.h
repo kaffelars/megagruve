@@ -11,6 +11,8 @@ namespace uiingame
     void updateactionbaritems(bool updatebar);
 
     bool showinginventory();
+    void refreshui();
+    void resetui();
 
     void toggleinventory(inventorytype invtype = inventorytype::none);
 }

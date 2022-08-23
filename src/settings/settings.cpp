@@ -26,6 +26,7 @@ void settings::loadsettings()
     setts.emplace_back(setting("bbox", 1, 1));
     setts.emplace_back(setting("mbox", 1, 1));
     setts.emplace_back(setting("maxthreads", 1, 1));
+    setts.emplace_back(setting("mousesens", 1, 1));
 
     pugi::xml_document doc;
 

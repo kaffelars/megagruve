@@ -12,6 +12,7 @@ mainchar::mainchar() : lifeform(wposition{50.5f, 78.0f, 0.5f},
 {
     flying = true;
     noclip = false;
+    running = false;
     toggleflying();
 
 }
@@ -24,6 +25,16 @@ mainchar::~mainchar()
 void mainchar::togglenoclip()
 {
     noclip = !noclip;
+}
+
+void mainchar::activaterunning()
+{
+    running = true;
+}
+
+void mainchar::deactivaterunning()
+{
+    running = false;
 }
 
 void mainchar::toggleflying()
@@ -74,6 +85,11 @@ void mainchar::additem(inventory::invitem iitem)
 {
     mcharinv.additem(iitem);
     uiingame::updateactionbaritems(true);
+}
+
+void mainchar::clearinv()
+{
+    mcharinv.clearinventory();
 }
 
 void mainchar::fillinv()
@@ -171,6 +187,9 @@ void mainchar::movehoriz(hdirection movement)
     hmovement.x += -dir.y * movement.x;
     hmovement.z += dir.x * movement.x;
 
+    hmovement.x *= (running ? runspeed : walkspeed);
+    hmovement.z *= (running ? runspeed : walkspeed);
+
     hmovement.y = vel.y;
 
     setvelocity(hmovement);
@@ -187,17 +206,20 @@ void mainchar::moveflying(hdirection movement)
     dmovement.y = dir.y * movement.y + vel.y;
     dmovement.z = dir.z * movement.y;
 
-    dmovement.x += -hdir.y * movement.x;
+    dmovement.x += -hdir.y * movement.x * (running ? runspeed : walkspeed);
     //dmovement.y += dir.y * movement.x;
-    dmovement.z += hdir.x * movement.x;
+    dmovement.z += hdir.x * movement.x * (running ? runspeed : walkspeed);
 
     setvelocity(dmovement);
 }
 
 void mainchar::rotateview(rotation r)
 {
-    rot.x += r.x;
-    rot.y += r.y;
+    float factor = settings::getisetting(settings::SET_MOUSESENS);
+    factor /= 50.0f;
+
+    rot.x += r.x * factor;
+    rot.y += r.y * factor;
 
     if (rot.x > 1080) rot.x -= 1080;
     if (rot.x < 0) rot.x += 1080;

@@ -30,6 +30,8 @@ namespace gamecontroller
 
     void render();
 
+    void startnewworld();
+
 
 
     void close();

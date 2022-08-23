@@ -24,6 +24,7 @@ void scenec::initialize()
     addscene(S_MAINMENU, std::make_unique<scenemainmenu>());
     addscene(S_SETTINGS, std::make_unique<scenesettings>());
     addscene(S_GAME, std::make_unique<scenegame>());
+    addscene(S_GAMEINITIALIZER, std::make_unique<scenegameinitializer>());
 }
 
 void scenec::addscene(uint32_t sceneid, std::unique_ptr<scene> sceneptr)

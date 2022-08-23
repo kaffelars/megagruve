@@ -17,6 +17,15 @@ inventory::~inventory()
     //dtor
 }
 
+void inventory::clearinventory()
+{
+    for (invitem& i: invitems)
+    {
+        i.itemid = 0;
+        i.quantity = 0;
+    }
+}
+
 void inventory::swapitems(int32_t position1, int32_t position2)
 {
     if (positionininv(position1) && positionininv(position2))

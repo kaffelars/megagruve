@@ -10,10 +10,7 @@ vaocontainer::vaocontainer()
 
 vaocontainer::~vaocontainer()
 {
-    /*if (vertexes[0].size()) //ikke ha noe her, det blir fuxor når ting flyttes rundt
-    {
-        cleanvbos();
-    }*/
+
 }
 
 void vaocontainer::initialize(int numv, typo rendertyp, int ele1, int ele2, int ele3, int ele4, int ele5)

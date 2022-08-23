@@ -13,7 +13,7 @@ namespace map_obj_models
 
 void map_obj_models::initialize()
 {
-    vnorm sidenormals[6] = {vnorm{-1,0,0}, vnorm{1,0,0}, vnorm{0,-1,0}, vnorm{0,1,0}, vnorm{0,0,-1}, vnorm{0,0,1}};
+    vnorm sidenormals[7] = {vnorm{-1,0,0}, vnorm{1,0,0}, vnorm{0,-1,0}, vnorm{0,1,0}, vnorm{0,-1,0}, vnorm{0,0,-1}, vnorm{0,0,1}};
 
     //chest
     map_obj_model t;
@@ -46,6 +46,14 @@ void map_obj_models::initialize()
     t.vertexes.push_back(vpos{0.0625f, 1.0f, 0.0625f});
     t.vertexes.push_back(vpos{0.0625f, 1.0f, 0.9375f});
 
+    t.vertexes.push_back(vpos{0.0625f, 0.145f, 0.0625f}); //inside
+    t.vertexes.push_back(vpos{0.9375f, 0.145f, 0.0625f});
+    t.vertexes.push_back(vpos{0.9375f, 0.145f, 0.9375f});
+    t.vertexes.push_back(vpos{0.0625f, 0.145f, 0.0625f});
+    t.vertexes.push_back(vpos{0.9375f, 0.145f, 0.9375f});
+    t.vertexes.push_back(vpos{0.0625f, 0.145f, 0.9375f});
+
+
     t.vertexes.push_back(vpos{0.0625f, 0.125f, 0.0625f});
     t.vertexes.push_back(vpos{0.0625f, 1.0f, 0.0625f});
     t.vertexes.push_back(vpos{0.9375f, 1.0f, 0.0625f});
@@ -88,6 +96,13 @@ void map_obj_models::initialize()
     t.uv.push_back(uvpos{0, 0});
     t.uv.push_back(uvpos{0, 1});
 
+    t.uv.push_back(uvpos{0, 0}); //chest inside
+    t.uv.push_back(uvpos{0, 1});
+    t.uv.push_back(uvpos{1, 1});
+    t.uv.push_back(uvpos{0, 0});
+    t.uv.push_back(uvpos{1, 1});
+    t.uv.push_back(uvpos{1, 0});
+
     t.uv.push_back(uvpos{0, 0});
     t.uv.push_back(uvpos{0, 1});
     t.uv.push_back(uvpos{1, 1});
@@ -110,10 +125,10 @@ void map_obj_models::initialize()
         if (uv.y == 1.0f) uv.y = 0.9375f;
     }
 
-    tileid texids[6] = {texturemanager::gettiletexturenumber("chest_front"), texturemanager::gettiletexturenumber("chest_side"), texturemanager::gettiletexturenumber("chest_top"),
-    texturemanager::gettiletexturenumber("chest_bottom"), texturemanager::gettiletexturenumber("chest_side"), texturemanager::gettiletexturenumber("chest_side")};
+    tileid texids[7] = {texturemanager::gettiletexturenumber("chest_front"), texturemanager::gettiletexturenumber("chest_side"), texturemanager::gettiletexturenumber("chest_top"),
+    texturemanager::gettiletexturenumber("chest_bottom"),texturemanager::gettiletexturenumber("chest_inside"), texturemanager::gettiletexturenumber("chest_side"), texturemanager::gettiletexturenumber("chest_side")};
 
-    for (int a = 0; a < 6; a++)
+    for (int a = 0; a < 7; a++)
     {
         for (int b = 0; b < 6; b++)
         {

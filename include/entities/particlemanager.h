@@ -12,6 +12,7 @@ namespace particlemanager
     void addcomplexparticle(wposition p, velocity v, uint8_t ptex, uint8_t psiz, uint32_t dur, uint8_t glo, float gravity, bool destro, entity* caster, std::vector<std::shared_ptr<effect>> landingeffects);
     void cleanup();
     bool anyactiveparticles();
+    void deleteallparticles();
 };
 
 #endif // PARTICLEMANAGER_H

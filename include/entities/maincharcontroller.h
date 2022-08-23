@@ -38,12 +38,16 @@ namespace maincharcontroller
 
     void togglelight(float lightstr);
     float getmcharlight();
+    void resetmainchar();
+    void currentlyrunning();
 
     void renderdestroyblock();
 
     void useselecteditem();
     void changeselectiondelta(int selectiondelta);
     void changeselection(int selection);
+
+    void movemainchartofloor();
 
     int32_t getactionbarselection();
     int32_t getcurrenthealth();

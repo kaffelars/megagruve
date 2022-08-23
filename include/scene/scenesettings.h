@@ -21,8 +21,10 @@ class scenesettings : public scene
         void show();
         void hide();
         void update();
+        void hiddenupdate();
         void initialize();
         void destroy();
+        void changewindowsize();
 
         void keybinds();
         void game();

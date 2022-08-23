@@ -10,6 +10,7 @@
 #include "newgenerator.h"
 #include "chunklight.h"
 #include "chunkwatermanager.h"
+#include "environment.h"
 
 #include "chunktilemanager.h"
 
@@ -48,6 +49,21 @@ namespace chunkcontroller
 
     //std::unique_ptr<chunkgenerator> currentchunkgenerator = std::make_unique<defaultgenerator>();
     std::unique_ptr<chunkgenerator> currentchunkgenerator = std::make_unique<newgenerator>();
+}
+
+void chunkcontroller::preparenewworld()
+{
+    //clear any old world
+    chunkwatermanager::clearactivewatertiles();
+    chunktilemanager::cleartilestochange();
+    environment::resetenvironment();
+    particlemanager::deleteallparticles();
+    for (auto& c: chunks)
+    {
+        c.second.deletechunk();
+    }
+    chunks.clear();
+    loadedchunks.clear();
 }
 
 void chunkcontroller::adddecoration(chunkpos cpos, ctilepos ctpos, uint32_t voxelmodelid)
@@ -141,6 +157,28 @@ void chunkcontroller::updatechunks()
         }
     }
 
+}
+
+void chunkcontroller::preparestartingarea(wposition mcharposition)
+{
+    chunkpos centerchunk = chunkpos{mcharposition.x / chunkdimensions.x, mcharposition.z / chunkdimensions.z};
+
+    for (int x = -1; x <= 1; x++)
+    {
+        for (int y = -1; y <= 1; y++)
+        {
+            chunkpos cp = centerchunk + chunkpos{x,y};
+            //std::cout << cp.x << " -- " << cp.y << "\n";
+
+            newchunk(centerchunk + chunkpos{x,y});
+            getchunk(centerchunk + chunkpos{x,y}).settag(chunk::C_GENERATING);
+            currentchunkgenerator->generatechunk(getchunk(centerchunk + chunkpos{x,y}));
+            meshwholechunk(getchunk(centerchunk + chunkpos{x,y}));
+            getchunk(centerchunk + chunkpos{x,y}).setallvbos();
+            getchunk(centerchunk + chunkpos{x,y}).settag(chunk::C_READY);
+            threadcounter+=2;
+        }
+    }
 }
 
 int chunkcontroller::loadedchunksnum()

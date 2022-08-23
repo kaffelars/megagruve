@@ -21,13 +21,16 @@ class scenemainmenu : public scene
         void show();
         void hide();
         void destroy();
+        void changewindowsize();
+        void recreatebackground();
 
         void update();
+        void hiddenupdate();
         void initialize();
     protected:
 
     private:
-        vaocontainer bgicons;
+        vaocontainer bgimage;
 };
 
 #endif // SCENEMAINMENU_H

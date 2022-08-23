@@ -17,9 +17,10 @@ class scene
         virtual void destroy() =0;//run once when scene is destroyed
 
         //each frame, update->render
-
+        virtual void changewindowsize() = 0;//called when window size changes
         virtual void render() =0;//setting up to render stuff, incl ui, runs every frame
         virtual void update() =0;//updates scene - *only run when window focus*
+        virtual void hiddenupdate() =0;//updates scene - *only run when window not focus*
     protected:
     private:
 };

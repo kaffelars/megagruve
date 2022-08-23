@@ -264,6 +264,8 @@ void inputmanager::initialize()
     addkey(KEYTYPE_KEYBOARD, KEY_INV, SDL_SCANCODE_I, mod_none, "inventory");
 
     addkey(KEYTYPE_KEYBOARD, KEY_TOGGLEFLYING, SDL_SCANCODE_F, mod_none, "toggle flying");
+    addkey(KEYTYPE_KEYBOARD, KEY_TOGGLEINFOBOX, SDL_SCANCODE_M, mod_none, "toggle infobox");
+    addkey(KEYTYPE_KEYBOARD, KEY_RUNNING, SDL_SCANCODE_LSHIFT, mod_none, "hold to run");
     addkey(KEYTYPE_KEYBOARD, KEY_JUMP, SDL_SCANCODE_SPACE, mod_none, "jump");
 
     for (int a =0 ; a < keymap.size(); a++)

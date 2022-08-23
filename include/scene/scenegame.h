@@ -20,6 +20,11 @@ class scenegame : public scene
 
         bool showingescbox {false};
         bool showinginventory {false};
+        bool lastwasfocus {false};
+        bool showinfobox {true};
+        bool startnewworld {true};
+        bool generatingnewworld {false};
+        void changewindowsize();
 
         void shutdownworld();
         void pressedesc();
@@ -32,6 +37,7 @@ class scenegame : public scene
         void destroy();
 
         void update();
+        void hiddenupdate();
         void initialize();
 
     protected:

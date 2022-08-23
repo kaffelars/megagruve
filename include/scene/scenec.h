@@ -5,12 +5,13 @@
 #include "scenemainmenu.h"
 #include "scenesettings.h"
 #include "scenegame.h"
+#include "scenegameinitializer.h"
 
 namespace scenec
 {
     enum sceneids
     {
-        S_MAINMENU, S_SETTINGS, S_GAME, S_BLANK
+        S_MAINMENU, S_SETTINGS, S_GAME, S_GAMEINITIALIZER, S_BLANK
     };
 
     void quitgame();

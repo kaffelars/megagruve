@@ -51,6 +51,8 @@ namespace inputmanager
         KEY_ESCAPE,
         KEY_INV,
         KEY_TOGGLEFLYING,
+        KEY_TOGGLEINFOBOX,
+        KEY_RUNNING,
         KEY_JUMP,
         KEY_1,
         KEY_2,

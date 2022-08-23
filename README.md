@@ -16,7 +16,7 @@ Features:
 * trees
 * other plants and flowers
 * biomes
-* simplex noise based random world generation
+* simplex noise based random world generation (now with changeable seed)
 * water with "physics" (watch out)
 * glowing blocks
 * particles
@@ -43,11 +43,13 @@ Missing features:
 
 * mouse to look around
 * w/a/s/d to move
+* shift = hold to run
 * space = jump
 * i = show/hide inventory
 * left mouse button = use selected item (or move items around in inventory/actionbar)
 * right mouse button = interact (with e.g. doors, chests, etc.)
 * scroll wheel or number keys = select item on action bar
+* m = toggle infobox (top-left corner)
 * f = enable noclip fly hax mode
 
 ## Screenshots

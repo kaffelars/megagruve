@@ -64,6 +64,19 @@ namespace uiingame
 
 }
 
+void uiingame::resetui()
+{
+    selection = 0;
+    refreshui();
+}
+
+void uiingame::refreshui()
+{
+    updatehearts(true);
+    updateactionbar(true);
+    updateactionbaritems(true);
+}
+
 bool uiingame::showinginventory()
 {
     return showinventory;

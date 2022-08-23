@@ -188,15 +188,36 @@ void maincharcontroller::initialize()
 
     selection.setvbos();
 
-    mchar.lifeform::setstats(25.0f, 30.0f, 1.0f, 1.0f, 0.7f, 1.0f);
-
     for (int a = 0; a < 4; a++)
     {
         tiledata::addblock(ctilepos(0,0,0), tiledata::gettileid("t_destroy"+std::to_string(a+1)), tiledata::SHAPE_BLOCK, 255, 128, rgbcolor255(0,0,0), 0, 0, rgbcolor255(255,255,255), destructorblock[a]);
         destructorblock[a].setvbos();
     }
+}
 
+void maincharcontroller::resetmainchar()
+{
+    mchar.lifeform::setstats(25.0f, 30.0f, 1.0f, 1.0f, 0.7f, 1.0f);
+    mchar.setposition(wposition{16.5f, 5.0f, 16.5f});
+    mchar.setvelocity(velocity{0.0f, 0.0f, 0.0f});
+    mchar.clearinv();
     mchar.fillinv();
+    tilehover = wtilepos(0,0,0);
+    oldtilehover = wtilepos(0,0,0);
+
+    tilesidehover = tilesideid::xm;
+    oldtilesidehover = tilesideid::xm;
+
+    hmovement = glm::vec2(0.0f);
+
+    mcharlight = 0.0f;
+
+    updatecamera();
+}
+
+void maincharcontroller::movemainchartofloor() //used when starting new world
+{
+    physicsmanager::moveboxtofloor(mchar);
 }
 
 
@@ -310,16 +331,12 @@ void maincharcontroller::useselecteditem()
 
 void maincharcontroller::update()
 {
-    //std::cout << "A";
-
     for (int a = 0; a < 10; a++)
     {
         mchar.setitemusecooldowndelta(a, -timekeeper::getcappeddeltatime());
     }
 
     mchar.lifeform::update();
-
-    //std::cout << "B";
 
     /*glm::vec4 mdata = renderer::getmousedata();
 
@@ -348,8 +365,6 @@ void maincharcontroller::update()
         tilehover = wposition(0.0f, -1.0f, 0.0f);
     }
 
-    //std::cout << "C";
-
     if (tilehover != oldtilehover)
     {
         oldtilehover = tilehover;
@@ -363,15 +378,11 @@ void maincharcontroller::update()
     }
 
 
-    //std::cout << "D";
-
     movement();
-
-    //std::cout << "E";
 
     updatecamera();
 
-    //std::cout << "F\n";
+    maincharcontroller::mchar.deactivaterunning();
 }
 
 void maincharcontroller::mcharjump()
@@ -399,10 +410,13 @@ bool maincharcontroller::isinwater()
     else return false;
 }
 
+void maincharcontroller::currentlyrunning()
+{
+    mchar.running = true;
+}
+
 void maincharcontroller::movement()
 {
-    //std::cout << "movement ";
-
     if (mchar.flying || isinwater())
     {
         if (hmovement != hdirection(0.0f, 0.0f))

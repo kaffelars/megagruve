@@ -227,10 +227,16 @@ bool tiledata::renderside(tileid tile, tileid neighbour, uint8_t side)
             if (isempty(neighbour) || tnb == T_WATER || tnb == T_OBJECT || tnb == T_LAVA || tnb == T_SOLID_VERT) return true;
             break;
         case T_WATER:
-            if (isempty(neighbour) || tnb == T_OBJECT || tnb == T_SOLID_VERT || tnb == T_DISCARD || tnb == T_LAVA || tnb == T_SOLID) return true; //hmm, vann under is?
+            if (isempty(neighbour) || tnb == T_OBJECT || tnb == T_SOLID_VERT || tnb == T_DISCARD || tnb == T_LAVA) return true;// || tnb == T_SOLID) return true; //hmm, vann under is?
             break;
         case T_LAVA:
-            if (isempty(neighbour) || tnb == T_OBJECT || tnb == T_SOLID_VERT || tnb == T_DISCARD || tnb == T_WATER || tnb == T_SOLID) return true;
+            if (isempty(neighbour) || tnb == T_OBJECT || tnb == T_SOLID_VERT || tnb == T_DISCARD || tnb == T_WATER) return true;// || tnb == T_SOLID) return true;
+            break;
+        case T_EMPTY:
+            return false;
+            break;
+        case T_MAP_OBJ:
+            return false;
             break;
     }
 

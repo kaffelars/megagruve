@@ -27,6 +27,7 @@ namespace chunktilemanager
 
     void addctiletochange(chunkpos cpos, ctilepos ctpos, tileid newtileid, uint8_t extrainfo, breakageinfo breakage);
     void addtiletochange(wtilepos wtile, tileid newtileid, uint8_t extrainfo, breakageinfo breakage);
+    void cleartilestochange();
 };
 
 #endif // CHUNKTILEMANAGER_H

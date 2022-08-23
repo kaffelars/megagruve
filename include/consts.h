@@ -25,4 +25,7 @@ const uint8_t sideflags[6] = {1,2,4,8,16,32};
 
 const tileid mapobjtileid = 255;
 
+const float runspeed = 1.25f;
+const float walkspeed = 0.75f;
+
 #endif // CONSTS_H_INCLUDED

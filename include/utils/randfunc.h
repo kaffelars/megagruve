@@ -15,5 +15,6 @@ namespace randfunc
     float normterrain(float wavefactor, float ampfactor, float startwave, float startamp, float ex, float ey, float ez, int levels);
 
     void setseed(int seed);
+    int getseed();
 }
 #endif // RANDFUNC_H

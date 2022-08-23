@@ -17,6 +17,10 @@ namespace chunkwatermanager
     std::vector<activewatertile> activewatertiles;
 }
 
+void chunkwatermanager::clearactivewatertiles()
+{
+    activewatertiles.clear();
+}
 
 void chunkwatermanager::updateactivewatertiles()
 {

@@ -31,6 +31,11 @@ namespace randfunc
     }
 }
 
+int randfunc::getseed()
+{
+    return seedn;
+}
+
 void randfunc::setseed(int seed)
 {
     seedn = seed;

@@ -21,6 +21,11 @@ void particlemanager::addparticle(wposition p, velocity v, uint8_t ptex, uint8_t
     particles.emplace_back(particle(p, v, ptex, psiz, dur, glo, gravity, destro));
 }
 
+void particlemanager::deleteallparticles()
+{
+    particles.clear();
+}
+
 void particlemanager::addcomplexparticle(wposition p, velocity v, uint8_t ptex, uint8_t psiz, uint32_t dur, uint8_t glo, float gravity, bool destro, entity* caster, std::vector<std::shared_ptr<effect>> landingeffects)
 {
     particles.emplace_back(particle(p, v, ptex, psiz, dur, glo, gravity, destro));
@@ -78,40 +83,8 @@ void particlemanager::updateparticles()
     {
         particles.push_back(std::move(p));
     }
-
-    /*particles.clear();
-
-    for (particle& p : ps)
-    {
-        particles.push_back(p);
-    }*/
-
-    //std::remove_if(particles.begin(), particles.end(), [](const particle &p) { return (p.duration <= 0); }); //tregt
-
-    //renser vekk døde particles //tregt
-    /*auto vit = particles.begin();
-    while (vit != particles.end())
-    {
-        if ((*vit).duration <= 0 || ((*vit).onfloor && (*vit).destroyedwhenlanding))
-        {
-            if (!(*vit).landingeffects.empty())
-            {
-                //landing effects
-                for (std::shared_ptr<effect>& le : (*vit).landingeffects)
-                {
-                    wposition wpos = (*vit).getposition();
-                    blockentity b(wtilepos(wpos.x, wpos.y, wpos.z));
-                    le->activate((*vit).createdby, &b);
-                }
-            }
-            vit = particles.erase(vit);
-        }
-        else
-        {
-            ++vit;
-        }
-    }*/
 }
+
 
 bool particlemanager::anyactiveparticles()
 {
