@@ -87,6 +87,7 @@ namespace inputmanager
     bool ismousehidden();
 
     glm::ivec2 getcursorpos();
+    glm::ivec2 getcenterpos();
 
 
     void clearallkeyfunctions();
@@ -103,12 +104,15 @@ namespace inputmanager
     void processevent(SDL_Event& e);
     void processheldkeys();
 
+    void clearheldkeys();
+
     struct keydata
     {
         bool held {false};
         bool clicked {false};
         int value {0};//for eks scroll
         keytype ktype {KEYTYPE_KEYBOARD};
+        int32_t keypress {0};
 
         std::string keydescription; //eks "forward", "cancel" osv.
 
@@ -124,12 +128,38 @@ namespace inputmanager
             for (int a = 0; a < 3; a++)
                 keyfunction[a] = nullptr;
         }
+        std::string getkeyname()
+        {
+            if (ktype == KEYTYPE_KEYBOARD)
+            {
+                return SDL_GetKeyName(SDL_GetKeyFromScancode(static_cast<SDL_Scancode>(keypress)));
+            }
+            else if (ktype == KEYTYPE_MOUSESCROLL)
+            {
+                return (keypress == 1 ? "Mouse scroll up" : "Mouse scroll down");
+            }
+            else if (ktype == KEYTYPE_MOUSEBUTTON)
+            {
+                if (keypress == 1)
+                {
+                    return "Left mouse button";
+                }
+                else if (keypress == 3)
+                {
+                    return "Right mouse button";
+                }
+                return "Mouse button " + std::to_string(keypress);
+            }
+            return "Key error";
+        }
 
-        keydata(std::string description, keytype ktyp) : keydescription{description}, ktype{ktyp}
+        keydata(std::string description, keytype ktyp, int32_t kpress) : keydescription{description}, ktype{ktyp}, keypress{kpress}
         {
 
         }
     };
+
+    std::vector<keydata>& getkeydata();
 };
 
 #endif // INPUTMANAGER_H

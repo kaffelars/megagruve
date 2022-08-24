@@ -40,7 +40,11 @@ void gamecontroller::gameloop()
 
             uint8_t winevent = 0;
 
-            inputmanager::processevent(e); //inputs, keys og mouse og bøttons
+            if (windowmanager::windowhasfocus())
+            {
+                inputmanager::processevent(e); //inputs, keys og mouse og bøttons
+            }
+
             winevent = windowmanager::processevent(e); //window events, i.e. resize, minimize, lost focus, etc
 
             if (e.type == SDL_QUIT)
@@ -65,6 +69,7 @@ void gamecontroller::gameloop()
         }
         else
         {
+            inputmanager::clearheldkeys();
             scenec::getactivescene().hiddenupdate();
         }
 

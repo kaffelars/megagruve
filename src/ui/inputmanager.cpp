@@ -12,6 +12,8 @@ namespace inputmanager
 
     uint8_t currentmodifiers = 0;
 
+    bool cursorjusthidden = false;
+
     bool keyfunctionsactive = false;
 
     int recordpress = 0;
@@ -72,6 +74,11 @@ uint32_t inputmanager::getkeyid(keytype ktype, int32_t keypress, key_mods kmod)
     return k.i;
 }
 
+void inputmanager::clearheldkeys()
+{
+    heldkeys.clear();
+}
+
 void inputmanager::processheldkeys()
 {
     for (uint32_t k_id : heldkeys)
@@ -107,7 +114,8 @@ void inputmanager::processkey(keytype ktype, int32_t keypress, key_mods kmod, ke
 
     if (kstatus == KS_UP)
     {
-        heldkeys.erase(std::remove(heldkeys.begin(), heldkeys.end(), k_id), heldkeys.end());
+        if (std::find(heldkeys.begin(), heldkeys.end(), k_id) != heldkeys.end())
+            heldkeys.erase(std::remove(heldkeys.begin(), heldkeys.end(), k_id), heldkeys.end());
         key.held = false;
         key.clicked = false;
         if (!keypaused[k_id] && key.keyfunction[KE_RELEASED])
@@ -146,22 +154,31 @@ void inputmanager::processevent(SDL_Event& e)
     case SDL_MOUSEWHEEL:
         {
             if (e.wheel.y > 0)
+            {
                 processkey(KEYTYPE_MOUSESCROLL, 1, mod_none, KS_DOWN);
+                processkey(KEYTYPE_MOUSESCROLL, 1, mod_none, KS_UP);
+            }
             if (e.wheel.y < 0)
+            {
                 processkey(KEYTYPE_MOUSESCROLL, -1, mod_none, KS_DOWN);
+                processkey(KEYTYPE_MOUSESCROLL, -1, mod_none, KS_UP);
+            }
+
             break;
         }
     default:
         break;
     }
+}
 
-    processkey(KEYTYPE_MOUSESCROLL, 1, mod_none, KS_UP);
-    processkey(KEYTYPE_MOUSESCROLL, -1, mod_none, KS_UP);
+std::vector<inputmanager::keydata>& inputmanager::getkeydata()
+{
+    return keymap;
 }
 
 void inputmanager::addkey(keytype ktype, keys_enum keyenum, int32_t keypress, key_mods kmod, std::string description)
 {
-    keymap.emplace_back(keydata(description, ktype));
+    keymap.emplace_back(keydata(description, ktype, keypress));
     uint32_t id = keymap.size()-1;
 
     uint32_t kid = getkeyid(ktype, keypress, kmod);
@@ -238,35 +255,36 @@ void inputmanager::resumekeyfunctions()
 void inputmanager::initialize()
 {
     std::cout << "initializing keys... "; //obs, lag så de kan endres
-    addkey(KEYTYPE_KEYBOARD, KEY_ESCAPE, SDL_SCANCODE_ESCAPE, mod_none, "escape");
-    addkey(KEYTYPE_KEYBOARD, KEY_1, SDL_SCANCODE_1, mod_none, "selection 1");
-    addkey(KEYTYPE_KEYBOARD, KEY_2, SDL_SCANCODE_2, mod_none, "selection 2");
-    addkey(KEYTYPE_KEYBOARD, KEY_3, SDL_SCANCODE_3, mod_none, "selection 3");
-    addkey(KEYTYPE_KEYBOARD, KEY_4, SDL_SCANCODE_4, mod_none, "selection 4");
-    addkey(KEYTYPE_KEYBOARD, KEY_5, SDL_SCANCODE_5, mod_none, "selection 5");
-    addkey(KEYTYPE_KEYBOARD, KEY_6, SDL_SCANCODE_6, mod_none, "selection 6");
-    addkey(KEYTYPE_KEYBOARD, KEY_7, SDL_SCANCODE_7, mod_none, "selection 7");
-    addkey(KEYTYPE_KEYBOARD, KEY_8, SDL_SCANCODE_8, mod_none, "selection 8");
-    addkey(KEYTYPE_KEYBOARD, KEY_9, SDL_SCANCODE_9, mod_none, "selection 9");
-    addkey(KEYTYPE_KEYBOARD, KEY_0, SDL_SCANCODE_0, mod_none, "selection 10");
+    addkey(KEYTYPE_KEYBOARD, KEY_ESCAPE, SDL_SCANCODE_ESCAPE, mod_none, "Show menu/Exit menus or inventory");
 
-    addkey(KEYTYPE_MOUSESCROLL, KEY_ZOOMIN, 1, mod_none, "zoom in");
-    addkey(KEYTYPE_MOUSESCROLL, KEY_ZOOMOUT, -1, mod_none, "zoom out");
+    addkey(KEYTYPE_MOUSEBUTTON, KEY_SELECT, SDL_BUTTON_LEFT, mod_none, "Use");
+    addkey(KEYTYPE_MOUSEBUTTON, KEY_INTERACT, SDL_BUTTON_RIGHT, mod_none, "Interact");
 
-    addkey(KEYTYPE_MOUSEBUTTON, KEY_SELECT, SDL_BUTTON_LEFT, mod_none, "select");
-    addkey(KEYTYPE_MOUSEBUTTON, KEY_INTERACT, SDL_BUTTON_RIGHT, mod_none, "interact");
+    addkey(KEYTYPE_KEYBOARD, KEY_UP, SDL_SCANCODE_W, mod_none, "Move forward");
+    addkey(KEYTYPE_KEYBOARD, KEY_DOWN, SDL_SCANCODE_S, mod_none, "Move backward");
+    addkey(KEYTYPE_KEYBOARD, KEY_LEFT, SDL_SCANCODE_A, mod_none, "Strafe left");
+    addkey(KEYTYPE_KEYBOARD, KEY_RIGHT, SDL_SCANCODE_D, mod_none, "Strafe right");
+    addkey(KEYTYPE_KEYBOARD, KEY_JUMP, SDL_SCANCODE_SPACE, mod_none, "Jump");
 
-    addkey(KEYTYPE_KEYBOARD, KEY_UP, SDL_SCANCODE_W, mod_none, "up");
-    addkey(KEYTYPE_KEYBOARD, KEY_DOWN, SDL_SCANCODE_S, mod_none, "down");
-    addkey(KEYTYPE_KEYBOARD, KEY_LEFT, SDL_SCANCODE_A, mod_none, "left");
-    addkey(KEYTYPE_KEYBOARD, KEY_RIGHT, SDL_SCANCODE_D, mod_none, "right");
+    addkey(KEYTYPE_KEYBOARD, KEY_INV, SDL_SCANCODE_I, mod_none, "Show inventory");
 
-    addkey(KEYTYPE_KEYBOARD, KEY_INV, SDL_SCANCODE_I, mod_none, "inventory");
+    addkey(KEYTYPE_KEYBOARD, KEY_TOGGLEFLYING, SDL_SCANCODE_F, mod_none, "Toggle flying");
+    addkey(KEYTYPE_KEYBOARD, KEY_TOGGLEINFOBOX, SDL_SCANCODE_M, mod_none, "Toggle infobox");
+    addkey(KEYTYPE_KEYBOARD, KEY_RUNNING, SDL_SCANCODE_LSHIFT, mod_none, "Hold to run");
 
-    addkey(KEYTYPE_KEYBOARD, KEY_TOGGLEFLYING, SDL_SCANCODE_F, mod_none, "toggle flying");
-    addkey(KEYTYPE_KEYBOARD, KEY_TOGGLEINFOBOX, SDL_SCANCODE_M, mod_none, "toggle infobox");
-    addkey(KEYTYPE_KEYBOARD, KEY_RUNNING, SDL_SCANCODE_LSHIFT, mod_none, "hold to run");
-    addkey(KEYTYPE_KEYBOARD, KEY_JUMP, SDL_SCANCODE_SPACE, mod_none, "jump");
+    addkey(KEYTYPE_KEYBOARD, KEY_1, SDL_SCANCODE_1, mod_none, "Selection 1");
+    addkey(KEYTYPE_KEYBOARD, KEY_2, SDL_SCANCODE_2, mod_none, "Selection 2");
+    addkey(KEYTYPE_KEYBOARD, KEY_3, SDL_SCANCODE_3, mod_none, "Selection 3");
+    addkey(KEYTYPE_KEYBOARD, KEY_4, SDL_SCANCODE_4, mod_none, "Selection 4");
+    addkey(KEYTYPE_KEYBOARD, KEY_5, SDL_SCANCODE_5, mod_none, "Selection 5");
+    addkey(KEYTYPE_KEYBOARD, KEY_6, SDL_SCANCODE_6, mod_none, "Selection 6");
+    addkey(KEYTYPE_KEYBOARD, KEY_7, SDL_SCANCODE_7, mod_none, "Selection 7");
+    addkey(KEYTYPE_KEYBOARD, KEY_8, SDL_SCANCODE_8, mod_none, "Selection 8");
+    addkey(KEYTYPE_KEYBOARD, KEY_9, SDL_SCANCODE_9, mod_none, "Selection 9");
+    addkey(KEYTYPE_KEYBOARD, KEY_0, SDL_SCANCODE_0, mod_none, "Selection 10");
+
+    addkey(KEYTYPE_MOUSESCROLL, KEY_ZOOMIN, 1, mod_none, "Decrease selection");
+    addkey(KEYTYPE_MOUSESCROLL, KEY_ZOOMOUT, -1, mod_none, "Increase selection");
 
     for (int a =0 ; a < keymap.size(); a++)
         keypaused.push_back(false);
@@ -274,53 +292,71 @@ void inputmanager::initialize()
     std::cout << "done\n";
 }
 
+glm::ivec2 inputmanager::getcenterpos()
+{
+    return glm::ivec2(settings::getisetting(settings::SET_SCREENX)/2, settings::getisetting(settings::SET_SCREENY)/2);
+}
+
 void inputmanager::hidemouse()//hides and locks mouse
 {
-    if (!inputmanager::ismousehidden())
+    if (!ismousehidden())
     {
         SDL_ShowCursor(SDL_DISABLE);
-        inputmanager::mousehidden = true;
-        inputmanager::mousetrappos = inputmanager::getcursorpos();
+        mousehidden = true;
+        //inputmanager::mousetrappos = inputmanager::getcursorpos();
+        glm::ivec2 cent = getcenterpos();
+        cursorpos = cent;
+        deltamove = glm::ivec2(0,0);
+        cursorjusthidden = true;
+        SDL_WarpMouseInWindow(windowmanager::sdlwindow, cent.x, cent.y);
     }
 }
 
 void inputmanager::showmouse()
 {
-    if (inputmanager::ismousehidden())
+    if (ismousehidden())
     {
         SDL_ShowCursor(SDL_ENABLE);
-        inputmanager::mousehidden = false;
+        mousehidden = false;
+        cursorjusthidden = false;
     }
 }
 
 bool inputmanager::ismousehidden()
 {
-    return inputmanager::mousehidden;
+    return mousehidden;
 }
 
 void inputmanager::logcursorpos()
 {
-    glm::ivec2 cursorposold = inputmanager::cursorpos;
-    SDL_GetMouseState(&inputmanager::cursorpos.x, &inputmanager::cursorpos.y);
-
-    inputmanager::deltamove = inputmanager::cursorpos - cursorposold;
-
-    if (inputmanager::ismousehidden()) //mus låst
+    if (!cursorjusthidden)
     {
-        //inputmanager::deltamove = inputmanager::cursorpos - inputmanager::mousetrappos;
-        inputmanager::cursorpos = inputmanager::mousetrappos;
-        SDL_WarpMouseInWindow(windowmanager::sdlwindow, inputmanager::mousetrappos.x, inputmanager::mousetrappos.y);
+        glm::ivec2 cursorposold = cursorpos;
+        SDL_GetMouseState(&cursorpos.x, &cursorpos.y);
+
+        //std::cout << cursorpos.x << " - " << cursorpos.y << " -- " << ismousehidden() << "\n";
+
+        deltamove = cursorpos - cursorposold;
+
+        if (inputmanager::ismousehidden()) //mus låst
+        {
+            glm::ivec2 cent = getcenterpos();
+            deltamove = cursorpos - cent;
+            cursorpos = cent;
+            SDL_WarpMouseInWindow(windowmanager::sdlwindow, cent.x, cent.y);
+        }
     }
+    cursorjusthidden = false;
 }
 
 glm::ivec2 inputmanager::getcursorpos()
 {
-    return inputmanager::cursorpos;
+    return cursorpos;
 }
 
 glm::ivec2 inputmanager::getmousedelta()
 {
-    return inputmanager::deltamove;
+    return deltamove;
 }
 
 

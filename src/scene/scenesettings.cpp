@@ -124,7 +124,12 @@ void scenesettings::keybinds()
 {
     float index = 0.0f;
 
-
+    for (inputmanager::keydata& k : inputmanager::getkeydata())
+    {
+        uielement::text(k.getkeyname(), glm::vec2(25.0f, 35.0f + index * 40.0f));
+        uielement::text(k.keydescription, glm::vec2(225.0f, 35.0f + index * 40.0f));
+        index ++;
+    }
 
 
     /*for (inputmanager::b_key b : inputmanager::bound_keys)
