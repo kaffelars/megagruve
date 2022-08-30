@@ -44,6 +44,7 @@ Missing features:
 * mouse to look around
 * w/a/s/d to move
 * shift = hold to run
+* ctrl = hold to move slowly
 * space = jump
 * i = show/hide inventory
 * left mouse button = use selected item (or move items around in inventory/actionbar)

@@ -167,10 +167,10 @@ bool changeblockeffect::activate(entity* user, entity* target)
     {
         targettileid = target->getid(); //gettileid blockentity pos
     }
-    //target er blockentity, sjekk om luft?
+    //target er blockentity, sjekk om luft eller overbuildable?
     if (emptyonly) //uncomment dis
     {
-        if (!tiledata::isempty(targettileid)) return false;
+        if (!(tiledata::isoverbuildable(targettileid) || tiledata::isempty(targettileid))) return false;
     }
     //std::cout << target->getposition().x << " " << target->getposition().y << " " << target->getposition().z << "\n";
     //wtilepos wt = target->getposition();//chunkcontroller::wpostowtilepos(target->getposition());

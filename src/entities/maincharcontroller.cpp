@@ -105,20 +105,22 @@ void maincharcontroller::setselectionmode(smode selmode)
 
 void maincharcontroller::renderselection()
 {
-    wtilepos selpos = maincharcontroller::gettilehover();
+    wtilepos selpos = gettilehover();
 
     if (selpos.y != -1)
     {
         wposition vpos = wposition(selpos) - mchar.geteyeposition();
-        glUniform3f(shadercontroller::getuniformid("vpos"), vpos.x, vpos.y, vpos.z);
 
         if (settings::getisetting(settings::SET_MBOX) && getselectionmode() == SEL_BLOCK)
         {
+            glUniform3f(shadercontroller::getuniformid("vpos"), vpos.x, vpos.y, vpos.z);
             glUniform3f(shadercontroller::getuniformid("rgb"), 0.8f, 0.7f, 0.7f);
             selection.render();
         }
         else if (settings::getisetting(settings::SET_BBOX) && getselectionmode() == SEL_AIR)
         {
+            vpos += sideoffsets[static_cast<int>(tilesidehover)];
+            glUniform3f(shadercontroller::getuniformid("vpos"), vpos.x, vpos.y, vpos.z);
             glUniform3f(shadercontroller::getuniformid("rgb"), 0.8f, 0.8f, 1.0f);
             selection.render();
         }
@@ -256,9 +258,9 @@ void maincharcontroller::updatecamera()
     mchar.updatecamera();
 }
 
-void maincharcontroller::changeselection(int selection)
+void maincharcontroller::changeselection(int sel)
 {
-    mchar.actionbarselection = selection;
+    mchar.actionbarselection = sel;
     utils::clamp(mchar.actionbarselection, 0, 9);
 
     inventory::invitem& iitem = mchar.mcharinv.getinvitem(mchar.actionbarselection);
@@ -273,6 +275,18 @@ void maincharcontroller::changeselection(int selection)
 void maincharcontroller::changeselectiondelta(int selectiondelta)
 {
     changeselection(mchar.actionbarselection+selectiondelta);
+}
+
+itemtype maincharcontroller::getcurrentlyselecteditemtype()
+{
+    inventory::invitem& iitem = mchar.mcharinv.getinvitem(mchar.actionbarselection);
+
+    if (iitem.quantity>0)
+    {
+        return itemmanager::getitem(iitem.itemid).itemtype;
+    }
+
+    return itemtype::none;
 }
 
 void maincharcontroller::useselecteditem()
@@ -347,7 +361,9 @@ void maincharcontroller::update()
     else
         tilehover = chunkcoords::wpostowtilepos(wposition(mdata.x, mdata.y, mdata.z) - (getviewdir() / 10.0f));*/
 
-    blocktracer::hitblock hit = blocktracer::traceblocks(mchar.geteyeposition(), mchar.getviewdir(), 6.0f);
+    itemtype i = getcurrentlyselecteditemtype();
+
+    blocktracer::hitblock hit = blocktracer::traceblocks(mchar.geteyeposition(), mchar.getviewdir(), 6.0f, (i == itemtype::block || i == itemtype::placeableobject) ? true: false);
 
     /*
     chunkpos cpos {chunkpos{0,0}};
@@ -382,7 +398,7 @@ void maincharcontroller::update()
 
     updatecamera();
 
-    maincharcontroller::mchar.deactivaterunning();
+    mchar.activatewalking();
 }
 
 void maincharcontroller::mcharjump()
@@ -412,7 +428,12 @@ bool maincharcontroller::isinwater()
 
 void maincharcontroller::currentlyrunning()
 {
-    mchar.running = true;
+    mchar.activaterunning();
+}
+
+void maincharcontroller::currentlysneaking()
+{
+    mchar.activatesneaking();
 }
 
 void maincharcontroller::movement()

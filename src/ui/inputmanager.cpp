@@ -106,8 +106,10 @@ void inputmanager::processkey(keytype ktype, int32_t keypress, key_mods kmod, ke
             key.clicked = true;
             if (!keypaused[k_id] && key.keyfunction[KE_CLICKED])
                 key.keyfunction[KE_CLICKED]();
+
+            heldkeys.push_back(k_id);
         }
-        heldkeys.push_back(k_id);
+
         key.held = true;
 
     }
@@ -116,6 +118,7 @@ void inputmanager::processkey(keytype ktype, int32_t keypress, key_mods kmod, ke
     {
         if (std::find(heldkeys.begin(), heldkeys.end(), k_id) != heldkeys.end())
             heldkeys.erase(std::remove(heldkeys.begin(), heldkeys.end(), k_id), heldkeys.end());
+
         key.held = false;
         key.clicked = false;
         if (!keypaused[k_id] && key.keyfunction[KE_RELEASED])
@@ -271,6 +274,7 @@ void inputmanager::initialize()
     addkey(KEYTYPE_KEYBOARD, KEY_TOGGLEFLYING, SDL_SCANCODE_F, mod_none, "Toggle flying");
     addkey(KEYTYPE_KEYBOARD, KEY_TOGGLEINFOBOX, SDL_SCANCODE_M, mod_none, "Toggle infobox");
     addkey(KEYTYPE_KEYBOARD, KEY_RUNNING, SDL_SCANCODE_LSHIFT, mod_none, "Hold to run");
+    addkey(KEYTYPE_KEYBOARD, KEY_SNEAKING, SDL_SCANCODE_LCTRL, mod_none, "Hold to sneak");
 
     addkey(KEYTYPE_KEYBOARD, KEY_1, SDL_SCANCODE_1, mod_none, "Selection 1");
     addkey(KEYTYPE_KEYBOARD, KEY_2, SDL_SCANCODE_2, mod_none, "Selection 2");

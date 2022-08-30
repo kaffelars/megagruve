@@ -18,6 +18,8 @@ namespace windowmanager
     bool setupgamewindow();
     bool setupopengl();
     void close();
+    void update();
+    bool windowjustgainedfocus();
 
     void setvsync(bool on);
 

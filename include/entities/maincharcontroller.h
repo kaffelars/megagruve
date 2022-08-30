@@ -40,12 +40,14 @@ namespace maincharcontroller
     float getmcharlight();
     void resetmainchar();
     void currentlyrunning();
+    void currentlysneaking();
 
     void renderdestroyblock();
 
     void useselecteditem();
     void changeselectiondelta(int selectiondelta);
-    void changeselection(int selection);
+    void changeselection(int sel);
+    itemtype getcurrentlyselecteditemtype();
 
     void movemainchartofloor();
 

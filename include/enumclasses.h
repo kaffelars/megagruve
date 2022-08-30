@@ -34,6 +34,11 @@ enum class iconsize
     small, medium, large //10x10, 16x16, 24x24
 };
 
+enum class movementmode
+{
+    sneaking=0, walking=1, running=2//flying etc
+};
+
 enum class sceneid
 {
     mainmenu, settings, ingame, blank

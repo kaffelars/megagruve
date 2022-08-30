@@ -83,7 +83,14 @@ bool chunk::isready()
     return (gettag() == C_READY);
 }
 
-//bool chunk::is
+void chunk::addoutsidetiles(chunkpos cpos, ctilepos ctpos, tileid tid)
+{
+    int index = (cpos.x + 1) + (cpos.y + 1) * 3;
+
+    outsidetiles[index].push_back(glm::ivec4(ctpos.x, ctpos.y, ctpos.z, tid));
+    anyoutsidetiles = true;
+}
+
 
 bool chunk::getremesh(int toremesh)
 {

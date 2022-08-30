@@ -4,6 +4,7 @@
 shader::shader(std::string filename, std::vector<std::string> uniformnames)
 {
     std::cout << "setting up shader " << filename << "\n";
+    shadername = filename;
     setupshader(filename);
     std::cout << "uniforms: ";
     for (std::string u:uniformnames)
@@ -23,7 +24,7 @@ shader::~shader()
 
 void shader::cleanup()
 {
-    std::cout << "shader cleaning in progress\n";
+    std::cout << "shader cleaning in progress (" << shadername << ")\n";
 
     glUseProgram(0);
 

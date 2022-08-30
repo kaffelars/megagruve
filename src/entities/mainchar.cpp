@@ -12,7 +12,10 @@ mainchar::mainchar() : lifeform(wposition{50.5f, 78.0f, 0.5f},
 {
     flying = true;
     noclip = false;
-    running = false;
+    //running = false;
+    //sneaking = false;
+    movemode = movementmode::walking;
+
     toggleflying();
 
 }
@@ -29,13 +32,19 @@ void mainchar::togglenoclip()
 
 void mainchar::activaterunning()
 {
-    running = true;
+    movemode = movementmode::running;
 }
 
-void mainchar::deactivaterunning()
+void mainchar::activatewalking()
 {
-    running = false;
+    movemode = movementmode::walking;
 }
+
+void mainchar::activatesneaking()
+{
+    movemode = movementmode::sneaking;
+}
+
 
 void mainchar::toggleflying()
 {
@@ -187,8 +196,8 @@ void mainchar::movehoriz(hdirection movement)
     hmovement.x += -dir.y * movement.x;
     hmovement.z += dir.x * movement.x;
 
-    hmovement.x *= (running ? runspeed : walkspeed);
-    hmovement.z *= (running ? runspeed : walkspeed);
+    hmovement.x *= movespeeds[static_cast<int>(movemode)];
+    hmovement.z *= movespeeds[static_cast<int>(movemode)];
 
     hmovement.y = vel.y;
 
@@ -206,9 +215,9 @@ void mainchar::moveflying(hdirection movement)
     dmovement.y = dir.y * movement.y + vel.y;
     dmovement.z = dir.z * movement.y;
 
-    dmovement.x += -hdir.y * movement.x * (running ? runspeed : walkspeed);
+    dmovement.x += -hdir.y * movement.x;// * (running ? runspeed : walkspeed);
     //dmovement.y += dir.y * movement.x;
-    dmovement.z += hdir.x * movement.x * (running ? runspeed : walkspeed);
+    dmovement.z += hdir.x * movement.x;// * (running ? runspeed : walkspeed);
 
     setvelocity(dmovement);
 }

@@ -17,7 +17,7 @@ namespace chunktilemanager
     void breaktile(wtilepos wtile);
     void breaktilewithinfo(wtilepos wtile, breakageinfo b);
     void explodetiles(wtilepos wtile, int32_t explosionpower);
-    bool changectile(chunkpos cpos, ctilepos ctpos, tileid newtileid, uint8_t extrainfo, breakageinfo breakage, uint8_t forwardside = 0);
+    bool changectile(chunkpos cpos, ctilepos ctpos, tileid newtileid, uint8_t extrainfo, breakageinfo breakage, uint8_t forwardside = 0, bool updateneighbour = true);
     bool changectile(wtilepos wtile, tileid newtileid, uint8_t extrainfo, breakageinfo breakage, uint8_t forwardside = 0);
     void changetiles();
     void removemapobj(chunk& c, ctilepos ctpos);
@@ -28,6 +28,7 @@ namespace chunktilemanager
     void addctiletochange(chunkpos cpos, ctilepos ctpos, tileid newtileid, uint8_t extrainfo, breakageinfo breakage);
     void addtiletochange(wtilepos wtile, tileid newtileid, uint8_t extrainfo, breakageinfo breakage);
     void cleartilestochange();
+    bool checkoutsidetiles(chunk& c);
 };
 
 #endif // CHUNKTILEMANAGER_H

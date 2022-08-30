@@ -55,6 +55,7 @@ void scenegame::setkeys()
     inputmanager::setkeyfunction(inputmanager::KEY_TOGGLEFLYING, [&](){maincharcontroller::toggleflying();maincharcontroller::togglenoclip();}, inputmanager::KE_CLICKED);
     inputmanager::setkeyfunction(inputmanager::KEY_TOGGLEINFOBOX, [&](){showinfobox = !showinfobox;}, inputmanager::KE_CLICKED);
     inputmanager::setkeyfunction(inputmanager::KEY_RUNNING, [&](){maincharcontroller::currentlyrunning();}, inputmanager::KE_HELD);
+    inputmanager::setkeyfunction(inputmanager::KEY_SNEAKING, [&](){maincharcontroller::currentlysneaking();}, inputmanager::KE_HELD);
     inputmanager::setkeyfunction(inputmanager::KEY_JUMP, [&](){maincharcontroller::mcharjump();}, inputmanager::KE_CLICKED);
     inputmanager::setkeyfunction(inputmanager::KEY_JUMP, [&](){maincharcontroller::mcharjump();}, inputmanager::KE_HELD);
 }
@@ -99,7 +100,7 @@ void scenegame::render()
 
     if (showinfobox)
     {
-        uielement::beginwindow("infobox", glm::vec2(1.0f), glm::vec2(190.0f, 200.0f));
+        uielement::beginwindow("infobox", glm::vec2(1.0f), glm::vec2(190.0f, 220.0f));
 
         wposition mcpos = maincharcontroller::getmaincharposition();
         std::stringstream infotext;
@@ -107,11 +108,11 @@ void scenegame::render()
 
         wtilepos selectedtile = maincharcontroller::gettilehover();
 
-        infotext << "tile coords: " << selectedtile.x << " " << selectedtile.y << " " << selectedtile.z << "\n";
+        infotext << "selected tile: " << selectedtile.x << " " << selectedtile.y << " " << selectedtile.z << "\n";
 
         wtilepos wtpos = maincharcontroller::gettilehoverentityposition();
 
-        infotext << "ctilepos: " << wtpos.x << " " << wtpos.y << " " << wtpos.z << "\n";
+        infotext << "player loc: " << wtpos.x << " " << wtpos.y << " " << wtpos.z << "\n";
 
         chunkpos cpos = chunkcoords::wpostocpos(wposition{wtpos} + wposition{0.5f});
         ctilepos ctpos = chunkcoords::wpostoctilepos(wposition{wtpos} + wposition{0.5f});
@@ -133,7 +134,9 @@ void scenegame::render()
         }
         infotext << "loaded: " << chunkcontroller::loadedchunksnum() << "\nrendered: " << chunkcontroller::getchunksrendered() << "\n";
 
-        infotext << "time: " << std::round(environment::getcurrenttime() * 100) / 100.0f;
+        infotext << "time: " << std::round(environment::getcurrenttime() * 100) / 100.0f << "\n";
+
+        infotext << "seed: " << randfunc::getseed();
 
         uielement::text(infotext.str(), glm::vec2(10.0f, 0.0f));
 

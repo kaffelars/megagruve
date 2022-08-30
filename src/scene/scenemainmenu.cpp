@@ -344,6 +344,16 @@ void scenemainmenu::render()
         randfunc::setseed(seed);
         recreatebackground();
     }
+
+    int changeseed = 0;
+
+    if (uielement::button("-10", glm::vec2(220.0f, 320.0f), glm::vec2(30.0f, 30.0f))) changeseed -= 10;
+    if (uielement::button("-1", glm::vec2(260.0f, 320.0f), glm::vec2(30.0f, 30.0f))) changeseed -= 1;
+    if (uielement::button("+1", glm::vec2(300.0f, 320.0f), glm::vec2(30.0f, 30.0f))) changeseed += 1;
+    if (uielement::button("+10", glm::vec2(340.0f, 320.0f), glm::vec2(30.0f, 30.0f))) changeseed += 10;
+
+    if (changeseed && seed+changeseed > 0 && seed+changeseed <= 10000) randfunc::setseed(seed+changeseed);
+
     if (uielement::button("settings", glm::vec2(centerx, 470.0f), glm::vec2(300.0f, 50.0f))) scenec::changeactivescene(scenec::S_SETTINGS);
     if (uielement::button("quit", glm::vec2(centerx, 750.0f), glm::vec2(300.0f, 50.0f))) scenec::quitgame();
 

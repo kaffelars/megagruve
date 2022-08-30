@@ -48,6 +48,55 @@ void chunktilemanager::addctiletochange(chunkpos cpos, ctilepos ctpos, tileid ne
     ctilestochangequeue.emplace_back(cchangetile{cpos, ctpos, newtileid, extrainfo, breakage});
 }
 
+bool chunktilemanager::checkoutsidetiles(chunk& c) //updates tiles in neighbouring chunks, e.g. from trees over border etc.
+{
+    if (c.anyoutsidetiles)
+    {
+        int numempty = 0;
+        breakageinfo b {false};
+
+        for (int y = -1; y <= 1; y++)
+        {
+            for (int x = -1; x <= 1; x++)
+            {
+                if (!(x == 0 && y == 0))
+                {
+                    int index = (x+1) + (y+1)*3;
+                    if (!c.outsidetiles[index].empty())
+                    {
+                        chunkpos cp = c.cpos + chunkpos{x,y};
+                        if (chunkcontroller::chunkexists(cp))
+                        {
+                            if (chunkcontroller::getchunk(cp).gettag() == chunk::C_READY)
+                            {
+                                for (glm::ivec4& v : c.outsidetiles[index])
+                                {
+                                    if (!changectile(cp, ctilepos{v.x, v.y, v.z}, v.a, 0, b, 0, false))
+                                    {
+                                        //?
+                                    }
+                                }
+
+                                c.outsidetiles[index].clear();
+                                numempty++;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        numempty++;
+                    }
+                }
+            }
+        }
+
+        if (numempty == 8)
+        {
+            c.anyoutsidetiles = false;
+        }
+    }
+}
+
 void chunktilemanager::removemapobj(chunk& c, ctilepos ctpos)
 {
     c.removechunkobj(ctpos);
@@ -126,10 +175,10 @@ bool chunktilemanager::changectile(wtilepos wtile, tileid newtileid, uint8_t ext
 {
     chunkpos cpos = chunkcoords::wpostocpos(wtile);
     ctilepos ctpos = chunkcoords::wtilepostoctilepos(wtile);
-    changectile(cpos, ctpos, newtileid, extrainfo, breakage, forwardside);
+    return changectile(cpos, ctpos, newtileid, extrainfo, breakage, forwardside);
 }
 
-bool chunktilemanager::changectile(chunkpos cpos, ctilepos ctpos, tileid newtileid, uint8_t extrainfo, breakageinfo breakage, uint8_t forwardside)
+bool chunktilemanager::changectile(chunkpos cpos, ctilepos ctpos, tileid newtileid, uint8_t extrainfo, breakageinfo breakage, uint8_t forwardside, bool updateneighbour)
 {
     //er det et problem med map objs på border? maybe, map objs bruker coord3d - nå blir ikke map objs satt i nabochunks inntil videre, kan bli problems med lys?
     if (!chunkcontroller::chunkexists(cpos)) return false;
@@ -212,7 +261,7 @@ bool chunktilemanager::changectile(chunkpos cpos, ctilepos ctpos, tileid newtile
                 chunklight::updatesunlight(c, ctpos, false);
             }
 
-            if (chunkcoords::withinchunkbounds(ctpos))
+            if (updateneighbour && chunkcoords::withinchunkbounds(ctpos))
             {
                 breakageinfo b;
                 if (ctpos.x == 0) addctiletochange(chunkpos{cpos.x-1, cpos.y}, ctilepos{chunkwidth, ctpos.y, ctpos.z}, newtileid, extrainfo, b);

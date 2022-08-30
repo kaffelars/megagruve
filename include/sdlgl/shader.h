@@ -32,6 +32,8 @@ class shader
         void printlinkingerror(int32_t shaderId);
         void printcompilationlog(int32_t shaderId);
 
+        std::string shadername;
+
         void setupshader(std::string filename);
         bool loadshaderprogram(std::string shado, GLenum shadertype);
 };

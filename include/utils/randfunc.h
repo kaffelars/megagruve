@@ -11,6 +11,8 @@ namespace randfunc
     float noise(float x, float y, float freq);
     float noise(float x, float y, float z, float freq);
 
+    uint8_t getrandom8bitvalue(int32_t offx, int32_t offy);
+
     float terrain(float wavefactor, float ampfactor, float startwave, float startamp, float ex, float ey, float ez, int levels);
     float normterrain(float wavefactor, float ampfactor, float startwave, float startamp, float ex, float ey, float ez, int levels);
 

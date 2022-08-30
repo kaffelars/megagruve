@@ -103,8 +103,6 @@ void chunkcontroller::renderchunks(direction dir, wposition maincharposition)
 
     chunksrendered = 0;
 
-    hdirection d = hdirection(dir.x, dir.z);
-
     int renderdist = settings::getisetting(settings::SET_CDIST);
 
     int x = 0; int y = 0;
@@ -167,7 +165,7 @@ void chunkcontroller::preparestartingarea(wposition mcharposition)
     {
         for (int y = -1; y <= 1; y++)
         {
-            chunkpos cp = centerchunk + chunkpos{x,y};
+            //chunkpos cp = centerchunk + chunkpos{x,y};
             //std::cout << cp.x << " -- " << cp.y << "\n";
 
             newchunk(centerchunk + chunkpos{x,y});
@@ -314,6 +312,10 @@ void chunkcontroller::renderchunk(chunkpos cpos)
     {
         if (ischunkvisible(c))//simple frustum culling
         {
+            if (ctag == chunk::C_READY)
+            {
+                chunktilemanager::checkoutsidetiles(c);
+            }
             chunksrendered++;
             c.render();
             waterrenders.emplace_back(waterrender{&c});

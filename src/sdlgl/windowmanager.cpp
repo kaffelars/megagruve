@@ -4,16 +4,26 @@
 
 namespace windowmanager
 {
-    namespace
-    {
-        bool window_focus = true;
-    }
-
     bool window_focus = true;
+    bool window_justgainedfocus = false;
     SDL_Window* sdlwindow = nullptr;
     SDL_Renderer* sdlrenderer = nullptr;
     SDL_GLContext sdlglcontext = nullptr;
 }
+
+void windowmanager::update()
+{
+    if (window_focus)
+    {
+        window_justgainedfocus = false;
+    }
+    else
+    {
+        window_justgainedfocus = true;
+    }
+}
+
+
 
 void windowmanager::reinitialize()
 {
@@ -125,7 +135,12 @@ float windowmanager::windowaspectratio()
 
 bool windowmanager::windowhasfocus()
 {
-    return windowmanager::window_focus;
+    return window_focus;
+}
+
+bool windowmanager::windowjustgainedfocus()
+{
+    return window_justgainedfocus;
 }
 
 void windowmanager::resizewindow(int sx, int sy)

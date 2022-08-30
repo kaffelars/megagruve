@@ -11,7 +11,7 @@ namespace blocktracer
 
 }
 
-blocktracer::hitblock blocktracer::traceblocks(wposition startposition, direction tracedirection, float maxdistance)
+blocktracer::hitblock blocktracer::traceblocks(wposition startposition, direction tracedirection, float maxdistance, bool ignoreoverbuildables)
 {
     //https://gamedev.stackexchange.com/questions/47362/cast-ray-to-select-block-in-voxel-game
     //https://gamedev.stackexchange.com/questions/87075/c-ray-traversing-in-3d-voxel-game
@@ -78,10 +78,14 @@ blocktracer::hitblock blocktracer::traceblocks(wposition startposition, directio
             }
 
             oldwtpos = curwtpos;
-            if (curchunk->gettile(chunkcoords::wtilepostoctilepos(curwtpos)) > 1)
+            tileid curtid = curchunk->gettile(chunkcoords::wtilepostoctilepos(curwtpos));
+            if (curtid > 1)
             {
-                hittile = true;
-                break;
+                if (!(ignoreoverbuildables && tiledata::isoverbuildable(curtid)))
+                {
+                    hittile = true;
+                    break;
+                }
             }
         }
 

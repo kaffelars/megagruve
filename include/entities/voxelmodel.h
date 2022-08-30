@@ -15,6 +15,7 @@ class voxelmodel
         };
 
         void addpoint(ctilepos tpos, tileid tid);
+        void centermodel();
 
         dimensions dims {0,0,0};
         std::vector<point> points;

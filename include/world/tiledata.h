@@ -35,6 +35,7 @@ namespace tiledata
         uint8_t hardness;
         uint8_t glow;
         bool needssupport;
+        bool overbuildable {false};
         bool passable;
         bool biometint;
         std::string breaktexture;
@@ -66,6 +67,7 @@ namespace tiledata
     bool isambocc(tileid tile);
     bool needssupport(tileid tile);
     bool ispassable(tileid tile);
+    bool isoverbuildable(tileid tile);
 
     void initialize();
     void finalizetileinfos(std::vector<tileinfo>& data);

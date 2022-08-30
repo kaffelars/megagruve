@@ -33,6 +33,8 @@ void gamecontroller::gameloop()
         //--------- inputs og events ----------
         inputmanager::logcursorpos();//putt i refresh? neh
 
+        windowmanager::update();
+
         //sdl events
         while (SDL_PollEvent(&e))
         {
@@ -40,7 +42,7 @@ void gamecontroller::gameloop()
 
             uint8_t winevent = 0;
 
-            if (windowmanager::windowhasfocus())
+            if (windowmanager::windowhasfocus() && !windowmanager::windowjustgainedfocus())
             {
                 inputmanager::processevent(e); //inputs, keys og mouse og bøttons
             }
@@ -62,7 +64,7 @@ void gamecontroller::gameloop()
         ImGui_ImplSDL2_NewFrame(windowmanager::sdlwindow);
         ImGui::NewFrame();
 
-        if (windowmanager::windowhasfocus())
+        if (windowmanager::windowhasfocus() && !windowmanager::windowjustgainedfocus())
         {
             //if focus
             scenec::getactivescene().update();

@@ -31,6 +31,13 @@ namespace randfunc
     }
 }
 
+uint8_t randfunc::getrandom8bitvalue(int32_t offx, int32_t offy)
+{
+    uint8_t opsi = (offx * 127 + offy * 111) % 255;
+
+    return perm[opsi];
+}
+
 int randfunc::getseed()
 {
     return seedn;

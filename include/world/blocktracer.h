@@ -11,7 +11,7 @@ namespace blocktracer
         tilesideid hitside {tilesideid::xm};
     };
 
-    hitblock traceblocks(wposition startposition, direction tracedirection, float maxdistance);
+    hitblock traceblocks(wposition startposition, direction tracedirection, float maxdistance, bool ignoreoverbuildables);
 };
 
 #endif // BLOCKTRACER_H

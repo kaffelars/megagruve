@@ -46,7 +46,8 @@ class mainchar : public lifeform
         bool noclip;
         bool running;
         void activaterunning();
-        void deactivaterunning();
+        void activatewalking();
+        void activatesneaking();
 
         void toggleflying();
         void togglenoclip();
@@ -68,7 +69,7 @@ class mainchar : public lifeform
     protected:
 
     private:
-
+        movementmode movemode;
 };
 
 #endif // MAINCHAR_H

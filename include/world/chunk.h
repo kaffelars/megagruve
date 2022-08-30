@@ -32,6 +32,11 @@ class chunk
 
         int32_t counter{0};
 
+        std::vector<glm::ivec4> outsidetiles[9]; //for tiles to add to neighbouring chunks (from decoration) 0 = -x,-y, 1 = 0, -y, 2 = +x, -y etc.
+        bool anyoutsidetiles {false};
+        void addoutsidetiles(chunkpos cpos, ctilepos ctpos, tileid tid);
+
+
         chunkpos cpos;
         chunkmesh cmesh[chunkmeshynum][2];
         chunkmesh wmesh[chunkmeshynum][2];

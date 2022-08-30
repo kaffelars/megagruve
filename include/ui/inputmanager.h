@@ -53,6 +53,7 @@ namespace inputmanager
         KEY_TOGGLEFLYING,
         KEY_TOGGLEINFOBOX,
         KEY_RUNNING,
+        KEY_SNEAKING,
         KEY_JUMP,
         KEY_1,
         KEY_2,

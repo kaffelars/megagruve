@@ -526,14 +526,26 @@ void newgenerator::generatebiomes(chunk& c, chunkpos cposoffset)
     }
 }
 
+
 void newgenerator::decorate(chunk& c)
 {
-    float numtrees = (randfunc::noise(c.cpos.x-6123, c.cpos.y+1124, 0.5f) + 1.0f)*2.0f;
+    float numtrees = (randfunc::noise(c.cpos.x-6123, c.cpos.y+1124, 37.5f) + 0.5f)*15.0f;
+
+    if (numtrees < 0.0f) numtrees = 0.0f;
 
     int tid_grass = tiledata::gettileid("t_grass");
     int tid_grass2 = tiledata::gettileid("t_grass2");
     int tid_sand = tiledata::gettileid("t_sand");
     int tid_snow = tiledata::gettileid("t_snow");
+
+    uint32_t voaktree = chunkdecorator::getvoxelmodelid("vox_oak_tree");
+    uint32_t vsprucetree = chunkdecorator::getvoxelmodelid("vox_spruce_tree");
+    uint32_t voaktree2 = chunkdecorator::getvoxelmodelid("vox_oak_tree2");
+    uint32_t vbirchtree = chunkdecorator::getvoxelmodelid("vox_birch_tree");
+    uint32_t vtallbirchtree = chunkdecorator::getvoxelmodelid("vox_tall_birch_tree");
+    uint32_t vcactus = chunkdecorator::getvoxelmodelid("vox_cactus");
+    uint32_t vtalltree = chunkdecorator::getvoxelmodelid("vox_talltree");
+    uint32_t vpyramid = chunkdecorator::getvoxelmodelid("vox_pyramid");
 
     chunk::biomedata cbiome = c.getbiome(ctilepos(16,128,16));
     if (cbiome.humidity < 38 && cbiome.temperature > 200)
@@ -552,19 +564,49 @@ void newgenerator::decorate(chunk& c)
                 }
             }
             if (tid == tid_sand)
-                chunkdecorator::addvoxelmodel(c, ctilepos(16,y,16), 4, true, true);
+                chunkdecorator::addvoxelmodel(c, ctilepos(16,y,16), vpyramid, true, true);
         }
     }
 
-    for (int a = 0; a < numtrees; a++)
+    std::vector<glm::ivec3> treepositions;
+
+    for (int a = 0; a < numtrees; a++) //tree positions
     {
+        glm::ivec3 tp;
 
+        float x = randfunc::noise(c.cpos.x+124+3*randfunc::getrandom8bitvalue(a*c.cpos.x, a*c.cpos.y), c.cpos.y-3245+3*randfunc::getrandom8bitvalue(a*c.cpos.y, a*c.cpos.x), 0.5f);
+        float z = randfunc::noise(c.cpos.y+745+3*randfunc::getrandom8bitvalue(a*c.cpos.x, a*c.cpos.y), c.cpos.y+1241+3*randfunc::getrandom8bitvalue(a*c.cpos.y, a*c.cpos.x), 0.5f);
+
+        //tp.x = (chunkwidth / 2) - (x * (chunkwidth / 3));
+        //tp.y = (chunkwidth / 2) - (z * (chunkwidth / 3));
+
+        tp.x = (chunkwidth / 2) - (x * (chunkwidth / 2));
+        tp.y = (chunkwidth / 2) - (z * (chunkwidth / 2));
+
+        bool toadd = true;
+
+        if (!treepositions.empty())
+        {
+            for (glm::ivec3 tree : treepositions)
+            {
+                if (tree.x - 1 <= tp.x && tree.x + 1 >= tp.x && tree.y - 1 <= tp.y && tree.y + 1 >= tp.y) toadd = false;
+            }
+        }
+
+        if (toadd)
+        {
+            tp.z = (255.0f * randfunc::noise(c.cpos.y+6745+3*randfunc::getrandom8bitvalue(a*c.cpos.x, a*c.cpos.y), c.cpos.y-4643+3*randfunc::getrandom8bitvalue(a*c.cpos.y, a*c.cpos.x), 0.5f));
+            treepositions.push_back(tp);
+        }
+    }
+
+    //for (int a = 0; a < numtrees; a++)
+    //{
+    for (glm::ivec3& tree : treepositions)
+    {
         //trees
-        float x = randfunc::noise(c.cpos.x+124, c.cpos.y-3245, 0.5f);
-        float z = randfunc::noise(c.cpos.x+745, c.cpos.y+1241, 0.5f);
-
-        x = (chunkwidth / 2) - (x * (chunkwidth / 3));
-        z = (chunkwidth / 2) - (z * (chunkwidth / 3));
+        float x = tree.x;
+        float z = tree.y;
 
         ytile y = 0;
         tileid tid = 0;
@@ -582,26 +624,46 @@ void newgenerator::decorate(chunk& c)
 
         if (y <= 129)
         {
+            int rotatos = std::round((randfunc::noise(x,z, 0.5f)+1.0f) * 2.0f);
+
             chunk::biomedata biome = c.getbiome(ctilepos(x,y,z));
 
             int32_t voxelmodelid = -1;
 
             if (biome.humidity < 59 && tid == tid_sand) //biome.temperature > 190 && biome.humidity < 58 && tid == tid_sand) //cactus
             {
-                voxelmodelid = 2;
+                if (tree.z > 180)
+                    voxelmodelid = vcactus;
             }
             else if (biome.temperature > 180 && biome.humidity > 165 && tid != tid_sand) //el grande tree
-                voxelmodelid = 3;
+                voxelmodelid = vtalltree;
             else if (biome.humidity > 58 && tid != tid_sand) //trees
             {
                 if (biome.temperature > 126)
-                    voxelmodelid = 1;
+                {
+                    if (tree.z > 195)
+                        voxelmodelid = vtallbirchtree;
+                    else
+                        voxelmodelid = vbirchtree;
+                }
+                else if (biome.temperature > 60)
+                {
+                    if (tree.z > 204)
+                        voxelmodelid = voaktree;
+                    else
+                        voxelmodelid = voaktree2;
+                }
                 else
-                    voxelmodelid = 0;
+                {
+                    if (tree.z > 125)
+                        voxelmodelid = voaktree;
+                    else
+                        voxelmodelid = vsprucetree;
+                }
             }
 
             if (voxelmodelid >= 0)
-                chunkdecorator::addvoxelmodel(c, ctilepos(x,y,z), voxelmodelid, true);
+                chunkdecorator::addvoxelmodel(c, ctilepos(x,y,z), voxelmodelid, true, false, rotatos);
         }
 
 
@@ -631,21 +693,21 @@ void newgenerator::decorate(chunk& c)
             {
                 if (maxy > 1 && (ctid == grass || ctid == grass2) && c.gettile(ctilepos(x,maxy-1,z)) == 0)
                 {
-                    int rint = utils::randint(0, 100);
-                    if (rint < 20)
+                    int rint = randfunc::getrandom8bitvalue(c.cpos.x * 111 + x * 13, c.cpos.y * 111 + z * 13);//utils::randint(0, 100);
+                    if (rint < 50)
                         c.settile(ctilepos{x, maxy-1, z}, grasstile1);
-                    if (rint > 80)
+                    if (rint > 200)
                         c.settile(ctilepos{x, maxy-1, z}, grasstile2);
-                    if (rint == 44)
+                    if (rint > 60 && rint < 65)
                         c.settile(ctilepos{x, maxy-1, z}, flower1);
-                    if (rint == 45)
+                    if (rint > 65 && rint < 70)
                         c.settile(ctilepos{x, maxy-1, z}, flower2);
-                    if (rint == 46)
+                    if (rint > 70 && rint < 75)
                         c.settile(ctilepos{x, maxy-1, z}, flower3);
 
                     if (biome.humidity > 170)
                     {
-                        if (rint > 30 && rint < 40)
+                        if (rint > 75 && rint < 100)
                         {
                             c.settile(ctilepos{x, maxy-1, z}, grass_bottom);
                             c.settile(ctilepos{x, maxy-2, z}, grass_top);
