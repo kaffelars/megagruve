@@ -3,11 +3,18 @@
 
 #include "pugixml.hpp"
 
+
 namespace settings
 {
     enum esettings
     {
-        SET_SCREENX, SET_SCREENY, SET_FOV, SET_CDIST, SET_AA, SET_TILERES, SET_VSYNC, SET_UISCALE, SET_LANGUAGE, SET_BBOX, SET_MBOX, SET_MAXTHREADS, SET_MOUSESENS
+        SET_SCREENX, SET_SCREENY, SET_FOV, SET_CDIST, SET_AA, SET_TILERES, SET_VSYNC, SET_UISCALE, SET_FILTER, SET_LANGUAGE, SET_BBOX, SET_MBOX, SET_MAXTHREADS, SET_MOUSESENS
+    };
+
+    struct filterinfo
+    {
+        std::string name;
+        glm::mat3x3 filter;
     };
 
     struct setting
@@ -40,6 +47,10 @@ namespace settings
     int getisetting(int s);
     float getfsetting(int s);
     std::string getssetting(int s);
+
+    const std::vector<filterinfo>& getfilters();
+    int getfilterindex(std::string filtername);
+    glm::mat3x3 getfilter(int id);
 
     //extern std::vector<setting> setts;
 

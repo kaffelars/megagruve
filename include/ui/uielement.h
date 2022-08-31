@@ -21,6 +21,13 @@ namespace uielement
     void beginwindow(std::string windowtitle, glm::vec2 windowpos, glm::vec2 windowsize, bool titlebar = false, bool scrollbar = false, bool background = true);
     void endwindow();
 
+    //list
+    bool addlistelement(std::string text, bool selected);
+
+    //dropdown combo
+    bool begindropdown(std::string id, std::string name);
+    void enddropdown();
+
     //void inputtext();
 
     void text(std::string text, glm::vec2 pos);

@@ -138,16 +138,19 @@ void chunkcontroller::updatechunks()
 
     chunktilemanager::changetiles();
 
-    //sletter chunks out of range
+    //removes chunks out of range
     glm::vec3 charpos = maincharcontroller::getmaincharposition();
-    glm::vec2 charpos2d = glm::vec2(charpos.x, charpos.z);
-    int maxdist = (2+settings::getisetting(settings::SET_CDIST)) * (chunkwidth);
+    //glm::vec2 charpos2d = glm::vec2(charpos.x, charpos.z);
+    chunkpos cc = chunkcoords::wpostocpos(charpos);
+    //int maxdist = (2+settings::getisetting(settings::SET_CDIST)) * (chunkwidth);
+    int renderdist = settings::getisetting(settings::SET_CDIST);
 
     for (chunkpos& c : loadedchunks)
     {
-        glm::vec2 wcpos = glm::vec2(c.x * chunkwidth, c.y * chunkwidth);
-        float distance = utils::getdist(charpos2d, wcpos);
-        if (distance > maxdist)
+        //glm::vec2 wcpos = glm::vec2(c.x * chunkwidth, c.y * chunkwidth);
+        //float distance = utils::getdist(charpos2d, wcpos);
+        //if (distance > maxdist)
+        if (std::abs(c.x - cc.x - 2) > renderdist || std::abs(c.y - cc.y - 2) > renderdist)
         {
             //std::cout << "remove " << c.x << "-" << c.y << "\n";
             removechunk(c); //kan bare fjerne 1 chunk pr loop i denne loopen, men det er kanskje best?

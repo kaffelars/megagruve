@@ -112,11 +112,11 @@ void texturemanager::loadicontextures()
 
             if (tileimg == NULL)
             {
-                std::cout << "\nerror loading texture: " << texture << " - " << IMG_GetError() << "\n";
+                std::cout << "error loading texture: " << texture << " - " << IMG_GetError() << "\n";
             }
             else
             {
-                std::cout << "\ntexture " << texture << ".png loaded " << int(tileimg->w) << "x" << int(tileimg->h) << " - " << int(tileimg->format->BytesPerPixel) << " bytes/px\n";
+                std::cout << "texture " << texture << ".png loaded " << int(tileimg->w) << "x" << int(tileimg->h) << " - " << int(tileimg->format->BytesPerPixel) << " bytes/px\n";
             }
 
             glTexSubImage3D(GL_TEXTURE_2D_ARRAY,
@@ -148,11 +148,11 @@ void texturemanager::loadicontextures()
 
                 if (tileimg == NULL)
                 {
-                    std::cout << "\nerror loading texture: " << texture << " - " << IMG_GetError() << "\n";
+                    std::cout << "error loading texture: " << texture << " - " << IMG_GetError() << "\n";
                 }
                 else
                 {
-                    std::cout << "\ntexture " << texture << ".png loaded " << int(tileimg->w) << "x" << int(tileimg->h) << " - " << int(tileimg->format->BytesPerPixel) << " bytes/px\n";
+                    std::cout << "texture " << texture << ".png loaded " << int(tileimg->w) << "x" << int(tileimg->h) << " - " << int(tileimg->format->BytesPerPixel) << " bytes/px\n";
                 }
 
                 uint8_t* processedpic = new uint8_t[tileres*tileres*4];
@@ -253,11 +253,11 @@ void texturemanager::loadtiletextures()
 
         if (tileimg == NULL)
         {
-            std::cout << "\nerror loading texture: " << texture << " - " << IMG_GetError() << "\n";
+            std::cout << "error loading texture: " << texture << " - " << IMG_GetError() << "\n";
         }
         else
         {
-            std::cout << "\ntexture " << texture << ".png loaded " << int(tileimg->w) << "x" << int(tileimg->h) << " - " << int(tileimg->format->BytesPerPixel) << " bytes/px\n";
+            std::cout << "texture " << texture << ".png loaded " << int(tileimg->w) << "x" << int(tileimg->h) << " - " << int(tileimg->format->BytesPerPixel) << " bytes/px\n";
         }
 
         glTexSubImage3D(GL_TEXTURE_2D_ARRAY,

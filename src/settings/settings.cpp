@@ -3,17 +3,16 @@
 
 namespace settings
 {
-    namespace //private
-    {
-        std::vector<setting> setts;// = {};
-    }
+    std::vector<setting> setts;// = {};
+    std::vector<filterinfo> filters;
+    void loadfilters();
 }
 
 void settings::loadsettings()
 {
     if (!settings::setts.empty()) settings::setts.clear();//renser settings
 
-    //settings den skal lete etter
+    //settings to look for - make more flexible
     setts.emplace_back(setting("screenx", 1, 0));//video
     setts.emplace_back(setting("screeny", 1, 0));
     setts.emplace_back(setting("fov", 1, 0));
@@ -22,6 +21,7 @@ void settings::loadsettings()
     setts.emplace_back(setting("tileres", 1, 0));
     setts.emplace_back(setting("vsync", 1, 0));
     setts.emplace_back(setting("uiscale", 2, 0));
+    setts.emplace_back(setting("filter", 0, 0));
     setts.emplace_back(setting("language", 0, 1));//game
     setts.emplace_back(setting("bbox", 1, 1));
     setts.emplace_back(setting("mbox", 1, 1));
@@ -58,8 +58,69 @@ void settings::loadsettings()
 
     if (st != setts.size())
     {
-        std::cout << "settings error! ";
+        std::cout << "settings error!\n";
     }
+
+    loadfilters();
+}
+
+void settings::loadfilters()
+{
+    if (!filters.empty()) filters.clear();
+
+    pugi::xml_document doc;
+
+    std::string fname = "./data/filters.txt";
+    pugi::xml_parse_result result = doc.load_file(fname.c_str());
+
+    if (result)
+    {
+        for (pugi::xml_node p = doc.child("filter"); p; p = p.next_sibling("filter"))
+        {
+            filterinfo f;
+            f.name = p.attribute("name").value();
+
+            f.filter = glm::mat3x3(1.0f);
+            for (int y = 0; y < 3; y++)
+            {
+                for (int x = 0; x < 3; x++)
+                {
+                    std::string row = "row"+std::to_string(y+1);
+                    std::string col = "val"+std::to_string(x+1);
+                    f.filter[y][x] = p.child(row.c_str()).attribute(col.c_str()).as_float();
+                }
+            }
+            filters.push_back(f);
+
+        }
+    }
+    else
+    {
+        std::cout << "filter loading error!\n\n\n\n\n\n";
+    }
+}
+
+const std::vector<settings::filterinfo>& settings::getfilters()
+{
+    return filters;
+}
+
+int settings::getfilterindex(std::string filtername)
+{
+    if (filtername == "none") return -1;
+
+    int index = 0;
+    for (filterinfo& f: filters)
+    {
+        if (f.name == filtername) return index;
+        index++;
+    }
+    return -1;
+}
+
+glm::mat3x3 settings::getfilter(int id)
+{
+    return filters[id].filter;
 }
 
 void settings::writedefaultsettings()

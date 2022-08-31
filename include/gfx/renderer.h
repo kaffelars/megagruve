@@ -14,6 +14,7 @@ namespace renderer
 {
     void rendergame();
     glm::vec4& getmousedata();
+    void updaterenderfilter();
 };
 
 #endif // RENDERER_H

@@ -118,6 +118,22 @@ void scenesettings::video()
     {
         settings::setfsetting(settings::SET_UISCALE, uisc);
     }
+
+    uielement::text("Render filter: ", glm::vec2(25.0f, 155.0f));
+    const std::vector<settings::filterinfo>& filterlist = settings::getfilters();
+    std::string currentfilter = settings::getssetting(settings::SET_FILTER);
+    if (uielement::begindropdown("##filterlist", currentfilter))
+    {
+        if (uielement::addlistelement("none", currentfilter=="none")) settings::setssetting(settings::SET_FILTER, "none");
+        for (const settings::filterinfo& f: filterlist)
+        {
+            if (uielement::addlistelement(f.name, f.name==currentfilter))
+            {
+                settings::setssetting(settings::SET_FILTER, f.name);
+            }
+        }
+        uielement::enddropdown();
+    }
 }
 
 void scenesettings::keybinds()

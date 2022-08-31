@@ -20,7 +20,8 @@ class scenegame : public scene
 
         bool showingescbox {false};
         bool showinginventory {false};
-        bool lastwasfocus {false};
+        bool lastwasfocus {true};
+        bool wasmousehidden {false};
         bool showinfobox {true};
         bool startnewworld {true};
         bool generatingnewworld {false};

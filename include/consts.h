@@ -4,8 +4,8 @@
 
 #define GL3_PROTOTYPES 1
 
-
 #include "includes.h"
+
 
 
 constexpr float pi_value = 3.1415926535f;

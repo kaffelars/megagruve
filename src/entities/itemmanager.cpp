@@ -23,7 +23,7 @@ void itemmanager::additem(std::string itemname, std::string texturename, item it
     itemtoadd.selectionmode = maincharcontroller::SEL_NONE;
     if (itemtoadd.itemtype == itemtype::tool)
         itemtoadd.selectionmode = maincharcontroller::SEL_BLOCK;
-    if (itemtoadd.itemtype == itemtype::block || itemtoadd.itemtype == itemtype::placeableobject || itemtoadd.itemtype == itemtype::flag)
+    if (itemtoadd.itemtype == itemtype::block || itemtoadd.itemtype == itemtype::placeableobject)// || itemtoadd.itemtype == itemtype::flag)
         itemtoadd.selectionmode = maincharcontroller::SEL_AIR;
 
     items.emplace_back(itemtoadd);
@@ -108,7 +108,7 @@ void itemmanager::initialize()
     {
         //if (t.ttype == tiledata::T_SOLID || t.ttype == tiledata::T_SOLID_VERT || t.ttype == tiledata::T_DISCARD) //trengs dette?
         //{
-        std::cout << "adding tile item: " << t.name << "-" << t.name.size() << "\n";
+        //std::cout << "adding tile item: " << t.name << "-" << t.name.size() << "\n";
         std::string itemid = "i_" + t.name.substr(2, t.name.size()-2);
         int32_t tid = tiledata::gettileid(t.name);
         additem(itemid, t.sidetextures[0], item{.name=t.fullname, .description="Placeable block", .speed=200, .duration=0, .maxstack=99, .itemtype=itemtype::block, .subtype=itemsubtype::other, .useeffects=std::vector<std::shared_ptr<effect>>{std::make_shared<changeblockeffect>(true, true, tid)}});
@@ -118,7 +118,7 @@ void itemmanager::initialize()
     uint32_t index = 0;
     for (const map_obj_manager::mapobjinfo& t : map_obj_manager::getmapobjlist())
     {
-        std::cout << "adding map object: " << t.name << "-" << t.name.size() << "\n";
+        //std::cout << "adding map object: " << t.name << "-" << t.name.size() << "\n";
         std::string itemid = "i_" + t.name.substr(2, t.name.size()-2);
         int32_t objid = index;
         additem(itemid, t.icontexture, item{.name=t.fullname, .description=t.description, .speed=200, .duration=0, .maxstack=64, .itemtype=itemtype::placeableobject, .subtype=itemsubtype::other, .useeffects=std::vector<std::shared_ptr<effect>>{std::make_shared<placeobjecteffect>(true, objid)}});

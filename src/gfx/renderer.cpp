@@ -3,6 +3,7 @@
 
 #include "timekeeper.h"
 #include "particlemanager.h"
+#include "settings.h"
 
 namespace renderer
 {
@@ -10,11 +11,21 @@ namespace renderer
     hposition renderoffset = hposition{0.0f, 0.0f};
 
     float timer = 0.0f;
+    int filterid = -1;
+    glm::mat3x3 renderfilter = glm::mat3x3(1.0f);
 }
 
 glm::vec4& renderer::getmousedata()
 {
     return mousedata;
+}
+
+void renderer::updaterenderfilter()
+{
+    filterid = settings::getfilterindex(settings::getssetting(settings::SET_FILTER));
+
+    if (filterid >= 0)
+        renderfilter = settings::getfilter(filterid);
 }
 
 void renderer::rendergame()
@@ -179,7 +190,15 @@ void renderer::rendergame()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     //glViewport(0, 0, settings::getisetting(settings::SET_SCREENX), settings::getisetting(settings::SET_SCREENY));
 
-    shadercontroller::activateshader(shadercontroller::SH_PP);
+    if (filterid == -1)
+    {
+        shadercontroller::activateshader(shadercontroller::SH_PP);
+    }
+    else
+    {
+        shadercontroller::activateshader(shadercontroller::SH_PPFILTER);
+        glUniformMatrix3fv(shadercontroller::getuniformid("em"), 1, GL_FALSE, &(renderfilter[0][0]));
+    }
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, framebuffercontroller::postrgb);
 

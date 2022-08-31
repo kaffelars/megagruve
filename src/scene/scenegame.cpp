@@ -64,6 +64,8 @@ void scenegame::show()
 {
     camera::updateperspective();
 
+    renderer::updaterenderfilter();
+
     setkeys();
 
     if (startnewworld)
@@ -189,6 +191,7 @@ void scenegame::hiddenupdate()
 {
     if (lastwasfocus)
     {
+        wasmousehidden = inputmanager::ismousehidden();
         inputmanager::showmouse();
         lastwasfocus = false;
     }
@@ -198,7 +201,7 @@ void scenegame::update()
 {
     if (!lastwasfocus)
     {
-        inputmanager::hidemouse();
+        wasmousehidden ? inputmanager::hidemouse() : inputmanager::showmouse();
         lastwasfocus = true;
     }
 

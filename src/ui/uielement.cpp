@@ -17,6 +17,21 @@ void uielement::resetcounter()
     counter = 0;
 }
 
+bool uielement::begindropdown(std::string id, std::string name)
+{
+    return ImGui::BeginCombo(id.c_str(), name.c_str());
+}
+
+void uielement::enddropdown()
+{
+    ImGui::EndCombo();
+}
+
+bool uielement::addlistelement(std::string text, bool selected)
+{
+    return ImGui::Selectable(text.c_str(), selected);
+}
+
 bool uielement::sliderint(int from, int to, int& into, int division)
 {
     std::string crab = "##slider"+counterstr();
