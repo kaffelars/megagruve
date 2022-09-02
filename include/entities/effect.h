@@ -34,6 +34,17 @@ class togglelight : public effect
 		float lightstrength;
 };
 
+class movetime : public effect
+{
+	public:
+		movetime(float timetomove);
+		virtual ~movetime() = default;
+		bool activate(entity* user, entity* target);
+
+	private:
+		float timemovement;
+};
+
 class applybuff : public effect
 {
 	public:

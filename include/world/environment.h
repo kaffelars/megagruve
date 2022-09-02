@@ -19,6 +19,10 @@ namespace environment
     void initialize();
     void resetenvironment();
 
+    void sendrendererdata();
+
+    void changetime(float timetochange);
+
     void changecloudcover(float change);
 
     void rain();

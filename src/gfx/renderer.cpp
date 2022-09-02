@@ -45,21 +45,22 @@ void renderer::rendergame()
     //render tiles ------
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_STENCIL_TEST);
+    glEnable (GL_CULL_FACE);
     glStencilFunc(GL_ALWAYS, 1, 0xFF);
     glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
     glStencilMask(0xFF);
 
-    direction sundir = environment::getsundir();//environment.getsundir();
-    rgbcolor suncolor = environment::getsuncolor();//environment.getsuncolor();
-    rgbcolor fogcolor = environment::getfogcolor();//environment.getfogcolor();
+
     wposition campos = maincharcontroller::getmaincharcamera();
     float mcharlight = maincharcontroller::getmcharlight();
 
+
+
     shadercontroller::activateshader(shadercontroller::SH_MAIN);
+
+    environment::sendrendererdata();
+
     glUniformMatrix4fv(shadercontroller::getuniformid("pv"), 1, GL_FALSE, &(camera::getpvmatrix()[0][0]));
-    glUniform3f(shadercontroller::getuniformid("sundir"), sundir.x, sundir.y, sundir.z);
-    glUniform3f(shadercontroller::getuniformid("fogcolor"), fogcolor.x, fogcolor.y, fogcolor.z);
-    glUniform3f(shadercontroller::getuniformid("suncolor"), suncolor.x, suncolor.y, suncolor.z);
     glUniform3f(shadercontroller::getuniformid("campos"), campos.x, campos.y, campos.z);
     glUniform1f(shadercontroller::getuniformid("mcharlight"), mcharlight);
 
@@ -77,9 +78,10 @@ void renderer::rendergame()
     {
         shadercontroller::activateshader(shadercontroller::SH_PARTICLE);
         glUniformMatrix4fv(shadercontroller::getuniformid("pv"), 1, GL_FALSE, &(camera::getpvmatrix()[0][0]));
-        glUniform3f(shadercontroller::getuniformid("sundir"), sundir.x, sundir.y, sundir.z);
+        /*glUniform3f(shadercontroller::getuniformid("sundir"), sundir.x, sundir.y, sundir.z);
         glUniform3f(shadercontroller::getuniformid("fogcolor"), fogcolor.x, fogcolor.y, fogcolor.z);
-        glUniform3f(shadercontroller::getuniformid("suncolor"), suncolor.x, suncolor.y, suncolor.z);
+        glUniform3f(shadercontroller::getuniformid("suncolor"), suncolor.x, suncolor.y, suncolor.z);*/
+        environment::sendrendererdata();
         glUniform3f(shadercontroller::getuniformid("campos"), campos.x, campos.y, campos.z);
         glUniform1f(shadercontroller::getuniformid("mcharlight"), mcharlight);
 
@@ -133,9 +135,11 @@ void renderer::rendergame()
     //water
     shadercontroller::activateshader(shadercontroller::SH_WATER);
     glUniformMatrix4fv(shadercontroller::getuniformid("pv"), 1, GL_FALSE, &(camera::getpvmatrix()[0][0]));
-    glUniform3f(shadercontroller::getuniformid("sundir"), sundir.x, sundir.y, sundir.z);
+    /*glUniform3f(shadercontroller::getuniformid("sundir"), sundir.x, sundir.y, sundir.z);
     glUniform3f(shadercontroller::getuniformid("fogcolor"), fogcolor.x, fogcolor.y, fogcolor.z);
-    glUniform3f(shadercontroller::getuniformid("suncolor"), suncolor.x, suncolor.y, suncolor.z);
+    glUniform3f(shadercontroller::getuniformid("suncolor"), suncolor.x, suncolor.y, suncolor.z);*/
+    environment::sendrendererdata();
+
     glUniform3f(shadercontroller::getuniformid("campos"), campos.x, campos.y, campos.z);
     glUniform1i(shadercontroller::getuniformid("gbuf_rgb"), 0);
     glUniform1i(shadercontroller::getuniformid("gbuf_pos"), 1);

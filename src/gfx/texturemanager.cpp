@@ -78,7 +78,7 @@ void texturemanager::loadicontextures()
     std::vector<std::string> filenames[3]= {
     {"debug", "redheart", "halfheart", "halfblackheart", "blackheart", "yellowheart", "greenheart", "blueheart", "silverheart", "shield"},
     {"debug", "iron_pickaxe", "iron_axe", "iron_sword", "diamond_pickaxe", "apple", "apple_golden", "green_wand", "red_wand", "totem", "fireball", "diamond", "wings",
-     "star", "helmet_iron", "ring_green", "ring_red", "skull_skeleton", "boots_blue", "boots_iron", "boots_leather", "chestplate_iron", "fireballhot", "fireballhot2"},
+     "star", "helmet_iron", "ring_green", "ring_red", "skull_skeleton", "boots_blue", "boots_iron", "boots_leather", "chestplate_iron", "fireballhot", "fireballhot2", "clock"},
     {"debug", "border", "selectedborder", "clickedborder", "otherborder"}
     };
 

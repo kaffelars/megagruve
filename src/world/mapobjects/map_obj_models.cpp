@@ -13,7 +13,8 @@ namespace map_obj_models
 
 void map_obj_models::initialize()
 {
-    vnorm sidenormals[7] = {vnorm{-1,0,0}, vnorm{1,0,0}, vnorm{0,-1,0}, vnorm{0,1,0}, vnorm{0,-1,0}, vnorm{0,0,-1}, vnorm{0,0,1}};
+    vnorm chestnormals[7] = {vnorm{-1,0,0}, vnorm{1,0,0}, vnorm{0,-1,0}, vnorm{0,1,0}, vnorm{0,-1,0}, vnorm{0,0,-1}, vnorm{0,0,1}};
+    vnorm sidenormals[6] = {vnorm{-1,0,0}, vnorm{1,0,0}, vnorm{0,-1,0}, vnorm{0,1,0}, vnorm{0,0,-1}, vnorm{0,0,1}};
 
     //chest
     map_obj_model t;
@@ -32,14 +33,14 @@ void map_obj_models::initialize()
     t.vertexes.push_back(vpos{0.9375f, 0.125f, 0.9375f});
     t.vertexes.push_back(vpos{0.9375f, 1.0f, 0.0625f});
 
-    t.vertexes.push_back(vpos{0.0625f, 0.125f, 0.0625f}); //12
+    t.vertexes.push_back(vpos{0.0625f, 0.125f, 0.0625f}); //12 top
     t.vertexes.push_back(vpos{0.9375f, 0.125f, 0.0625f}); //13
     t.vertexes.push_back(vpos{0.9375f, 0.125f, 0.9375f}); //14
     t.vertexes.push_back(vpos{0.0625f, 0.125f, 0.0625f}); //15
     t.vertexes.push_back(vpos{0.9375f, 0.125f, 0.9375f}); //16
     t.vertexes.push_back(vpos{0.0625f, 0.125f, 0.9375f}); //17
 
-    t.vertexes.push_back(vpos{0.9375f, 1.0f, 0.0625f});
+    t.vertexes.push_back(vpos{0.9375f, 1.0f, 0.0625f}); //bottom
     t.vertexes.push_back(vpos{0.0625f, 1.0f, 0.0625f});
     t.vertexes.push_back(vpos{0.9375f, 1.0f, 0.9375f});
     t.vertexes.push_back(vpos{0.9375f, 1.0f, 0.9375f});
@@ -132,7 +133,7 @@ void map_obj_models::initialize()
     {
         for (int b = 0; b < 6; b++)
         {
-            t.normals.push_back(sidenormals[a]);
+            t.normals.push_back(chestnormals[a]);
             t.texids.push_back(texids[a]);
             t.glow.push_back(0);
         }
@@ -237,13 +238,13 @@ void map_obj_models::initialize()
         if (v.z == 0.9375f) v.z = 0.625f;
     }
 
-    for (uvpos& uv : f.uv)
+    /*for (uvpos& uv : f.uv)
     {
         if (uv.x == 0.0f) uv.x = 0.375f;
         if (uv.y == 0.0f) uv.y = 0.375f;
         if (uv.x == 1.0f) uv.x = 0.625f;
         if (uv.y == 1.0f) uv.y = 0.625f;
-    }
+    }*/
 
     obj_models.push_back(f);
 

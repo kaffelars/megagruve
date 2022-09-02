@@ -24,6 +24,17 @@ namespace environment
 
     uint32_t raintexid = 0;
 
+    rgbcolor fogcolors[9] = {
+    rgbcolor{0.0f, 0.0f, 0.1f}, //0
+    rgbcolor{0.0f, 0.0f, 0.1f}, //3
+    rgbcolor{0.6f, 0.6f, 0.6f}, //6
+    rgbcolor{0.9f, 0.9f, 0.9f}, //9
+    rgbcolor{1.0f, 1.0f, 1.0f}, //12
+    rgbcolor{1.0f, 1.0f, 1.0f}, //15
+    rgbcolor{0.6f, 0.6f, 0.6f}, //18
+    rgbcolor{0.0f, 0.0f, 0.1f}, //21
+    rgbcolor{0.0f, 0.0f, 0.1f}}; //24
+
     rgbcolor skycolors[9] = {
     rgbcolor{0.0f, 0.0f, 0.0f}, //0
     rgbcolor{0.0f, 0.0f, 0.0f}, //3
@@ -36,15 +47,50 @@ namespace environment
     rgbcolor{0.0f, 0.0f, 0.0f}}; //24
 
     rgbcolor suncolors[9] = {
-    rgbcolor{0.0f, 0.0f, 0.0f}, //0
-    rgbcolor{0.0f, 0.0f, 0.0f}, //3
-    rgbcolor{0.9f, 0.0f, 0.0f}, //6
+    rgbcolor{0.0f, 0.0f, 0.1f}, //0
+    rgbcolor{0.0f, 0.0f, 0.1f}, //3
+    rgbcolor{0.9f, 0.0f, 0.1f}, //6
     rgbcolor{0.9f, 0.9f, 0.9f}, //9
     rgbcolor{1.0f, 1.0f, 1.0f}, //12
     rgbcolor{1.0f, 1.0f, 1.0f}, //15
     rgbcolor{1.0f, 0.2f, 0.2f}, //18
-    rgbcolor{0.0f, 0.0f, 0.0f}, //21
-    rgbcolor{0.0f, 0.0f, 0.0f}}; //24
+    rgbcolor{0.0f, 0.0f, 0.1f}, //21
+    rgbcolor{0.0f, 0.0f, 0.1f}}; //24
+
+
+    float getcloudfactor();
+}
+
+void environment::sendrendererdata()
+{
+    rgbcolor fogcolor = getfogcolor();
+    glm::vec2 fogdist;
+    direction sundir = getsundir();//environment.getsundir();
+    rgbcolor suncolor = getsuncolor();//environment.getsuncolor();
+
+    fogdist.y = settings::getisetting(settings::SET_CDIST) * (chunkwidth);
+    float cloudfactor = getcloudfactor();
+    fogdist.y /= (1.0f + 3.0f * cloudfactor);
+    fogdist.x = (fogdist.y / (3.0f));
+    fogdist.x -= fogdist.x * cloudfactor * 4.0f;
+
+    glUniform3f(shadercontroller::getuniformid("fogcolor"), fogcolor.x, fogcolor.y, fogcolor.z);
+    glUniform2f(shadercontroller::getuniformid("fogdist"), fogdist.x, fogdist.y);
+    glUniform3f(shadercontroller::getuniformid("sundir"), sundir.x, sundir.y, sundir.z);
+    glUniform3f(shadercontroller::getuniformid("suncolor"), suncolor.x, suncolor.y, suncolor.z);
+}
+
+float environment::getcloudfactor()
+{
+    float cloudfactor = (cloudcover - 0.5f) * 2.0f;
+    if (cloudfactor < 0.0f) cloudfactor = 0.0f;
+    return cloudfactor;
+}
+
+void environment::changetime(float timetochange)
+{
+    currenttime += timetochange;
+    if (currenttime > 24.0f) currenttime -= 24.0f;
 }
 
 void environment::resetenvironment()
@@ -127,10 +173,11 @@ rgbcolor environment::getsuncolor()
 
     rgbcolor suncol = suncolors[ptone] * (1.0f - factor) + suncolors[pttwo] * (factor);
 
-    if (cloudcover > 0.5f)
+    /*if (cloudcover > 0.5f)
     {
         suncol *= (1.0f - 2.0f * (cloudcover - 0.5f));
-    }
+    }*/
+    suncol *= (1.0f - getcloudfactor());
 
     return suncol;
 }
@@ -156,15 +203,17 @@ rgbcolor environment::getskycolor()
 
 rgbcolor environment::getfogcolor()
 {
-    /*rgbcolor skycolor = getskycolor();
+    float curtime = getcurrenttime();
 
-    skycolor.r = skycolor.r*5.0f;
-    skycolor.g = skycolor.g*3.0f;
-    skycolor.b = skycolor.b*1.5f;*/
+    uint8_t ptone = (curtime / 3);
+    uint8_t pttwo = ptone + 1;
 
-    rgbcolor skycolor = getsuncolor();
+    float factor = (curtime - (3.0f * ptone)) / 3.0f;
 
-    return skycolor;
+    float foglight = (1.0f - (1.4f * getcloudfactor()));
+    if (foglight < 0.05f) foglight = 0.05f;
+
+    return (fogcolors[ptone] * (1.0f - factor) + fogcolors[pttwo] * (factor)) * foglight;
 }
 
 void environment::renderskybox()
@@ -174,7 +223,11 @@ void environment::renderskybox()
     direction sundir = getsundir();
     wposition eyepos = maincharcontroller::getmaincharposition();
     rgbcolor suncolor = getsuncolor();
-    rgbcolor fogcolor = getfogcolor();
+
+    float lightfactor = (1.0f - (1.4f * getcloudfactor()));
+    if (lightfactor < 0.05f) lightfactor = 0.05f;
+
+    rgbcolor fogcolor = getfogcolor() * (1.0f - lightfactor) + getsuncolor() * lightfactor;
     rgbcolor skycolor = getskycolor();
 
     texturemanager::bindcloudtexture(0);

@@ -94,6 +94,17 @@ bool changeweathereffect::activate(entity* user, entity* target)
     return true;
 }
 
+movetime::movetime(float timetomove) : timemovement{timetomove}
+{
+
+}
+
+bool movetime::activate(entity* user, entity* target)
+{
+    environment::changetime(timemovement);
+    return true;
+}
+
 
 toggletime::toggletime()
 {

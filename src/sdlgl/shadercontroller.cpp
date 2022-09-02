@@ -34,15 +34,15 @@ void shadercontroller::initialize()
 {
     std::cout << "setting up shaders\r\n";
 
-    addshader(SH_MAIN, "main", {"pv", "vpos", "sundir", "sunlight", "suncolor", "fogcolor", "campos", "mcharlight"});
+    addshader(SH_MAIN, "main", {"pv", "vpos", "sundir", "sunlight", "suncolor", "fogcolor", "fogdist", "campos", "mcharlight"});
     addshader(SH_SCENE, "scene", {"gbuf_rgb", "gbuf_pos", "gbuf_norm", "underwater"}); //"tiles",
     addshader(SH_SKY, "sky", {"sundir", "skycolor", "pv", "campos", "fogcolor", "suncolor", "cloudcover"});
     addshader(SH_PP, "postprocessing", {});
     addshader(SH_PPFILTER, "postprocessingfilter", {"em"});
     addshader(SH_LINE, "line", {"pv", "vpos", "rgb"});
     addshader(SH_ICONS, "icon", {"screensize"});
-    addshader(SH_WATER, "water", {"gbuf_rgb", "gbuf_pos", "gbuf_norm", "tex", "timer", "pv", "vpos", "sundir", "sunlight", "suncolor", "fogcolor", "campos", "mcharlight"});
-    addshader(SH_PARTICLE, "particle", {"pv", "sundir", "sunlight", "suncolor", "fogcolor", "campos", "mcharlight"});
+    addshader(SH_WATER, "water", {"gbuf_rgb", "gbuf_pos", "gbuf_norm", "tex", "timer", "pv", "vpos", "sundir", "sunlight", "suncolor", "fogcolor", "fogdist", "campos", "mcharlight"});
+    addshader(SH_PARTICLE, "particle", {"pv", "sundir", "sunlight", "suncolor", "fogcolor", "fogdist", "campos", "mcharlight"});
     addshader(SH_SIMPLEPARTICLE, "simpleparticle", {});
     addshader(SH_MENU, "menu", {"tex"});
 

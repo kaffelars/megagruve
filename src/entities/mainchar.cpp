@@ -146,6 +146,7 @@ void mainchar::fillinv()
     mcharinv.additem("i_flag4", 64);
     mcharinv.additem("i_flagpole", 64);
     mcharinv.additem("i_lightbulb", 64);
+    mcharinv.additem("i_magicalclock", 1);
 
     equipment.additem("i_helmet_iron", 1);
     equipment.additem("i_chest_iron", 1);

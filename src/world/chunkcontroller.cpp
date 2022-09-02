@@ -111,7 +111,7 @@ void chunkcontroller::renderchunks(direction dir, wposition maincharposition)
     //spiral
     while (true)
     {
-        if (-renderdist < x && x <= renderdist && -renderdist < y && y <= renderdist)
+        if (-renderdist <= x && x <= renderdist && -renderdist <= y && y <= renderdist)
         {
             //std::cout << x << " " << y << "\n";
             chunkpos offset = chunkpos{x,y};
@@ -150,7 +150,7 @@ void chunkcontroller::updatechunks()
         //glm::vec2 wcpos = glm::vec2(c.x * chunkwidth, c.y * chunkwidth);
         //float distance = utils::getdist(charpos2d, wcpos);
         //if (distance > maxdist)
-        if (std::abs(c.x - cc.x - 2) > renderdist || std::abs(c.y - cc.y - 2) > renderdist)
+        if (std::abs(c.x - cc.x)-2 > renderdist || std::abs(c.y - cc.y)-2 > renderdist)
         {
             //std::cout << "remove " << c.x << "-" << c.y << "\n";
             removechunk(c); //kan bare fjerne 1 chunk pr loop i denne loopen, men det er kanskje best?
