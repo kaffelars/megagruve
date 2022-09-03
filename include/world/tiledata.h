@@ -50,7 +50,7 @@ namespace tiledata
     void addblock(ctilepos cpos, tileid id, uint32_t bshape, uint8_t tilesides, uint8_t sunlight, rgbcolor255 light, uint8_t glow, uint8_t ambocc, rgbcolor255 tint, chunkmesh& cmesh);
     void addside(ctilepos cpos, tileid id, uint32_t bshape, uint8_t tileside, uint8_t sunlight[4], rgbcolor255 light[4], uint8_t glow, uint8_t ambocc[4], rgbcolor255 tint[4], chunkmesh& cmesh, bool overlay = false);
 
-    uint32_t gettileid(std::string tilename);
+    tileid gettileid(std::string tilename);
     //tileinfo& gettileinfo(uint32_t id);
     tiletype gettiletype(tileid tile);
     blockshape gettileshape(tileid tile);
@@ -60,7 +60,7 @@ namespace tiledata
     std::string gettilename(tileid tid);
     const std::vector<tileinfo>& gettileinfolist();
 
-    inline tileinfo& gettileinfo(tileid tile);
+    tileinfo& gettileinfo(tileid tile);
 
     bool isempty(tileid tile);
     bool istransparent(tileid tile);

@@ -6,7 +6,7 @@ statuseffect::statuseffect(std::string fname, statnumbers cstats, int32_t dur, s
     fullname=fname;
     changestats=cstats;
     duration=dur;
-    for (int a = 0; a < teffects.size(); a++)
+    for (int a = 0; a < static_cast<int>(teffects.size()); a++)
     {
         timedeffects.push_back(teffects[a]);
     }

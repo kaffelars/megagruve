@@ -65,7 +65,7 @@ void chunkcontroller::meshchunkpart(chunk& c, uint8_t cpart)
                 {
                     //sunlight
                     uint8_t sunlight = 0;
-                    uint8_t ambocc = 0;
+                    //uint8_t ambocc = 0;
 
                     if (y > 0)
                     {

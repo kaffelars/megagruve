@@ -2,6 +2,7 @@
 #include "chunk.h"
 
 #include "map_obj_manager.h"
+#include "chunkcoords.h"
 
 chunk::chunk(dimensions dims, chunkpos pos)
 {
@@ -283,9 +284,16 @@ tileid chunk::gettile(ctilepos tpos)
     if (tpos.y > chunkheight-1) std::cout << "y makrus " << tpos.y;*/
     return tileids[gettilecoord(tpos)];
 }
+
 void chunk::settile(ctilepos tpos, tileid value)
 {
     tileids[gettilecoord(tpos)] = value;
+}
+
+void chunk::trysettile(ctilepos tpos, tileid value)
+{
+    if (chunkcoords::withinextendedchunkbounds(tpos))
+        tileids[gettilecoord(tpos)] = value;
 }
 
 

@@ -117,7 +117,7 @@ namespace inputmanager
 
         std::string keydescription; //eks "forward", "cancel" osv.
 
-        std::function<void()> keyfunction[3];//funker ikke for mus/scroll
+        std::function<void()> keyfunction[3] = {std::function<void()>(), std::function<void()>(), std::function<void()>()};//funker ikke for mus/scroll
 
         void setkeyclick(std::function<void()> kclick, keyevent kevent)
         {
@@ -154,7 +154,7 @@ namespace inputmanager
             return "Key error";
         }
 
-        keydata(std::string description, keytype ktyp, int32_t kpress) : keydescription{description}, ktype{ktyp}, keypress{kpress}
+        keydata(std::string description, keytype ktyp, int32_t kpress) : ktype{ktyp}, keypress{kpress}, keydescription{description}
         {
 
         }

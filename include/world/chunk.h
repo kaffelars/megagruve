@@ -69,6 +69,7 @@ class chunk
 
         tileid gettile(ctilepos tpos);
         void settile(ctilepos tpos, tileid value);
+        void trysettile(ctilepos tpos, tileid value);
 
         void addtile(tileid value);
 

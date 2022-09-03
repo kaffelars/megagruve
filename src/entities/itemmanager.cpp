@@ -48,6 +48,8 @@ uint32_t itemmanager::getflagidbytextureid(uint32_t texid)
         }
         index++;
     }
+
+    return 0;
 }
 
 std::string itemmanager::getitemtypename(uint32_t itemnumid)
@@ -78,6 +80,8 @@ void itemmanager::initialize()
     additem("i_ironaxe", "iron_axe", item{.name="Iron Axe", .description="An axe made from iron", .speed=400, .duration=5, .maxstack=1, .itemtype=itemtype::tool, .subtype=itemsubtype::other, .useeffects=std::vector<std::shared_ptr<effect>>{std::make_shared<attackeffect>(11, 2)}});
     additem("i_ironsword", "iron_sword", item{.name="Iron Sword", .description="A sword made from iron", .speed=400, .duration=5, .maxstack=1, .itemtype=itemtype::tool, .subtype=itemsubtype::other, .useeffects=std::vector<std::shared_ptr<effect>>{std::make_shared<attackeffect>(10, 0)}});
     additem("i_apple", "apple", item{.name="Red apple", .description="Delicious red apple", .speed=2000, .duration=0, .maxstack=16, .itemtype=itemtype::consumable, .subtype=itemsubtype::other, .useeffects=std::vector<std::shared_ptr<effect>>{std::make_shared<healeffect>(1)}});
+    additem("i_bread", "bread", item{.name="Bread", .description="Nutritious bread", .speed=2000, .duration=0, .maxstack=16, .itemtype=itemtype::consumable, .subtype=itemsubtype::other, .useeffects=std::vector<std::shared_ptr<effect>>{std::make_shared<healeffect>(2)}});
+    additem("i_potato", "potato", item{.name="Potato", .description="Nice hearthy potato", .speed=2000, .duration=0, .maxstack=16, .itemtype=itemtype::consumable, .subtype=itemsubtype::other, .useeffects=std::vector<std::shared_ptr<effect>>{std::make_shared<healeffect>(1)}});
     additem("i_apple_golden", "apple_golden", item{.name="Golden apple", .description="Extremely delicious golden apple", .speed=2000, .duration=0, .maxstack=16, .itemtype=itemtype::consumable, .subtype=itemsubtype::other, .useeffects=std::vector<std::shared_ptr<effect>>{std::make_shared<healeffect>(6)}});
     //additem("i_lightbulb", "lightbulb", item{.name="Lightbulb", .description="Emits a decent amount of light", .speed=500, .duration=0, .maxstack=99, .itemtype=I_PLACEABLEOBJECT, .subtype=IS_OTHER, .useeffects=std::vector<std::shared_ptr<effect>>{std::make_shared<healeffect>(1)}});
     additem("i_greenwand", "green_wand", item{.name="Green wand", .description="Make weather good", .speed=10, .duration=0, .maxstack=1, .itemtype=itemtype::usable, .subtype=itemsubtype::other, .useeffects=std::vector<std::shared_ptr<effect>>{std::make_shared<changeweathereffect>(-0.001f)}});
@@ -87,7 +91,10 @@ void itemmanager::initialize()
     additem("i_fireball", "fireball", item{.name="Exploder", .description="Blows up tiles", .speed=1000, .duration=5, .maxstack=99, .itemtype=itemtype::consumable, .subtype=itemsubtype::other, .useeffects=std::vector<std::shared_ptr<effect>>{std::make_shared<throwexplosive>(5, texturemanager::gettiletexturenumber("fireball"), 10)}});
     additem("i_fireballlarge", "fireballhot", item{.name="Megaexploder", .description="Blows up tiles deluxe", .speed=1000, .duration=5, .maxstack=99, .itemtype=itemtype::consumable, .subtype=itemsubtype::other, .useeffects=std::vector<std::shared_ptr<effect>>{std::make_shared<throwexplosive>(15, texturemanager::gettiletexturenumber("fireball"), 30)}});
     additem("i_fireballhumongous", "fireballhot2", item{.name="Intergalactic hyperexploder", .description="Humongous explosions", .speed=1000, .duration=5, .maxstack=99, .itemtype=itemtype::consumable, .subtype=itemsubtype::other, .useeffects=std::vector<std::shared_ptr<effect>>{std::make_shared<throwexplosive>(25, texturemanager::gettiletexturenumber("fireball"), 50)}});
-    additem("i_diamond", "diamond", item{.name="Diamonds", .description="Shiny diamonds", .speed=500, .duration=5, .maxstack=1, .itemtype=itemtype::inert, .subtype=itemsubtype::other, .useeffects=std::vector<std::shared_ptr<effect>>{}});
+    additem("i_diamond", "diamond", item{.name="Diamonds", .description="Shiny diamonds", .speed=500, .duration=5, .maxstack=99, .itemtype=itemtype::inert, .subtype=itemsubtype::other, .useeffects=std::vector<std::shared_ptr<effect>>{}});
+    additem("i_coal", "coal", item{.name="Coal", .description="A lump of coal", .speed=500, .duration=5, .maxstack=99, .itemtype=itemtype::inert, .subtype=itemsubtype::other, .useeffects=std::vector<std::shared_ptr<effect>>{}});
+    additem("i_ironingot", "iron_ingot", item{.name="Iron ingot", .description="An ingot of iron", .speed=500, .duration=5, .maxstack=99, .itemtype=itemtype::inert, .subtype=itemsubtype::other, .useeffects=std::vector<std::shared_ptr<effect>>{}});
+    additem("i_goldingot", "gold_ingot", item{.name="Gold ingot", .description="A shiny gold ingot", .speed=500, .duration=5, .maxstack=99, .itemtype=itemtype::inert, .subtype=itemsubtype::other, .useeffects=std::vector<std::shared_ptr<effect>>{}});
     additem("i_wings", "wings", item{.name="Wings", .description="Fly all over the place", .speed=500, .duration=5, .maxstack=1, .itemtype=itemtype::usable, .subtype=itemsubtype::other, .useeffects=std::vector<std::shared_ptr<effect>>{std::make_shared<toggleflying>()}});
     additem("i_star", "star", item{.name="Star light", .description="Use to create light", .speed=500, .duration=5, .maxstack=1, .itemtype=itemtype::usable, .subtype=itemsubtype::other, .useeffects=std::vector<std::shared_ptr<effect>>{std::make_shared<togglelight>(10)}});
 

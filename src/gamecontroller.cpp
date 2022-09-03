@@ -25,7 +25,6 @@ void gamecontroller::gameloop()
 
     timekeeper::initialize();
 
-
     //THE loop
     while (!scenec::quit)
     {

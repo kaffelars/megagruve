@@ -21,6 +21,7 @@ namespace chunkcoords
     bool withinchunkbounds(ctilepos cpos);
     bool withinextendedchunkbounds(ctilepos cpos);
     bool withinworld(wtilepos wpos);
+    bool withinchunkheight(ytile y);
 }
 
 

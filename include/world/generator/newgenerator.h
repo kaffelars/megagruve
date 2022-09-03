@@ -11,6 +11,12 @@ class newgenerator : public chunkgenerator
 
         void generator(chunk& c);
 
+        struct tileh
+        {
+            ytile y;
+            tileid tid;
+        };
+
 
     protected:
 
@@ -20,6 +26,8 @@ class newgenerator : public chunkgenerator
         void generatebiomes(chunk& c, chunkpos cposoffset);
         void generateworld(chunk& c, std::vector<float>& land, chunkpos cposoffset);
         float getlandweight(std::vector<float>& land, ctilepos ctpos);
+        tileh gettileheight(chunk& c, htile x, htile z);
+        bool isacceptableforvillage(chunk& c);
 };
 
 #endif // NEWGENERATOR_H

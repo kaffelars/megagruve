@@ -68,6 +68,8 @@ void scenegame::show()
 
     setkeys();
 
+    uiingame::refreshui();
+
     if (startnewworld)
     {
         showingescbox = false;
@@ -114,7 +116,7 @@ void scenegame::render()
 
         wtilepos wtpos = maincharcontroller::gettilehoverentityposition();
 
-        infotext << "player loc: " << wtpos.x << " " << wtpos.y << " " << wtpos.z << "\n";
+        infotext << "tile hover: " << wtpos.x << " " << wtpos.y << " " << wtpos.z << "\n";
 
         chunkpos cpos = chunkcoords::wpostocpos(wposition{wtpos} + wposition{0.5f});
         ctilepos ctpos = chunkcoords::wpostoctilepos(wposition{wtpos} + wposition{0.5f});

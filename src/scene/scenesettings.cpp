@@ -1,5 +1,6 @@
 #include "consts.h"
 #include "scenesettings.h"
+#include "camera.h"
 
 scenesettings::scenesettings()
 {
@@ -97,12 +98,12 @@ void scenesettings::video()
 {
     uielement::text("Render distance: ", glm::vec2(25.0f, 25.0f));
     int renderdist = settings::getisetting(settings::SET_CDIST);
-    uielement::setposition(100.0f, 25.0f);
+    uielement::setposition(25.0f, 45.0f);
     if (uielement::sliderint(5, 32, renderdist, 1)) settings::setisetting(settings::SET_CDIST, renderdist);
 
-    uielement::text("Vsync: ", glm::vec2(25.0f, 95.0f));
+    uielement::text("Vsync: ", glm::vec2(25.0f, 85.0f));
     bool vsync = settings::getisetting(settings::SET_VSYNC);
-    uielement::checkbox(vsync, glm::vec2(90.0f, 95.0f));
+    uielement::checkbox(vsync, glm::vec2(90.0f, 85.0f));
     if (vsync != settings::getisetting(settings::SET_VSYNC))
     {
         settings::setisetting(settings::SET_VSYNC, vsync);
@@ -111,7 +112,7 @@ void scenesettings::video()
 
     uielement::text("UI scale: ", glm::vec2(25.0f, 125.0f));
     int uiscale = 10.0f * settings::getfsetting(settings::SET_UISCALE);
-    uielement::setposition(100.0f, 125.0f);
+    uielement::setposition(25.0f, 145.0f);
     uielement::sliderint(5, 30, uiscale, 1);
     float uisc = (float)uiscale / 10.0f;
     if (uisc != settings::getfsetting(settings::SET_UISCALE))
@@ -119,7 +120,7 @@ void scenesettings::video()
         settings::setfsetting(settings::SET_UISCALE, uisc);
     }
 
-    uielement::text("Render filter: ", glm::vec2(25.0f, 155.0f));
+    uielement::text("Render filter: ", glm::vec2(25.0f, 175.0f));
     const std::vector<settings::filterinfo>& filterlist = settings::getfilters();
     std::string currentfilter = settings::getssetting(settings::SET_FILTER);
     if (uielement::begindropdown("##filterlist", currentfilter))
@@ -133,6 +134,38 @@ void scenesettings::video()
             }
         }
         uielement::enddropdown();
+    }
+
+    uielement::text("Crosshair size: ", glm::vec2(25.0f, 235.0f));
+    int crosssize = settings::getisetting(settings::SET_CROSSHAIRSIZE);
+    uielement::setposition(25.0f, 255.0f);
+    if (uielement::sliderint(8, 100, crosssize, 1))
+    {
+        settings::setisetting(settings::SET_CROSSHAIRSIZE, crosssize);
+    }
+
+    uielement::text("Crosshair type: ", glm::vec2(25.0f, 300.0f));
+    std::string currentcross = settings::getssetting(settings::SET_CROSSHAIR);
+    std::string crosshairs[6] = {"crosshair1", "crosshair2", "crosshair3", "crosshair4", "crosshair5", "flag"};
+    if (uielement::begindropdown("##crosslist", currentcross))
+    {
+        for (int a = 0; a < 6; a++)
+        {
+            if (uielement::addlistelement(crosshairs[a], crosshairs[a]==currentcross))
+            {
+                settings::setssetting(settings::SET_CROSSHAIR, crosshairs[a]);
+            }
+        }
+        uielement::enddropdown();
+    }
+
+    uielement::text("Field of view: ", glm::vec2(25.0f, 365.0f));
+    int curfov = settings::getisetting(settings::SET_FOV);
+    uielement::setposition(25.0f, 385.0f);
+    if (uielement::sliderint(50, 120, curfov, 1))
+    {
+        settings::setisetting(settings::SET_FOV, curfov);
+        camera::updateperspective();
     }
 }
 

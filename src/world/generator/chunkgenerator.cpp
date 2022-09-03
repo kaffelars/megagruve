@@ -77,7 +77,7 @@ void chunkgenerator::sethighest(chunk& c)
 
 void chunkgenerator::initializechunk(chunk& c)
 {
-    dimensions dims = c.cdims;
+    //dimensions dims = c.cdims;
     chunkpos cposoffset = c.cpos;
     cposoffset.x *= chunkwidth;
     cposoffset.y *= chunkwidth;

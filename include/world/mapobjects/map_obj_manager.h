@@ -22,6 +22,7 @@ namespace map_obj_manager
         uint32_t icontextureid {0};
     };
 
+    uint32_t getmapobjid(std::string mapobjname);
 
     void addmapobj(chunk& c, ctilepos ctpos, uint8_t mapobjid, uint8_t forwardside);
 

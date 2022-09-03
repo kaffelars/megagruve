@@ -22,6 +22,8 @@ void settings::loadsettings()
     setts.emplace_back(setting("vsync", 1, 0));
     setts.emplace_back(setting("uiscale", 2, 0));
     setts.emplace_back(setting("filter", 0, 0));
+    setts.emplace_back(setting("crosshairsize", 1, 0));
+    setts.emplace_back(setting("crosshair", 0, 0));
     setts.emplace_back(setting("language", 0, 1));//game
     setts.emplace_back(setting("bbox", 1, 1));
     setts.emplace_back(setting("mbox", 1, 1));
@@ -56,7 +58,7 @@ void settings::loadsettings()
         }
     }
 
-    if (st != setts.size())
+    if (st != static_cast<int>(setts.size()))
     {
         std::cout << "settings error!\n";
     }

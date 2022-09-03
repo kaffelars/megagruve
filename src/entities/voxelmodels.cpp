@@ -1,6 +1,7 @@
 #include "consts.h"
 #include "voxelmodels.h"
 #include "randfunc.h"
+#include "map_obj_manager.h"
 
 namespace voxelmodels
 {
@@ -174,6 +175,324 @@ void voxelmodels::initialize()
 
     addvoxelmodel(p, "vox_pyramid");
 
+    //hut
+    voxelmodel hut;
+
+    tileid brickid = tiledata::gettileid("t_bricks");
+    tileid stoneid = tiledata::gettileid("t_stone");
+    tileid plankid = tiledata::gettileid("t_planks");
+    tileid windowid = tiledata::gettileid("t_window");
+
+    uint32_t odoor = map_obj_manager::getmapobjid("o_door");
+    uint32_t ochest = map_obj_manager::getmapobjid("o_chest");
+
+    int hs = 4;
+
+    for (int y = 0; y < 6; y++)
+    {
+        for (int x = -hs; x <= hs; x++)
+        {
+            for (int z = -hs; z <= hs; z++)
+            {
+                if ((x == -hs || x == hs || z == -hs || z == hs) && !(x == -hs && z == 0 && y < 3 && y > 0))
+                {
+                     if ((z == -2 && y == 1) || (z == 2 && y == 1) || (x == 0 && y == 1)) //windows
+                     {
+                         hut.addpoint(ctilepos(x,y,z), windowid);
+                     }
+                     else
+                     {
+                         hut.addpoint(ctilepos(x,y,z), brickid);
+                     }
+                }
+                else
+                {
+
+                    hut.addpoint(ctilepos(x,y,z), 0);
+                }
+
+                if (y == 0)
+                {
+                    if ((z == hs || z == -hs) && (x != -hs && x != hs))
+                        hut.addpoint(ctilepos(x,-1,z), brickid); //ceiling
+                    else
+                        hut.addpoint(ctilepos(x,-1,z), plankid); //ceiling
+                }
+
+            }
+        }
+    }
+
+    //floor
+    for (int x = -(hs-1); x <= (hs-1); x++)
+    {
+        for (int z = -(hs-1); z <= (hs-1); z++)
+        {
+            hut.addpoint(ctilepos(x,3,z), plankid);
+        }
+    }
+
+    for (int index = 1; index < 3; index++) //roof
+    {
+        for (int z = -hs; z <= hs; z++)
+        {
+            for (int x = -hs+index; x <= hs-index; x++)
+            {
+                if (index < 2 && (z == -hs || z == hs) && !(x == -hs+index || x == hs-index))
+                    hut.addpoint(ctilepos(x,-1-index,z), brickid);
+                else
+                    hut.addpoint(ctilepos(x,-1-index,z), plankid);
+            }
+        }
+    }
+
+    hut.addmapobject(ctilepos(-hs, 2, 0), odoor, 0, 0);
+
+    hut.centerbottomtile = ctilepos(0, 3, 0);
+
+    addvoxelmodel(hut, "vox_hut");
+
+    //small path
+    hut.addpoint(ctilepos(-hs-1, 3, 0), stoneid);
+    hut.addpoint(ctilepos(-hs-2, 3, 0), stoneid);
+
+    addvoxelmodel(hut, "vox_hut_path");
+
+
+
+    //small hut
+    voxelmodel shut;
+
+    hs = 3;
+
+    for (int y = 0; y < 6; y++)
+    {
+        for (int x = -hs; x <= hs; x++)
+        {
+            for (int z = -hs; z <= hs; z++)
+            {
+                if ((x == -hs || x == hs || z == -hs || z == hs) && !(z == 0 && x == -hs && y < 3 && y > 0))
+                {
+                     if ((z == -1 && x == hs && y == 1) || (z == 1 && x == hs && y == 1) || (x == 0 && y == 1)) //windows
+                     {
+                         shut.addpoint(ctilepos(x,y,z), windowid);
+                     }
+                     else
+                     {
+                         shut.addpoint(ctilepos(x,y,z), brickid);
+                     }
+                }
+                else
+                {
+
+                    shut.addpoint(ctilepos(x,y,z), 0);
+                }
+
+                if (y == 0)
+                {
+                    if ((z == hs || z == -hs) && (x != -hs && x != hs))
+                        shut.addpoint(ctilepos(x,-1,z), brickid); //ceiling
+                    else
+                        shut.addpoint(ctilepos(x,-1,z), plankid); //ceiling
+                }
+
+            }
+        }
+    }
+
+    //floor
+    for (int x = -(hs-1); x <= (hs-1); x++)
+    {
+        for (int z = -(hs-1); z <= (hs-1); z++)
+        {
+            shut.addpoint(ctilepos(x,3,z), plankid);
+        }
+    }
+
+    for (int index = 1; index < 2; index++) //roof
+    {
+        for (int z = -hs; z <= hs; z++)
+        {
+            for (int x = -hs+index; x <= hs-index; x++)
+            {
+                /*if (index < 1 && (x == -hs || x == hs) && !(z == -hs+index || z == hs-index))
+                    shut.addpoint(ctilepos(x,-1-index,z), brickid);
+                else*/
+                    shut.addpoint(ctilepos(x,-1-index,z), plankid);
+            }
+        }
+    }
+
+    shut.centerbottomtile = ctilepos(0, 3, 0);
+
+    shut.addmapobject(ctilepos(-hs, 2, 0), odoor, 0, 0);
+
+    addvoxelmodel(shut, "vox_small_hut");
+
+    //small path
+    shut.addpoint(ctilepos(-hs-1, 3, 0), stoneid);
+    shut.addpoint(ctilepos(-hs-2, 3, 0), stoneid);
+    shut.addpoint(ctilepos(-hs-3, 3, 0), stoneid);
+
+    addvoxelmodel(shut, "vox_small_hut_path");
+
+    for (voxelmodel::point& p : hut.points)
+    {
+        if (p.tid == brickid) p.tid = stoneid;
+    }
+    for (voxelmodel::point& p : shut.points)
+    {
+        if (p.tid == brickid) p.tid = stoneid;
+    }
+
+    addvoxelmodel(hut, "vox_stone_hut_path");
+    addvoxelmodel(shut, "vox_small_stone_hut_path");
+
+
+    voxelmodel well;
+
+    for (int y = 0; y < 12; y++)
+    {
+        well.addpoint(ctilepos(-1, y, 0), stoneid);
+        well.addpoint(ctilepos(-1, y, 1), stoneid);
+        well.addpoint(ctilepos(0, y, 2), stoneid);
+        well.addpoint(ctilepos(1, y, 2), stoneid);
+        well.addpoint(ctilepos(2, y, 0), stoneid);
+        well.addpoint(ctilepos(2, y, 1), stoneid);
+        well.addpoint(ctilepos(0, y, -1), stoneid);
+        well.addpoint(ctilepos(1, y, -1), stoneid);
+
+        well.addpoint(ctilepos(0, y, 0), 0);
+        well.addpoint(ctilepos(1, y, 0), 0);
+        well.addpoint(ctilepos(0, y, 1), 0);
+        well.addpoint(ctilepos(1, y, 1), 0);
+    }
+
+    well.centerbottomtile = ctilepos(0, 1, 0);
+
+    addvoxelmodel(well, "vox_well");
+
+    voxelmodel flowerbed;
+
+    tileid dirtid = tiledata::gettileid("t_dirt");
+    tileid flower[3] = {tiledata::gettileid("t_flower1"), tiledata::gettileid("t_flower2"), tiledata::gettileid("t_flower3")};
+
+    for (int x = 0; x < 8; x++)
+    {
+        for (int z = 0; z < 8; z++)
+        {
+            if (x == 0 || x == 7 || z == 0 || z == 7)
+            {
+                flowerbed.addpoint(ctilepos(x,0,z), plankid);
+                flowerbed.addpoint(ctilepos(x,-1,z), 0);
+            }
+            else
+            {
+                flowerbed.addpoint(ctilepos(x,0,z), dirtid);
+                flowerbed.addpoint(ctilepos(x,-1,z), flower[(x+z)%3]);
+            }
+            flowerbed.addpoint(ctilepos(x,-2,z), 0);
+            flowerbed.addpoint(ctilepos(x,-3,z), 0);
+        }
+    }
+
+    flowerbed.centerbottomtile = ctilepos(3, 0, 3);
+
+    addvoxelmodel(flowerbed, "vox_flowerbed");
+
+
+    voxelmodel shed;
+
+    hs = 2;
+
+    for (int y = 0; y < 6; y++)
+    {
+        for (int x = -hs; x <= hs; x++)
+        {
+            for (int z = -hs; z <= hs; z++)
+            {
+                if ((x == -hs || x == hs || z == -hs || z == hs) && !(z == 0 && x == -hs && y < 3 && y > 0))
+                {
+                    if (z == 0 && x == hs && y == 1)
+                        shed.addpoint(ctilepos(x,y,z), windowid);
+                    else
+                    {
+                        if (y == 0)
+                            shed.addpoint(ctilepos(x,y,z), plankid);
+                        else
+                            shed.addpoint(ctilepos(x,y,z), stoneid);
+                    }
+
+                }
+                else
+                {
+                    if (y == 0 || y == 3)
+                    {
+                        shed.addpoint(ctilepos(x,y,z), plankid);
+                    }
+                    else
+                    {
+                        shed.addpoint(ctilepos(x,y,z), 0);
+                    }
+                }
+            }
+        }
+    }
+
+    shed.centerbottomtile = ctilepos(0, 3, 0);
+
+    shed.addmapobject(ctilepos(-hs, 2, 0), odoor, 0, 0);
+    shed.addmapobject(ctilepos(hs-1, 2, 0), ochest, 0, static_cast<int32_t>(chestloot::village));
+
+    addvoxelmodel(shed, "vox_shed");
+
+
+    voxelmodel stower;
+
+    hs = 3;
+
+    for (int y = 0; y < 18; y++)
+    {
+        for (int x = -hs; x <= hs; x++)
+        {
+            for (int z = -hs; z <= hs; z++)
+            {
+                if ((x == -hs || x == hs || z == -hs || z == hs) && !(z == 0 && x == -hs && y < 11 && y > 8))
+                {
+                    if (y == 9 && x == 0)
+                        stower.addpoint(ctilepos(x,y,z), windowid);
+                    else
+                        stower.addpoint(ctilepos(x,y,z), stoneid);
+                }
+                else
+                {
+                    if (y == 11 || y == 1)
+                        stower.addpoint(ctilepos(x,y,z), plankid);
+                    else
+                        stower.addpoint(ctilepos(x,y,z), 0);
+                }
+            }
+        }
+    }
+
+    stower.addpoint(ctilepos(-hs,-1,-hs), stoneid);
+    stower.addpoint(ctilepos(hs,-1,-hs), stoneid);
+    stower.addpoint(ctilepos(-hs,-1,hs), stoneid);
+    stower.addpoint(ctilepos(hs,-1,hs), stoneid);
+
+    stower.addpoint(ctilepos(-hs,-1,-1), stoneid);
+    stower.addpoint(ctilepos(-hs,-1,1), stoneid);
+    stower.addpoint(ctilepos(hs,-1,-1), stoneid);
+    stower.addpoint(ctilepos(hs,-1,1), stoneid);
+    stower.addpoint(ctilepos(-1,-1,hs), stoneid);
+    stower.addpoint(ctilepos(1,-1,hs), stoneid);
+    stower.addpoint(ctilepos(-1,-1,-hs), stoneid);
+    stower.addpoint(ctilepos(1,-1,-hs), stoneid);
+
+    stower.centerbottomtile = ctilepos(0, 11, 0);
+    stower.addmapobject(ctilepos(hs-1, 10, 0), ochest, 0, static_cast<int32_t>(chestloot::blacksmith));
+
+    addvoxelmodel(stower, "vox_small_tower");
 
     randfunc::setseed(seed);
 }

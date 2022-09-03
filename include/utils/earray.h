@@ -44,7 +44,7 @@ class earray //2d array
 
         void unloadarray()
         {
-            delete arraydata;
+            delete[] arraydata;
             arraydata = nullptr;
         }
 

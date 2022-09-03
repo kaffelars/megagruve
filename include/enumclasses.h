@@ -69,6 +69,11 @@ enum class blockshape
     block, x, cactus, stairs, slab, water, noshape, custom
 };
 
+enum class chestloot
+{
+    none = 0, village = 1, blacksmith = 2
+};
+
 enum class tilesideflag
 {
     xm = 1, xp = 2, ym = 4, yp = 8, zm = 16, zp = 32

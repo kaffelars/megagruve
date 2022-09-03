@@ -103,7 +103,6 @@ void particlemanager::renderparticles()
         rgbcolor255 light = rgbcolor255(255, 255, 255);
         chunk::tlight tl = chunkcontroller::getlight(pp);
         uint8_t sunlight = tl.sunlight * 17;
-        uint8_t ambocc = 0;
 
         float packedlight = utils::packu2f(light.x, light.y, light.z);
         float packeddiv = utils::packu2f(sunlight, p.textureid, p.glow);

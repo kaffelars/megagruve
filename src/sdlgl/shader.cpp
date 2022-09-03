@@ -119,7 +119,7 @@ void shader::printlinkingerror(int32_t shaderid)
 
     std::cout << errorlog << "\n";
 
-    delete errorlog;
+    delete[] errorlog;
     return;
 }
 
@@ -135,6 +135,6 @@ void shader::printcompilationlog(int32_t shaderid)
 
         std::cout << "compile info: " << infolog << "\n";
 
-        delete infolog;
+        delete[] infolog;
     }
 }

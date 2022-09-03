@@ -162,6 +162,12 @@ bool chunkcoords::withinchunkbounds(ctilepos cpos)
     return true;
 }
 
+bool chunkcoords::withinchunkheight(ytile y)
+{
+    if (y < 0 || y > chunkheight-1) return false;
+    return true;
+}
+
 bool chunkcoords::withinextendedchunkbounds(ctilepos cpos)
 {
     if (cpos.x < -1 || cpos.x > chunkwidth) return false;

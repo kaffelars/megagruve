@@ -26,7 +26,7 @@ class inventory
         void swaporcombineitems(int32_t position1, int32_t position2);
 
         invitem& getinvitem(int32_t position);
-        invitem& removeinvitem(int32_t position);
+        invitem removeinvitem(int32_t position);
         invitem emptyinvitem;
         void setinvitem(int32_t position, invitem item);
 

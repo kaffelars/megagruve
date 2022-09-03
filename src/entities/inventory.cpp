@@ -89,7 +89,7 @@ inventory::invitem& inventory::getinvitem(int32_t position)
 
 bool inventory::positionininv(int32_t position)
 {
-    if (position >= 0 && position < invitems.size())
+    if (position >= 0 && position < static_cast<int32_t>(invitems.size()))
         return true;
     return false;
 }
@@ -100,9 +100,9 @@ void inventory::setinvitem(int32_t position, invitem item)
         invitems[position] = item;
 }
 
-inventory::invitem& inventory::removeinvitem(int32_t position)
+inventory::invitem inventory::removeinvitem(int32_t position)
 {
-    if (position >= 0 && position < invitems.size())
+    if (position >= 0 && position < static_cast<int32_t>(invitems.size()))
     {
         invitem i = invitems[position];
         invitems[position].quantity = 0;
@@ -118,9 +118,11 @@ void inventory::resizeinv(uint32_t newsize)
 {
     uint32_t oldsize = invitems.size();
 
+    invsize = newsize;
+
     if (newsize > oldsize) //enlarge inv
     {
-        for (int a = oldsize; a < newsize; a++)
+        for (uint32_t a = oldsize; a < newsize; a++)
         {
             invitems.emplace_back(invitem{.itemid = 0, .quantity = 0});
         }
@@ -173,6 +175,6 @@ bool inventory::additem(invitem itemtoadd) //returner overskuddsitems hvis f.eks
 
 bool inventory::additem(std::string itemid, uint32_t quantity)
 {
-    int32_t itemidnum = itemmanager::getitemid(itemid);
+    uint32_t itemidnum = itemmanager::getitemid(itemid);
     return additem(invitem{itemidnum, quantity});
 }

@@ -15,7 +15,7 @@ defaultgenerator::~defaultgenerator()
 
 void defaultgenerator::generator(chunk& c)
 {
-    dimensions dims = c.cdims;
+    //dimensions dims = c.cdims;
     chunkpos cposoffset = c.cpos;
     cposoffset.x *= chunkwidth;
     cposoffset.y *= chunkwidth;
@@ -65,7 +65,7 @@ void defaultgenerator::generator(chunk& c)
 
                 wposition w = wposition(x + cposoffset.x, y, z + cposoffset.y);
 
-                float mheight = (randfunc::noise(w.x, w.y, w.z, 218.3f) + 1.0f) * 90.0f;
+                //float mheight = (randfunc::noise(w.x, w.y, w.z, 218.3f) + 1.0f) * 90.0f;
 
                 if (y < 190)
                 {

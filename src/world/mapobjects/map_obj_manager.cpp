@@ -57,6 +57,18 @@ void map_obj_manager::initialize()
     }
 }
 
+uint32_t map_obj_manager::getmapobjid(std::string mapobjname)
+{
+    int index = 0;
+    for (mapobjinfo& m : mapobjectsinfo)
+    {
+        if (m.name == mapobjname) return index;
+        index++;
+    }
+
+    return 0;
+}
+
 std::vector<map_obj_manager::mapobjinfo>& map_obj_manager::getmapobjlist()
 {
     return mapobjectsinfo;

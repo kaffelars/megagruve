@@ -19,6 +19,7 @@
 #include "map_obj_models.h"
 #include "environment.h"
 #include "particlemanager.h"
+#include "chestinventoryfiller.h"
 
 int main( int argc, char* args[] )
 {
@@ -30,7 +31,7 @@ int main( int argc, char* args[] )
     uicontroller::setupimgui();
 
     texturemanager::initialize();
-    tiledata::initialize();
+    tiledata::initialize(); //map_obj_manager initialize
     itemmanager::initialize();
     uiingame::initialize();
 
@@ -57,6 +58,8 @@ int main( int argc, char* args[] )
     scenec::initialize();
 
     map_obj_models::initialize();
+
+    chestinventoryfiller::initialize(); //must be after map_obj_manager
 
     maincharcontroller::initialize();
 

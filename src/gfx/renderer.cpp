@@ -46,6 +46,7 @@ void renderer::rendergame()
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_STENCIL_TEST);
     glEnable (GL_CULL_FACE);
+    glDisable(GL_BLEND); //blir noe rart med pos gbuf
     glStencilFunc(GL_ALWAYS, 1, 0xFF);
     glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
     glStencilMask(0xFF);

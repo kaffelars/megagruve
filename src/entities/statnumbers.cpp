@@ -31,7 +31,10 @@ statnumbers operator+(const statnumbers& a, const statnumbers& b)
 {
     statnumbers s;
     for (int i = 0; i < 5; i++)
+    {
         s.statvalues[i] = a.statvalues[i] + b.statvalues[i];
+    }
+
 
 	return s;
 }

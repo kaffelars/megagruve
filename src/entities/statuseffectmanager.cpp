@@ -55,5 +55,6 @@ statuseffect statuseffectmanager::createstatuseffect(std::string name, std::stri
             if (tempduration > s.duration) s.duration = tempduration;
         }
     }
+    //todo
 }
 

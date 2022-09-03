@@ -5,6 +5,7 @@
 
 #include "coarsearray.h"
 #include "twoarray.h"
+#include "chunkcoords.h"
 
 newgenerator::newgenerator()
 {
@@ -136,13 +137,6 @@ void newgenerator::generateworld(chunk& c, std::vector<float>& land, chunkpos cp
             {
                 rx = x + cposoffset.x;
 
-                //if (getlandweight(land, ctilepos{x,y,z}) > 0.0f)
-                /*if (randfunc::noise(x, y, z, 33.3f) > 0.0f)
-                    c.settile(ctilepos{x,y,z}, tid_dirt);
-                else
-                    c.settile(ctilepos{x,y,z}, 0);*/
-
-                //float h = getlandweight(land, ctilepos{x,y,z}); //randfunc::noise(rx, ry, rz, 33.3f);
                 tileid tid = 0;
 
                 float lh = landheight.getdata(x+1,z+1); //[(x+1) + (chunkwidth + 2) * (z+1)];
@@ -423,7 +417,7 @@ float newgenerator::getlandweight(std::vector<float>& land, ctilepos ctpos)
 
     int8_t cmin[3] = {0,0,0};
     int8_t cmax[3] = {0,0,0};
-    float fcent[3] = {ctpos.x, ctpos.y, ctpos.z};
+    float fcent[3] = {(float)ctpos.x, (float)ctpos.y, (float)ctpos.z};
     int cent[3] = {0,0,0};
 
     int hwid = ((chunkwidth + 2) / 3) + 1;
@@ -526,6 +520,49 @@ void newgenerator::generatebiomes(chunk& c, chunkpos cposoffset)
     }
 }
 
+newgenerator::tileh newgenerator::gettileheight(chunk& c, htile x, htile z)
+{
+    tileid tid;
+
+    for (ytile y = 0; y < chunkheight; y++)
+    {
+        tid = c.gettile(ctilepos(x,y,z));
+        if (tid != 0)
+        {
+            return tileh{.y = y, .tid = tid};
+        }
+    }
+    return tileh{.y = 255, .tid = 0};
+}
+
+bool newgenerator::isacceptableforvillage(chunk& c)
+{
+    if (std::abs(c.cpos.x) > 5 && std::abs(c.cpos.y) > 5)
+    {
+        float villagos = randfunc::noise(c.cpos.x-3923, c.cpos.y+3337, 12.5f);
+
+        if (villagos > -0.6f)
+        {
+            tileh t[4] = {gettileheight(c, 0, 0), gettileheight(c, chunkwidth-1, 0), gettileheight(c, 0, chunkwidth-1), gettileheight(c, chunkwidth-1, chunkwidth-1)};
+
+            bool acceptable = true;
+
+            int tid_water = tiledata::gettileid("t_water");
+            int tid_ice = tiledata::gettileid("t_ice");
+
+            for (int a = 0; a < 4; a++)
+            {
+                if (t[a].tid == tid_water || t[a].tid == tid_ice) acceptable = false; //no watervillages!!
+                if (a < 3)
+                    if (!(t[a].y >= t[a+1].y - 1 && t[a].y <= t[a+1].y + 1)) acceptable = false; //no villages in (too) bumpy terrain
+            }
+
+            return acceptable;
+        }
+    }
+
+    return false;
+}
 
 void newgenerator::decorate(chunk& c)
 {
@@ -537,6 +574,8 @@ void newgenerator::decorate(chunk& c)
     int tid_grass2 = tiledata::gettileid("t_grass2");
     int tid_sand = tiledata::gettileid("t_sand");
     int tid_snow = tiledata::gettileid("t_snow");
+    int tid_stone = tiledata::gettileid("t_stone");
+    //int tid_water = tiledata::gettileid("t_water");
 
     uint32_t voaktree = chunkdecorator::getvoxelmodelid("vox_oak_tree");
     uint32_t vsprucetree = chunkdecorator::getvoxelmodelid("vox_spruce_tree");
@@ -547,56 +586,167 @@ void newgenerator::decorate(chunk& c)
     uint32_t vtalltree = chunkdecorator::getvoxelmodelid("vox_talltree");
     uint32_t vpyramid = chunkdecorator::getvoxelmodelid("vox_pyramid");
 
+    bool village = false;
+
+    if (isacceptableforvillage(c))
+    {
+        village = true;
+    }
+
     chunk::biomedata cbiome = c.getbiome(ctilepos(16,128,16));
-    if (cbiome.humidity < 38 && cbiome.temperature > 200)
+    if (!village && cbiome.humidity < 38 && cbiome.temperature > 200)
     {
         float x = randfunc::noise(c.cpos.x+124, c.cpos.y-3245, 0.5f);
         if (x > 0.96f)
         {
-            ytile y = 0;
-            tileid tid = 0;
-            for (y = 0; y < chunkheight; y++)
-            {
-                tid = c.gettile(ctilepos(16,y,16));
-                if (tid != 0)
-                {
-                    break;
-                }
-            }
-            if (tid == tid_sand)
-                chunkdecorator::addvoxelmodel(c, ctilepos(16,y,16), vpyramid, true, true);
+            tileh tileinf = gettileheight(c, 16, 16);
+            if (tileinf.tid == tid_sand)
+                chunkdecorator::addvoxelmodel(c, ctilepos(16,tileinf.y,16), vpyramid, true, true);
         }
     }
 
     std::vector<glm::ivec3> treepositions;
 
-    for (int a = 0; a < numtrees; a++) //tree positions
+    if (village)
     {
-        glm::ivec3 tp;
+        //uint32_t vhut = chunkdecorator::getvoxelmodelid("vox_hut");
+        uint32_t vhutpath = chunkdecorator::getvoxelmodelid("vox_hut_path");
+        uint32_t vstonehutpath = chunkdecorator::getvoxelmodelid("vox_stone_hut_path");
+        //uint32_t vshut = chunkdecorator::getvoxelmodelid("vox_small_hut");
+        uint32_t vshutpath = chunkdecorator::getvoxelmodelid("vox_small_hut_path");
+        uint32_t vsstonehutpath = chunkdecorator::getvoxelmodelid("vox_small_stone_hut_path");
+        uint32_t vflowerbed = chunkdecorator::getvoxelmodelid("vox_flowerbed");
+        uint32_t vwell = chunkdecorator::getvoxelmodelid("vox_well");
+        uint32_t vshed = chunkdecorator::getvoxelmodelid("vox_shed");
+        uint32_t vstower = chunkdecorator::getvoxelmodelid("vox_small_tower");
 
-        float x = randfunc::noise(c.cpos.x+124+3*randfunc::getrandom8bitvalue(a*c.cpos.x, a*c.cpos.y), c.cpos.y-3245+3*randfunc::getrandom8bitvalue(a*c.cpos.y, a*c.cpos.x), 0.5f);
-        float z = randfunc::noise(c.cpos.y+745+3*randfunc::getrandom8bitvalue(a*c.cpos.x, a*c.cpos.y), c.cpos.y+1241+3*randfunc::getrandom8bitvalue(a*c.cpos.y, a*c.cpos.x), 0.5f);
+        bool atleastonehut = false;
+        bool haswell = false;
+        int32_t models[4];
 
-        //tp.x = (chunkwidth / 2) - (x * (chunkwidth / 3));
-        //tp.y = (chunkwidth / 2) - (z * (chunkwidth / 3));
+        float stonedos = randfunc::noise(c.cpos.x+3931, c.cpos.y-991, 0.5f);
 
-        tp.x = (chunkwidth / 2) - (x * (chunkwidth / 2));
-        tp.y = (chunkwidth / 2) - (z * (chunkwidth / 2));
-
-        bool toadd = true;
-
-        if (!treepositions.empty())
+        for (int a = 0; a < 4; a++)
         {
-            for (glm::ivec3 tree : treepositions)
+            float randos = randfunc::noise(c.cpos.x-1123 * a, c.cpos.y+3124 * a, 0.5f);
+            if (randos > 0.5f)
             {
-                if (tree.x - 1 <= tp.x && tree.x + 1 >= tp.x && tree.y - 1 <= tp.y && tree.y + 1 >= tp.y) toadd = false;
+                if (stonedos > 0.0f)
+                    models[a] = static_cast<int32_t>(vhutpath);
+                else
+                    models[a] = static_cast<int32_t>(vstonehutpath);
+                atleastonehut = true;
+            }
+            else if (randos > 0.0f)
+            {
+                if (stonedos > 0.0f)
+                    models[a] = static_cast<int32_t>(vshutpath);
+                else
+                    models[a] = static_cast<int32_t>(vsstonehutpath);
+                atleastonehut = true;
+            }
+            else if (randos > -0.3f)
+            {
+                models[a] = static_cast<int32_t>(vflowerbed);
+            }
+            else if (randos > -0.5f && !haswell) //max 1 well
+            {
+                models[a] = static_cast<int32_t>(vwell);
+                haswell = true;
+            }
+            else if (randos > -0.7f)
+            {
+                models[a] = static_cast<int32_t>(vshed);
+            }
+            else if (randos > -0.8f)
+            {
+                models[a] = static_cast<int32_t>(vstower);
+            }
+            else
+            {
+                models[a] = -1;
             }
         }
 
-        if (toadd)
+        if (!atleastonehut) //makes sure there is at least one hut in the village
         {
-            tp.z = (255.0f * randfunc::noise(c.cpos.y+6745+3*randfunc::getrandom8bitvalue(a*c.cpos.x, a*c.cpos.y), c.cpos.y-4643+3*randfunc::getrandom8bitvalue(a*c.cpos.y, a*c.cpos.x), 0.5f));
-            treepositions.push_back(tp);
+            models[randfunc::getrandom8bitvalue(c.cpos.x, c.cpos.y) % 4] = static_cast<int32_t>(vhutpath);
+        }
+
+        for (int x = 0; x < 2; x++)
+        {
+            for (int z = 0; z < 2; z++)
+            {
+                if (models[z + (x*2)] != -1)
+                {
+                    tileh pp = gettileheight(c, 8+x*15, 13+z*5);
+                    chunkdecorator::addvoxelmodel(c, ctilepos(8+x*15,pp.y+1, 8+z*15), models[z + (x*2)], true, true, (z == 1 ? 4 : 5));
+                }
+                else//tree on empty spot
+                {
+                    float treedos = randfunc::noise(c.cpos.x+1931*x, c.cpos.y+4991*z, 0.5f);
+                    if (treedos > 0.5f)
+                    {
+                        treepositions.push_back(glm::ivec3(14+x*15, 13+z*15, 0));
+                        treepositions.push_back(glm::ivec3(12+x*15, 6+z*15, 0));
+                        treepositions.push_back(glm::ivec3(6+x*15, 10+z*15, 0));
+                    }
+                    else if (treedos > 0.0f)
+                    {
+                        treepositions.push_back(glm::ivec3(12+x*15, 9+z*15, 0));
+                        treepositions.push_back(glm::ivec3(6+x*15, 5+z*15, 0));
+                    }
+                    else if (treedos > -0.5f)
+                    {
+                        treepositions.push_back(glm::ivec3(8+x*15, 8+z*15, 0));
+                    }
+                }
+
+            }
+        }
+
+        for (int a = 1; a < chunkwidth-1; a++) //crossroads
+        {
+            tileh tt = gettileheight(c, a, chunkwidth/2);
+            c.trysettile(ctilepos(a, tt.y, chunkwidth/2), tid_stone);
+            tt = gettileheight(c, a, (chunkwidth/2)-1);
+            c.trysettile(ctilepos(a, tt.y, (chunkwidth/2)-1), tid_stone);
+            tt = gettileheight(c, chunkwidth/2, a);
+            c.trysettile(ctilepos(chunkwidth/2, tt.y, a), tid_stone);
+            tt = gettileheight(c, (chunkwidth/2)-1, a);
+            c.trysettile(ctilepos((chunkwidth/2)-1, tt.y, a), tid_stone);
+        }
+    }
+    else
+    {
+        for (int a = 0; a < numtrees; a++) //tree positions
+        {
+            glm::ivec3 tp;
+
+            float x = randfunc::noise(c.cpos.x+124+3*randfunc::getrandom8bitvalue(a*c.cpos.x, a*c.cpos.y), c.cpos.y-3245+3*randfunc::getrandom8bitvalue(a*c.cpos.y, a*c.cpos.x), 0.5f);
+            float z = randfunc::noise(c.cpos.y+745+3*randfunc::getrandom8bitvalue(a*c.cpos.x, a*c.cpos.y), c.cpos.y+1241+3*randfunc::getrandom8bitvalue(a*c.cpos.y, a*c.cpos.x), 0.5f);
+
+            //tp.x = (chunkwidth / 2) - (x * (chunkwidth / 3));
+            //tp.y = (chunkwidth / 2) - (z * (chunkwidth / 3));
+
+            tp.x = (chunkwidth / 2) - (x * (chunkwidth / 2));
+            tp.y = (chunkwidth / 2) - (z * (chunkwidth / 2));
+
+            bool toadd = true;
+
+            if (!treepositions.empty())
+            {
+                for (glm::ivec3 tree : treepositions)
+                {
+                    if (tree.x - 1 <= tp.x && tree.x + 1 >= tp.x && tree.y - 1 <= tp.y && tree.y + 1 >= tp.y) toadd = false;
+                }
+            }
+
+            if (toadd)
+            {
+                tp.z = (255.0f * randfunc::noise(c.cpos.y+6745+3*randfunc::getrandom8bitvalue(a*c.cpos.x, a*c.cpos.y), c.cpos.y-4643+3*randfunc::getrandom8bitvalue(a*c.cpos.y, a*c.cpos.x), 0.5f));
+                treepositions.push_back(tp);
+            }
         }
     }
 
@@ -620,7 +770,7 @@ void newgenerator::decorate(chunk& c)
             }
         }
 
-        tileid abovetid = 0;
+        //tileid abovetid = 0;
 
         if (y <= 129)
         {
@@ -691,7 +841,7 @@ void newgenerator::decorate(chunk& c)
 
             if (biome.temperature > 58 && biome.temperature < 160 && biome.humidity > 58)
             {
-                if (maxy > 1 && (ctid == grass || ctid == grass2) && c.gettile(ctilepos(x,maxy-1,z)) == 0)
+                if (maxy > 2 && maxy < chunkheight - 3 && (ctid == grass || ctid == grass2) && c.gettile(ctilepos(x,maxy-1,z)) == 0)
                 {
                     int rint = randfunc::getrandom8bitvalue(c.cpos.x * 111 + x * 13, c.cpos.y * 111 + z * 13);//utils::randint(0, 100);
                     if (rint < 50)
@@ -718,7 +868,7 @@ void newgenerator::decorate(chunk& c)
             }
             else
             {
-                if (maxy > 1 && maxy < chunkheight-1)
+                if (maxy > 2 && maxy < chunkheight-3)
                 {
                     //std::cout << int(x) << " " << maxy << " " << int(z) << "\n";
                     tileid ctid = c.gettile(ctilepos(x,maxy,z));

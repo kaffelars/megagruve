@@ -348,19 +348,35 @@ void map_obj_models::initialize()
     texid = texturemanager::gettiletexturenumber("door_upper");
     texid2 = texturemanager::gettiletexturenumber("door_lower");
 
-    door.vertexes.push_back(vpos{0.5f, 0, 0});
-    door.vertexes.push_back(vpos{0.5f, 0, 1});
-    door.vertexes.push_back(vpos{0.5f, 1, 0});
-    door.vertexes.push_back(vpos{0.5f, 0, 1});
-    door.vertexes.push_back(vpos{0.5f, 1, 1});
-    door.vertexes.push_back(vpos{0.5f, 1, 0});
+    float th = 0.05f;
 
-    door.vertexes.push_back(vpos{0.5f, 0, 0});
-    door.vertexes.push_back(vpos{0.5f, 1, 0});
-    door.vertexes.push_back(vpos{0.5f, 0, 1});
-    door.vertexes.push_back(vpos{0.5f, 1, 1});
-    door.vertexes.push_back(vpos{0.5f, 0, 1});
-    door.vertexes.push_back(vpos{0.5f, 1, 0});
+    door.vertexes.push_back(vpos{0.5f-th, 0, 0});
+    door.vertexes.push_back(vpos{0.5f-th, 0, 1});
+    door.vertexes.push_back(vpos{0.5f-th, 1, 0});
+    door.vertexes.push_back(vpos{0.5f-th, 0, 1});
+    door.vertexes.push_back(vpos{0.5f-th, 1, 1});
+    door.vertexes.push_back(vpos{0.5f-th, 1, 0});
+
+    door.vertexes.push_back(vpos{0.5f+th, 0, 0});
+    door.vertexes.push_back(vpos{0.5f+th, 1, 0});
+    door.vertexes.push_back(vpos{0.5f+th, 0, 1});
+    door.vertexes.push_back(vpos{0.5f+th, 1, 1});
+    door.vertexes.push_back(vpos{0.5f+th, 0, 1});
+    door.vertexes.push_back(vpos{0.5f+th, 1, 0});
+
+    door.vertexes.push_back(vpos{0.5f-th, 0, 0});
+    door.vertexes.push_back(vpos{0.5f-th, 1, 0});
+    door.vertexes.push_back(vpos{0.5f+th, 1, 0});
+    door.vertexes.push_back(vpos{0.5f-th, 0, 0});
+    door.vertexes.push_back(vpos{0.5f+th, 1, 0});
+    door.vertexes.push_back(vpos{0.5f+th, 0, 0});
+
+    door.vertexes.push_back(vpos{0.5f-th, 1, 1});
+    door.vertexes.push_back(vpos{0.5f-th, 0, 1});
+    door.vertexes.push_back(vpos{0.5f+th, 1, 1});
+    door.vertexes.push_back(vpos{0.5f+th, 1, 1});
+    door.vertexes.push_back(vpos{0.5f-th, 0, 1});
+    door.vertexes.push_back(vpos{0.5f+th, 0, 1});
 
     door.uv.push_back(uvpos{1, 0});
     door.uv.push_back(uvpos{0, 0});
@@ -376,7 +392,21 @@ void map_obj_models::initialize()
     door.uv.push_back(uvpos{0, 0});
     door.uv.push_back(uvpos{1, 1});
 
-    for (int a = 0; a < 12; a++)
+    door.uv.push_back(uvpos{0, 0});
+    door.uv.push_back(uvpos{0, 1});
+    door.uv.push_back(uvpos{0.1f, 1});
+    door.uv.push_back(uvpos{0, 0});
+    door.uv.push_back(uvpos{0.1f, 1});
+    door.uv.push_back(uvpos{0.1f, 0});
+
+    door.uv.push_back(uvpos{0.1f, 1});
+    door.uv.push_back(uvpos{0.1f, 0});
+    door.uv.push_back(uvpos{0, 1});
+    door.uv.push_back(uvpos{0, 1});
+    door.uv.push_back(uvpos{0.1f, 0});
+    door.uv.push_back(uvpos{0, 0});
+
+    for (int a = 0; a < 24; a++)
     {
         door.texids.push_back(texid2);
         vpos v = door.vertexes[a];
@@ -386,33 +416,43 @@ void map_obj_models::initialize()
         door.uv.push_back(u);
         door.glow.push_back(0);
     }
-    for (int a = 0; a < 12; a++)
+    for (int a = 0; a < 24; a++)
     {
         door.texids.push_back(texid);
         door.glow.push_back(0);
     }
-    for (int a = 0; a < 6; a++)
-        door.normals.push_back(sidenormals[0]);
-    for (int a = 0; a < 6; a++)
-        door.normals.push_back(sidenormals[1]);
-    for (int a = 0; a < 6; a++)
-        door.normals.push_back(sidenormals[0]);
-    for (int a = 0; a < 6; a++)
-        door.normals.push_back(sidenormals[1]);
+
+    for (int b = 0; b < 2; b++)
+    {
+        for (int a = 0; a < 6; a++)
+            door.normals.push_back(sidenormals[0]);
+        for (int a = 0; a < 6; a++)
+            door.normals.push_back(sidenormals[1]);
+        for (int a = 0; a < 6; a++)
+            door.normals.push_back(sidenormals[4]);
+        for (int a = 0; a < 6; a++)
+            door.normals.push_back(sidenormals[5]);
+    }
+
 
     obj_models.push_back(door);
 
-    for (int a = 0; a < 24; a++)
+    glm::mat4 rotmat = glm::rotate(glm::mat4(1.0f), 1.5f, glm::vec3(0,1,0));
+
+    for (int a = 0; a < 48; a++)
     {
         vpos v = door.vertexes[a];
+        v.x -= 0.5f;
+        glm::vec4 rotv = glm::vec4(v.x, v.y, v.z, 1.0f);
+        rotv = rotmat * rotv;
+        rotv.x += 0.5f;
 
-        if (v.z == 0)
-        {
-            v.z = 0.8f;
-            v.x = 1.4f;
-        }
+        door.vertexes[a] = glm::vec3(rotv.x, rotv.y, rotv.z);
 
-        door.vertexes[a] = v;
+        v = door.normals[a];
+        rotv = glm::vec4(v.x, v.y, v.z, 1.0f);
+        rotv = rotmat * rotv;
+        door.normals[a] = glm::vec3(rotv.x, rotv.y, rotv.z);
     }
 
     obj_models.push_back(door);//opendoor

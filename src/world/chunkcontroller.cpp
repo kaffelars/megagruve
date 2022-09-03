@@ -294,7 +294,7 @@ void chunkcontroller::renderchunk(chunkpos cpos)
     chunk& c = getchunk(cpos);
     chunk::ctags ctag = c.gettag();
 
-    if (threadcounter < settings::getisetting(settings::SET_MAXTHREADS) && ctag == chunk::C_READY && c.needsremesh())
+    if (threadcounter < static_cast<uint32_t>(settings::getisetting(settings::SET_MAXTHREADS)) && ctag == chunk::C_READY && c.needsremesh())
     {
         threadcounter++;
         c.settag(chunk::C_REMESHING);
@@ -327,7 +327,7 @@ void chunkcontroller::renderchunk(chunkpos cpos)
     else
     {
         //std::cout << chunkmeshynum << "fsef\n";
-        if (threadcounter < settings::getisetting(settings::SET_MAXTHREADS))
+        if (threadcounter < static_cast<uint32_t>(settings::getisetting(settings::SET_MAXTHREADS)))
         {
             if (ctag == chunk::C_START) //mutex
             {

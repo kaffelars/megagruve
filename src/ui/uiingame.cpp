@@ -27,6 +27,7 @@ namespace uiingame
     vaocontainer hearts;
     vaocontainer actionbar;
     vaocontainer actionbaritems;
+    vaocontainer crosshair;
 
     vaocontainer clickedbox;
 
@@ -51,6 +52,7 @@ namespace uiingame
     positiondata positionvalues;
 
     void updatevalues();
+    void updatecrosshair();
 
     struct hitem
     {
@@ -64,6 +66,15 @@ namespace uiingame
 
 }
 
+void uiingame::updatecrosshair()
+{
+    //
+    crosshair.initialize(1, vaocontainer::typo::POINTS, 4);
+    crosshair.cleanvbos();
+    crosshair.addvalues(0, screensizex/2, screensizey/2, texturemanager::geticontexturenumber(settings::getssetting(settings::SET_CROSSHAIR), texturemanager::ICONS_MEDIUM),(float)settings::getisetting(settings::SET_CROSSHAIRSIZE));
+    crosshair.setvbos();
+}
+
 void uiingame::resetui()
 {
     selection = 0;
@@ -75,6 +86,7 @@ void uiingame::refreshui()
     updatehearts(true);
     updateactionbar(true);
     updateactionbaritems(true);
+    updatecrosshair();
 }
 
 bool uiingame::showinginventory()
@@ -89,7 +101,7 @@ void uiingame::initialize()
         uint32_t texid = texturemanager::geticontexturenumber(std::to_string(a), texturemanager::ICONS_MEDIUM);
         numbertotexid.push_back(texid);
     }
-
+    updatecrosshair();
     uiicons::initialize();
 }
 
@@ -116,7 +128,7 @@ void uiingame::updatehearts(bool screensizeupdated)
 
         hearts.cleanvbos();
 
-        int index = 0;
+        //int index = 0;
 
         float hiconsize = (positionvalues.iconsize / 90.0f) * 35.0f;
         float hspacer = hiconsize / 2.0f;
@@ -148,7 +160,7 @@ void uiingame::updateactionbar(bool screensizeupdated)
 {
     uint32_t newselection = maincharcontroller::getactionbarselection();
 
-    if (screensizeupdated || actionbar.isempty() || selection != newselection)
+    if (screensizeupdated || actionbar.isempty() || selection != static_cast<int>(newselection))
     {
         selection = newselection;
 
@@ -232,11 +244,13 @@ void uiingame::rendergameui()
         screensizeupdated = true;
 
         updatevalues();
+        updatecrosshair();
     }
 
     updatehearts(screensizeupdated);
     updateactionbar(screensizeupdated);
     updateactionbaritems(screensizeupdated);
+
     //updateinventory(screensizeupdated, true);
 
     shadercontroller::activateshader(shadercontroller::SH_ICONS);
@@ -262,6 +276,14 @@ void uiingame::rendergameui()
         }
 
         uiinventory::renderinventory();
+    }
+    else
+    {
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_ONE_MINUS_DST_COLOR, GL_ZERO);
+        texturemanager::bindiconstexture(texturemanager::ICONS_MEDIUM, 0);
+        crosshair.render();
+        glDisable(GL_BLEND);
     }
 
 }

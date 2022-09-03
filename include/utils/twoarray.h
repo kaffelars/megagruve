@@ -13,7 +13,7 @@ class twoarray
         }
         virtual ~twoarray()
         {
-            delete data;
+            delete [] data;
         }
 
         void setdata(int x, int y, T datatoset)

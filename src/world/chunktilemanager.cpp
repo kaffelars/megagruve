@@ -95,6 +95,8 @@ bool chunktilemanager::checkoutsidetiles(chunk& c) //updates tiles in neighbouri
             c.anyoutsidetiles = false;
         }
     }
+
+    return true;
 }
 
 void chunktilemanager::removemapobj(chunk& c, ctilepos ctpos)

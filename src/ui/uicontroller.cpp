@@ -6,14 +6,10 @@ namespace uicontroller
 {
     int activefont = 0;
 
-    namespace
-    {
-        ImGuiIO* io = nullptr;
-        ImFont* font[3] = {nullptr, nullptr, nullptr};//
+    ImGuiIO* io = nullptr;
+    ImFont* font[3] = {nullptr, nullptr, nullptr};//
 
-        bool windowbegun = false;
-        glm::vec2 curwindowsize = glm::vec2(0.0f);
-    }
+    glm::vec2 curwindowsize = glm::vec2(0.0f);
 }
 
 

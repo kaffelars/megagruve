@@ -53,7 +53,7 @@ shootparticle::shootparticle(uint32_t particlenum, uint8_t particletex, int32_t 
 
 bool shootparticle::activate(entity* user, entity* target)
 {
-    for (int a = 0; a < num; a++)
+    for (uint32_t a = 0; a < num; a++)
     {
         float randx = utils::randint(-spread, spread);
         float randy = utils::randint(-spread, spread);
@@ -157,7 +157,7 @@ bool throwexplosive::activate(entity* user, entity* target)
 
 
 
-changeblockeffect::changeblockeffect(bool onlyemptyblocks, bool addtheblock, tileid block) : emptyonly{onlyemptyblocks}, addblock{addtheblock}, tid{block}
+changeblockeffect::changeblockeffect(bool onlyemptyblocks, bool addtheblock, tileid block) : tid{block}, emptyonly{onlyemptyblocks}, addblock{addtheblock}
 {
 
 }
@@ -196,7 +196,7 @@ bool changeblockeffect::activate(entity* user, entity* target)
 }
 
 
-placeobjecteffect::placeobjecteffect(bool onlyemptyblocks, uint32_t objid) : emptyonly{onlyemptyblocks}, tid{objid}
+placeobjecteffect::placeobjecteffect(bool onlyemptyblocks, uint32_t objid) : tid{objid}, emptyonly{onlyemptyblocks}
 {
 
 }
@@ -209,9 +209,11 @@ bool placeobjecteffect::activate(entity* user, entity* target)
 
     if (!chunkcoords::withinworld(wt)) return false;
 
+    tileid targetid = chunkcontroller::gettileid(wt);
+
     if (emptyonly) //uncomment dis
     {
-        if (!tiledata::isempty(chunkcontroller::gettileid(wt))) return false;
+        if (!(tiledata::isoverbuildable(targetid) || tiledata::isempty(targetid))) return false;
     }
 
     target->heal(99999);

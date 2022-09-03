@@ -42,7 +42,7 @@ bool windowmanager::setupgamewindow()
         return false;
     }
 
-    windowmanager::sdlwindow = SDL_CreateWindow("dummy", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, settings::getisetting(settings::SET_SCREENX), settings::getisetting(settings::SET_SCREENY), SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
+    windowmanager::sdlwindow = SDL_CreateWindow("megagruve", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, settings::getisetting(settings::SET_SCREENX), settings::getisetting(settings::SET_SCREENY), SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
 
     if (!windowmanager::sdlwindow )
     {
