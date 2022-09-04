@@ -17,6 +17,7 @@ Features:
 * other plants and flowers
 * biomes
 * simplex noise based random world generation (now with changeable seed)
+* villages (some with loot)
 * water with "physics" (watch out)
 * glowing blocks
 * particles
@@ -66,10 +67,10 @@ Missing features:
 ![screenshot](https://github.com/kaffelars/megagruve/blob/main/screenshots/screenshot6.png)
 
 ## Using/compiling
-* [SDL2](https://www.libsdl.org/)
+* [SDL2](https://www.libsdl.org/) & [SDL Image](https://github.com/libsdl-org/SDL_image/releases)
 * [glew](http://glew.sourceforge.net/)
 * [GLM](https://github.com/g-truc/glm)
 * [Dear ImGui](https://github.com/ocornut/imgui)
 * [pugixml](https://pugixml.org/)
 
-Dear ImGui and pugixml are included in the repo. SDL2, glew and GLM has to be downloaded separately and included and linked (SDL2 and glew) to compile. I compile (windows) through [Code::Blocks](https://www.codeblocks.org/) with the included mingw-w64 (GCC) set to C++17. Necessary dll-files to run the compiled program are in the zip in the builds folder. SDL2 has wide platform support, so compiling for other platforms should be doable (I haven't tried). Let me know if you have issues compiling.
+If you wish to just try it out, a ready-to-run compiled version is available in the builds folder. However, if you wish to try to compile the project yourself, you will need to download some extra stuff. Dear ImGui and pugixml are included in the repo. SDL2, glew and GLM has to be downloaded separately and included and linked (SDL2 and glew) to compile. I compile (windows) through [Code::Blocks](https://www.codeblocks.org/) with the included mingw-w64 (GCC) set to C++17. Necessary dll-files to run the compiled program are in the zip in the builds folder. SDL2 has wide platform support, so compiling for other platforms should be doable (I haven't tried). Let me know if you have issues compiling.

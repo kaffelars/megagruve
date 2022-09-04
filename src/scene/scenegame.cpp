@@ -7,6 +7,7 @@
 #include "uiinventory.h"
 #include "scenegamehelperfunctions.h"
 #include "timedfunctions.h"
+#include "newgenerator.h"
 
 scenegame::scenegame()
 {
@@ -50,6 +51,8 @@ void scenegame::setkeys()
     inputmanager::setkeyfunction(inputmanager::KEY_SELECT, [&](){maincharcontroller::useselecteditem();}, inputmanager::KE_HELD);
 
     inputmanager::setkeyfunction(inputmanager::KEY_INTERACT, [&](){maincharcontroller::interact();}, inputmanager::KE_CLICKED);
+
+    //inputmanager::setkeyfunction(inputmanager::KEY_INTERACT, [&](){newgenerator::printgenvalues(chunkcontroller::getchunk(chunkcoords::wpostocpos(maincharcontroller::getmaincharposition())));}, inputmanager::KE_CLICKED);
 
     inputmanager::setkeyfunction(inputmanager::KEY_INV, [&](){toggleinventory();}, inputmanager::KE_CLICKED);
     inputmanager::setkeyfunction(inputmanager::KEY_TOGGLEFLYING, [&](){maincharcontroller::toggleflying();maincharcontroller::togglenoclip();}, inputmanager::KE_CLICKED);

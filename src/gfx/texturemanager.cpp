@@ -23,7 +23,7 @@ namespace texturemanager
     "logtop", "grasstuft1", "grasstuft2", "planks", "cactus_side", "cactus_top", "littlegrass", "bookcase", "flower1", "flower2", "flower3",
     "chest_top", "chest_bottom", "chest_side", "chest_front", "chest_inside", "lightbulb", "destroy1", "destroy2", "destroy3", "destroy4", "glowstone", "snow", "gravel", "ice", "green", "orb",
     "bedrock", "diamond_ore", "iron_ore", "coal_ore", "log_birch", "log_birch_top", "grass_side_overlay", "clay", "clay_hard", "brick", "door_lower", "door_upper", "grass_bottom", "grass_top",
-    "flag1", "flag2", "flag3", "flag4", "flagpole", "crafting_table", "table_side", "white_tiles", "sandstone_block", "button", "lava", "fireball", "glass", "window"};
+    "flag1", "flag2", "flag3", "flag4", "flagpole", "crafting_table", "table_side", "white_tiles", "sandstone_block", "button", "lava", "fireball", "glass", "window", "hay_block_side", "hay_block_top"};
 }
 
 

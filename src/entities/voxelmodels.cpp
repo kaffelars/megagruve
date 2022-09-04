@@ -256,6 +256,11 @@ void voxelmodels::initialize()
     hut.addpoint(ctilepos(-hs-1, 3, 0), stoneid);
     hut.addpoint(ctilepos(-hs-2, 3, 0), stoneid);
 
+    hut.addpoint(ctilepos(-hs-1, 2, 0), 0);
+    hut.addpoint(ctilepos(-hs-2, 2, 0), 0);
+    hut.addpoint(ctilepos(-hs-1, 1, 0), 0);
+    hut.addpoint(ctilepos(-hs-2, 1, 0), 0);
+
     addvoxelmodel(hut, "vox_hut_path");
 
 
@@ -333,6 +338,12 @@ void voxelmodels::initialize()
     shut.addpoint(ctilepos(-hs-1, 3, 0), stoneid);
     shut.addpoint(ctilepos(-hs-2, 3, 0), stoneid);
     shut.addpoint(ctilepos(-hs-3, 3, 0), stoneid);
+    shut.addpoint(ctilepos(-hs-1, 2, 0), 0);
+    shut.addpoint(ctilepos(-hs-2, 2, 0), 0);
+    shut.addpoint(ctilepos(-hs-3, 2, 0), 0);
+    shut.addpoint(ctilepos(-hs-1, 1, 0), 0);
+    shut.addpoint(ctilepos(-hs-2, 1, 0), 0);
+    shut.addpoint(ctilepos(-hs-3, 1, 0), 0);
 
     addvoxelmodel(shut, "vox_small_hut_path");
 
@@ -394,6 +405,14 @@ void voxelmodels::initialize()
             flowerbed.addpoint(ctilepos(x,-2,z), 0);
             flowerbed.addpoint(ctilepos(x,-3,z), 0);
         }
+    }
+
+    for (int y = 1; y < 6; y++) //pillars
+    {
+        flowerbed.addpoint(ctilepos(0,y,0), plankid);
+        flowerbed.addpoint(ctilepos(7,y,0), plankid);
+        flowerbed.addpoint(ctilepos(0,y,7), plankid);
+        flowerbed.addpoint(ctilepos(7,y,7), plankid);
     }
 
     flowerbed.centerbottomtile = ctilepos(3, 0, 3);
@@ -489,10 +508,121 @@ void voxelmodels::initialize()
     stower.addpoint(ctilepos(-1,-1,-hs), stoneid);
     stower.addpoint(ctilepos(1,-1,-hs), stoneid);
 
+    //path
+    stower.addpoint(ctilepos(-hs-1,11,0), stoneid);
+    stower.addpoint(ctilepos(-hs-2,11,0), stoneid);
+    stower.addpoint(ctilepos(-hs-3,11,0), stoneid);
+
+    stower.addpoint(ctilepos(-hs-1,10,0), 0);
+    stower.addpoint(ctilepos(-hs-2,10,0), 0);
+    stower.addpoint(ctilepos(-hs-3,10,0), 0);
+    stower.addpoint(ctilepos(-hs-1,9,0), 0);
+    stower.addpoint(ctilepos(-hs-2,9,0), 0);
+    stower.addpoint(ctilepos(-hs-3,9,0), 0);
+
     stower.centerbottomtile = ctilepos(0, 11, 0);
     stower.addmapobject(ctilepos(hs-1, 10, 0), ochest, 0, static_cast<int32_t>(chestloot::blacksmith));
 
     addvoxelmodel(stower, "vox_small_tower");
+
+
+    voxelmodel btower;
+
+    hs = 5;
+
+    for (int y = 0; y < 26; y++)
+    {
+        for (int x = -hs; x <= hs+1; x++)
+        {
+            for (int z = -hs; z <= hs+1; z++)
+            {
+                if ((x == -hs || x == hs+1 || z == -hs || z == hs+1))
+                {
+                    if (y == 9 && x == 0)
+                        btower.addpoint(ctilepos(x,y,z), windowid);
+                    else
+                    {
+                        if (y < 18 && y > 15)
+                        {
+                            if (z == 0 || z == 1 || x == 0 || x == 1)
+                                btower.addpoint(ctilepos(x,y,z), 0);
+                            else
+                                btower.addpoint(ctilepos(x,y,z), stoneid);
+                        }
+                        else
+                        {
+                            btower.addpoint(ctilepos(x,y,z), stoneid);
+                        }
+                    }
+
+                }
+                else
+                {
+                    if (y == 18 || y == 0)
+                        btower.addpoint(ctilepos(x,y,z), plankid);
+                    else
+                        btower.addpoint(ctilepos(x,y,z), 0);
+                }
+            }
+        }
+    }
+
+    int bal = 0;
+
+    for (int x = -hs-bal; x <= hs+1+bal; x++)
+    {
+        for (int z = -hs-bal; z <= hs+1+bal; z++)
+        {
+            if (x == -hs-bal || x == hs+1+bal || z == -hs-bal || z == hs+1+bal)
+            {
+                if (bal > 0) btower.addpoint(ctilepos(x,0,z), stoneid);
+                btower.addpoint(ctilepos(x,-1,z), stoneid);
+                if (((z == -hs-bal || z == hs+1+bal) && x % 2 == 0) || ((x == -hs-bal || x == hs+1+bal) && z % 2 == 0)) btower.addpoint(ctilepos(x,-2,z), stoneid);
+                else btower.addpoint(ctilepos(x,-2,z), 0);
+            }
+            else
+            {
+                btower.addpoint(ctilepos(x,-1,z), 0);
+                btower.addpoint(ctilepos(x,-2,z), 0);
+            }
+        }
+    }
+
+    btower.addpoint(ctilepos(-hs-1,18,0), stoneid);
+    btower.addpoint(ctilepos(-hs-1,18,1), stoneid);
+    btower.addpoint(ctilepos(hs+2,18,0), stoneid);
+    btower.addpoint(ctilepos(hs+2,18,1), stoneid);
+
+    btower.addpoint(ctilepos(0,18,-hs-1), stoneid);
+    btower.addpoint(ctilepos(1,18,-hs-1), stoneid);
+    btower.addpoint(ctilepos(0,18,hs+2), stoneid);
+    btower.addpoint(ctilepos(1,18,hs+2), stoneid);
+
+    btower.centerbottomtile = ctilepos(0, 18, 0);
+
+    addvoxelmodel(btower, "vox_big_tower");
+
+    voxelmodel path;
+
+    path.addpoint(ctilepos(0,0,0), stoneid);
+    path.addpoint(ctilepos(1,0,0), stoneid);
+    path.addpoint(ctilepos(0,0,1), stoneid);
+    path.addpoint(ctilepos(1,0,1), stoneid);
+
+    path.centerbottomtile = ctilepos(0,0,0);
+
+    addvoxelmodel(path, "vox_path");
+
+    voxelmodel wpath;
+
+    wpath.addpoint(ctilepos(0,0,0), plankid);
+    wpath.addpoint(ctilepos(1,0,0), plankid);
+    wpath.addpoint(ctilepos(0,0,1), plankid);
+    wpath.addpoint(ctilepos(1,0,1), plankid);
+
+    wpath.centerbottomtile = ctilepos(0,0,0);
+
+    addvoxelmodel(wpath, "vox_wpath");
 
     randfunc::setseed(seed);
 }

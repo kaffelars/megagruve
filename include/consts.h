@@ -10,6 +10,7 @@
 
 constexpr float pi_value = 3.1415926535f;
 constexpr int chunkwidth = 32;
+constexpr int halfchunkwidth = chunkwidth/2;
 constexpr int chunkheight = 256;
 constexpr int chunkmeshheight = 64;
 constexpr int chunkmeshynum = chunkheight/chunkmeshheight;

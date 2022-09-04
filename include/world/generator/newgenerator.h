@@ -17,6 +17,15 @@ class newgenerator : public chunkgenerator
             tileid tid;
         };
 
+        struct modeltoadd
+        {
+            uint32_t modelid;
+            ctilepos position;
+            uint8_t forwardside;
+        };
+
+        static void printgenvalues(chunk& c);
+
 
     protected:
 
@@ -27,7 +36,7 @@ class newgenerator : public chunkgenerator
         void generateworld(chunk& c, std::vector<float>& land, chunkpos cposoffset);
         float getlandweight(std::vector<float>& land, ctilepos ctpos);
         tileh gettileheight(chunk& c, htile x, htile z);
-        bool isacceptableforvillage(chunk& c);
+        bool isacceptableforvillage(chunkpos cpos);
 };
 
 #endif // NEWGENERATOR_H
