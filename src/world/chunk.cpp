@@ -11,6 +11,7 @@ chunk::chunk(dimensions dims, chunkpos pos)
     chunktag = C_START;
     std::fill_n(activecmesh, chunkmeshynum, false);
     std::fill_n(remesh, chunkmeshynum, false);
+    sunlight.initialize();
 }
 
 chunk::~chunk()
@@ -25,6 +26,8 @@ std::shared_ptr<map_obj>& chunk::getmapobj(ctilepos ctpos)
 
 void chunk::deletechunk()
 {
+    sunlight.deinitialize();
+
     for (int a = 0; a < chunkmeshynum; a++)
     {
         cmesh[a][0].cleanbuffers();
@@ -174,7 +177,7 @@ bool chunk::tryinteractobj(ctilepos ctpos, mainchar& mchar)
 
 void chunk::addlight()
 {
-    tilelight.push_back(tlight{0,0});
+    //tilelight.push_back(tlight{0,0});
 }
 
 uint32_t chunk::get2dcoord(chtilepos thpos)
@@ -199,17 +202,29 @@ uint32_t chunk::gettilecoord(ctilepos tpos)
 
 void chunk::setsunlight(ctilepos tpos, uint8_t value)
 {
-    tilelight[gettilecoord(tpos)].sunlight = value / 16;
+    //tilelight[gettilecoord(tpos)].sunlight = value / 16;
+    sunlight.setvalue(tpos+ctilepos(1,0,1), value);
 }
 
 uint8_t chunk::getsunlight(ctilepos tpos)
 {
-    return tilelight[gettilecoord(tpos)].sunlight * 17; //for å mappe til 0 - 255
+    //return tilelight[gettilecoord(tpos)].sunlight
+    return sunlight.getvalue(tpos+ctilepos(1,0,1));
+}
+
+uint8_t chunk::getinterpolatedsunlight(float x, float y, float z, uint8_t direction)
+{
+    sunlight.getinterpolatedvalue(x,y,z,direction);
+}
+
+void chunk::fillsunlayer(uint8_t layer, uint8_t value)
+{
+    sunlight.filllayer(layer, value);
 }
 
 chunk::tlight chunk::getalllight(ctilepos tpos)
 {
-    return tilelight[gettilecoord(tpos)];
+    return tlight{sunlight.getvalue(tpos+ctilepos(1,0,1)), 0};//tilelight[gettilecoord(tpos)];
 }
 
 void chunk::setallvbos()

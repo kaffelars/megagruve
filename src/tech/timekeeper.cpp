@@ -28,7 +28,7 @@ float timekeeper::getcappeddeltatime()
     return (deltatime > 33.333333f) ? 33.3333333f : deltatime;
 }
 
-float timekeeper::gettimefactor() //returnerer faktor i forhold til 60 fps
+float timekeeper::gettimefactor() //returns factor in relation to 60 fps
 {
     float factor = getcappeddeltatime() / 16.66667f;
     //if (factor > 2.0) factor = 2.0; //30 fps min
@@ -38,7 +38,7 @@ float timekeeper::gettimefactor() //returnerer faktor i forhold til 60 fps
 
 void timekeeper::timekeeping()
 {
-    //deltatime så ting er uavhengig av fps
+    //deltatime so stuff are independent of fps
     tid[2] = std::chrono::high_resolution_clock::now();
     deltatime = std::chrono::duration_cast<std::chrono::milliseconds>(tid[2] - tid[1]).count();
 

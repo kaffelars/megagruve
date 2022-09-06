@@ -86,7 +86,7 @@ void physicsobject::updateposition()
 
 void physicsobject::updatevelocity()
 {
-    vel.y += 0.02f * gravityfactor;//gravity lol
+    vel.y += 0.02f * gravityfactor * timekeeper::gettimefactor();//gravity lol
 
     if (vel.y > 0.9f) vel.y = 0.9f;
 

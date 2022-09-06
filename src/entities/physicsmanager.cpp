@@ -25,7 +25,7 @@ void physicsmanager::pointphysics(physicsobject& p)
 
     float timefactor = timekeeper::gettimefactor();
     wposition newpos = p.position;
-    velocity vel = p.vel * timefactor;
+    velocity vel = p.vel;// * timefactor;
     p.onfloor = false;
 
     for (int a = 0; a < 3; a++)
@@ -33,11 +33,11 @@ void physicsmanager::pointphysics(physicsobject& p)
         if (vel[a])
         {
             wposition nextpos = p.position;
-            nextpos[a] += vel[a];
+            nextpos[a] += vel[a] * timefactor;
             tileid tid = chunkcontroller::gettileid(nextpos);
             if (tiledata::ispassable(tid))
             {
-                newpos[a] += vel[a];
+                newpos[a] += vel[a] * timefactor;
             }
             else
             {
@@ -65,7 +65,7 @@ void physicsmanager::pointphysics(physicsobject& p)
     }
 
     p.position = newpos;
-    p.vel = vel / timefactor;
+    p.vel = vel;// / timefactor;
 }
 
 void physicsmanager::moveboxtofloor(physicsobject& p)
@@ -85,7 +85,7 @@ void physicsmanager::boxphysics(physicsobject& p, bool takefalldamage)
     p.updatevelocity();
     wposition newpos = p.position;
     float timefactor = timekeeper::gettimefactor();
-    velocity vel = p.vel * timefactor; //kan kræsje hvis vel > 1.0
+    velocity vel = p.vel;// * timefactor; //kan kræsje hvis vel > 1.0
     p.onfloor = false;
 
     point bb = p.bbox;
@@ -168,7 +168,7 @@ void physicsmanager::boxphysics(physicsobject& p, bool takefalldamage)
             for (int i = 0; i < pts; i++)
             {
                 wposition nextpos = newpos + points[i];
-                nextpos[a] += vel[a];
+                nextpos[a] += vel[a] * timefactor;
                 /*tileid tid = 0;
                 if (nextpos.y >= 0 && nextpos.y < chunkheight) tid = chunkcontroller::gettileid(nextpos);
                 if (!tiledata::ispassable(tid))
@@ -181,7 +181,7 @@ void physicsmanager::boxphysics(physicsobject& p, bool takefalldamage)
 
             if (passable)
             {
-                newpos[a] += vel[a];
+                newpos[a] += vel[a] * timefactor;
             }
             else
             {
@@ -219,7 +219,7 @@ void physicsmanager::boxphysics(physicsobject& p, bool takefalldamage)
         if (abs(vel[2]) < 0.02f) vel[2] = 0.0f;
     }
 
-    p.vel = vel / timefactor;
+    p.vel = vel;// / timefactor;
     p.position = newpos;
 
     //std::cout << "finitos\n";

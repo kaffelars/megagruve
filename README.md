@@ -56,6 +56,8 @@ Missing features:
 
 ## Screenshots
 
+![screenshot](https://github.com/kaffelars/megagruve/blob/main/screenshots/screenshot9.png)
+
 ![screenshot](https://github.com/kaffelars/megagruve/blob/main/screenshots/screenshot8.png)
 
 ![screenshot](https://github.com/kaffelars/megagruve/blob/main/screenshots/screenshot7.png)

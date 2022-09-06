@@ -6,6 +6,7 @@
 #include "shadercontroller.h"
 #include "map_obj.h"
 #include "mainchar.h"
+#include "chunklightcontainer.h"
 
 class chunk
 {
@@ -32,79 +33,76 @@ class chunk
 
         int32_t counter{0};
 
-        std::vector<glm::ivec4> outsidetiles[9]; //for tiles to add to neighbouring chunks (from decoration) 0 = -x,-y, 1 = 0, -y, 2 = +x, -y etc.
-        bool anyoutsidetiles {false};
-        void addoutsidetiles(chunkpos cpos, ctilepos ctpos, tileid tid);
 
-
+        //coords
         chunkpos cpos;
-        chunkmesh cmesh[chunkmeshynum][2];
-        chunkmesh wmesh[chunkmeshynum][2];
-
         uint32_t get2dcoord(chtilepos tpos);
         uint32_t get3dcoord(ctilepos tpos);
         uint32_t gettilecoord(ctilepos tpos);
         uint32_t getbiomecoord(chtilepos thpos);
+        dimensions cdims;
 
+        //meshing
+        chunkmesh cmesh[chunkmeshynum][2];
+        chunkmesh wmesh[chunkmeshynum][2];
         uint8_t getactivemesh(uint8_t meshnum);
         uint8_t getinactivemesh(uint8_t meshnum);
         void toggleactivemesh(uint8_t meshnum);
-
         void setallvbos();
         void setonevbo(uint8_t meshnum);
         void setremeshedvbos();
-
-        bool safetodelete();
-
-        dimensions cdims;
-
         void setremesh(int toremesh, bool meshthis = true);
         void setremeshy(ytile ycoord);
         bool getremesh(int toremesh);
-
         bool needsremesh();
 
-        void settag(ctags tag);
-        ctags gettag();
-
+        //tiles
         tileid gettile(ctilepos tpos);
         void settile(ctilepos tpos, tileid value);
         void trysettile(ctilepos tpos, tileid value);
-
         void addtile(tileid value);
+        std::vector<glm::ivec4> outsidetiles[9]; //for tiles to add to neighbouring chunks (from decoration) 0 = -x,-y, 1 = 0, -y, 2 = +x, -y etc.
+        bool anyoutsidetiles {false};
+        void addoutsidetiles(chunkpos cpos, ctilepos ctpos, tileid tid);
 
+        //highest - fix
         void addhighest(ytile value);
         ytile gethighest(chtilepos thpos);
         void sethighest(chtilepos thpos, ytile y);
 
+        //biome
         void setbiome(biomedata b, chtilepos chpos);
         biomedata getbiome(chtilepos chpos);
         biomedata getbiome(ctilepos ctpos);
         void addbiome();
 
+        //light
         void addlight();
-
         void setsunlight(ctilepos tpos, uint8_t value);
         uint8_t getsunlight(ctilepos tpos);
-
+        uint8_t getinterpolatedsunlight(float x, float y, float z, uint8_t direction);
+        void fillsunlayer(uint8_t layer, uint8_t value);
         tlight getalllight(ctilepos tpos);
 
         void render();
         void renderwater();
         void deletechunk();
 
+        //chunk objs
         std::unordered_map<uint32_t, std::shared_ptr<map_obj>> chunk_objs;
         void addchunkobj(ctilepos ctpos, uint8_t mapobjid, uint8_t forwardside);
         void interactobj(ctilepos ctpos, mainchar& mchar);
         bool tryinteractobj(ctilepos ctpos, mainchar& mchar);
         void removechunkobj(ctilepos ctpos);
+        std::shared_ptr<map_obj>& getmapobj(ctilepos ctpos);
 
+        //threading/tags
         bool allowstilewrites();
         bool allowstilereads();
         bool isready();
-
-        std::shared_ptr<map_obj>& getmapobj(ctilepos ctpos);
-
+        void settag(ctags tag);
+        ctags gettag();
+        bool safetodelete();
 
 
     protected:
@@ -122,9 +120,12 @@ class chunk
         std::vector<tileid> tileids;
         //std::vector<uint8_t> tilesides;
         std::vector<uint8_t> highesttile;
-        std::vector<tlight> tilelight;
+        //std::vector<tlight> tilelight;
 
         bool remesh[chunkmeshynum];
+
+        chunklightcontainer sunlight;
+        //chunklightcontainer tilelight;
 
 
         bool activecmesh[chunkmeshynum];

@@ -8,25 +8,68 @@ namespace chunklight
 
 }
 
-void chunklight::generatesunlight(chunk& c)
+void chunklight::generatesunlight(chunk& c) //initial full sunlight
 {
-    for (htile z = -1; z < chunkwidth+1; z++)
+    tileid tid = 0;
+    int sunlightlayers = 0;
+    int firstblocklayer = 0;
+
+    for (ytile y = 0; y < chunkheight; y++) //combines
     {
-        for (htile x = -1; x < chunkwidth+1; x++)
+        for (htile z = -1; z < chunkwidth+1; z++)
         {
-            c.setsunlight(ctilepos(x,0,z), 255);
+            for (htile x = -1; x < chunkwidth+1; x++)
+            {
+                tid = c.gettile(ctilepos(x,y,z));
+                if (tid != 0)
+                {
+                    if (tiledata::gettileinfo(tid).lightattenuation > 0)//hit first non fully transparent block
+                    {
+                        firstblocklayer = y;
+                        goto nextstep; //evil goto!
+                    }
+                }
+            }
+        }
+        sunlightlayers ++;
+        if (sunlightlayers == 4)
+        {
+            sunlightlayers = 0;
+            c.fillsunlayer(y/4, 255);
         }
     }
 
-    //generate sunlight et al
-    for (htile z = -1; z < chunkwidth+1; z++)
+    nextstep:
+
+    if ((firstblocklayer&3) != 0)
     {
-        for (htile x = -1; x < chunkwidth+1; x++)
+        for (ytile y = firstblocklayer-(firstblocklayer&3); y < firstblocklayer; y++)
         {
-            updatesunlight(c, ctilepos{x, 1, z}, true);
+            for (htile z = -1; z < chunkwidth+1; z++)
+            {
+                for (htile x = -1; x < chunkwidth+1; x++)
+                {
+                    c.setsunlight(ctilepos(x,y,z), 255);
+                }
+            }
         }
     }
-    //
+
+    if (firstblocklayer > 0) //should never be false
+    {
+        //generate sunlight et al
+        for (htile z = -1; z < chunkwidth+1; z++)
+        {
+            for (htile x = -1; x < chunkwidth+1; x++)
+            {
+                updatesunlight(c, ctilepos{x, firstblocklayer, z}, true);
+            }
+        }
+    }
+    else
+    {
+        std::cout << "(chunklight::generatesunlight) block(s) detected on y=0?!?!\n";
+    }
 }
 
 void chunklight::updatesunlight(chunk& c, ctilepos ctpos, bool initial) //dette funker bare av og til
@@ -48,7 +91,7 @@ void chunklight::updatesunlight(chunk& c, ctilepos ctpos, bool initial) //dette 
 
         c.setsunlight(currentpos, sunlight);
 
-        if (!initial) c.setremeshy(currentpos.y); //for å unngå at remesh trigges når chunk genereres
+        if (!initial) c.setremeshy(currentpos.y); //avoid remesh on chunk gen
 
         if (sunlight <= 0) break;
     }
