@@ -7,6 +7,19 @@ namespace inventorymanager
 
 }
 
+bool inventorymanager::movealltoinv2(inventory& inv1, int32_t invslot1, inventory& inv2)
+{
+    inventory::invitem i1 = inv1.getinvitem(invslot1);
+    inventory::invitem i2 = inv2.additem(i1);
+
+    inv1.setinvitem(invslot1, i2);
+
+    if (i1.quantity != i2.quantity)
+        return true;//something got moved
+    else
+        return false;//nope
+}
+
 bool inventorymanager::moveonlyone(inventory& inv1, int32_t invslot1, inventory& inv2, int32_t invslot2)
 {
     inventory::invitem i1 = inv1.getinvitem(invslot1);

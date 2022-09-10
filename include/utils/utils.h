@@ -9,6 +9,7 @@ namespace utils
 
     float packnormal(glm::vec3 normal); //må være normalisert
     float packnormal(float x, float y, float z);
+    uint8_t pack4bitint(uint8_t fourbitone, uint8_t fourbittwo);
 
     float packrgb(glm::vec3 rgb);
 

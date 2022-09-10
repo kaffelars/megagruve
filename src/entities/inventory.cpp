@@ -134,9 +134,8 @@ uint32_t inventory::getinvsize()
     return invsize;
 }
 
-bool inventory::additem(invitem itemtoadd) //returner overskuddsitems hvis f.eks. en halv stack får plass istedenfor bool
+inventory::invitem inventory::additem(invitem itemtoadd) //returner overskuddsitems hvis f.eks. en halv stack får plass istedenfor bool
 {
-    bool itemadded = false;
     int index = 0;
     //sjekk om den kan adderes først
     for (invitem& i : invitems)
@@ -156,24 +155,29 @@ bool inventory::additem(invitem itemtoadd) //returner overskuddsitems hvis f.eks
         }
     }
 
-    if (itemtoadd.quantity > 0) //hvis noe er igjen, putt evt. resten i empty slot
+    if (itemtoadd.quantity > 0) //if anything left, try add to empty slot
     {
         for (invitem& i : invitems)
         {
             if (i.quantity == 0) //empty slot
             {
                 i = itemtoadd;
-                itemadded = true;
+                itemtoadd.quantity = 0;
                 break;
             }
             index++;
         }
     }
 
-    return itemadded;
+    if (itemtoadd.quantity > 0) //if anything still left, return it
+    {
+        return itemtoadd;
+    }
+
+    return emptyinvitem;
 }
 
-bool inventory::additem(std::string itemid, uint32_t quantity)
+inventory::invitem inventory::additem(std::string itemid, uint32_t quantity)
 {
     uint32_t itemidnum = itemmanager::getitemid(itemid);
     return additem(invitem{itemidnum, quantity});

@@ -21,13 +21,13 @@ obj_chest::~obj_chest()
     //dtor
 }
 
-void obj_chest::addmodel(ctilepos ctp, chunkmesh& cmesh)
+void obj_chest::addmodel(ctilepos ctp, chunkmesh& cmesh, chunklightcontainer& sunlight)
 {
     //tiledata::addblock(ctp, 2, 0, 255, 255, notint, 0, 0, notint, cmesh);
     if (lidopen)
-        map_obj_models::addmodel(cmesh, ctp, 1, forwardside);
+        map_obj_models::addmodel(cmesh, sunlight, ctp, 1, forwardside);
     else
-        map_obj_models::addmodel(cmesh, ctp, 0, forwardside);
+        map_obj_models::addmodel(cmesh, sunlight, ctp, 0, forwardside);
 }
 
 void obj_chest::interact(mainchar& interactor)
@@ -56,4 +56,9 @@ void obj_chest::destroy()
 {
     //drop inv
     //husk å fixe remove map_obj fra chunk
+}
+
+uint8_t obj_chest::lightattenuation()
+{
+    return 15;
 }

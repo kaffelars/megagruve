@@ -9,6 +9,7 @@ namespace inventorymanager
     void movehalfstack(inventory& inv1, int32_t invslot1, inventory& inv2, int32_t invslot2);
     void swapitems(inventory& inv1, int32_t invslot1, inventory& inv2, int32_t invslot2);
     bool moveonlyone(inventory& inv1, int32_t invslot1, inventory& inv2, int32_t invslot2);
+    bool movealltoinv2(inventory& inv1, int32_t invslot1, inventory& inv2);
 };
 
 #endif // INVENTORYMANAGER_H

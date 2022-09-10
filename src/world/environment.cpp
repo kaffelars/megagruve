@@ -9,6 +9,7 @@
 #include "texturemanager.h"
 #include "utils.h"
 #include "particlemanager.h"
+#include "randfunc.h"
 
 namespace environment
 {
@@ -21,6 +22,10 @@ namespace environment
     float cloudcover = 0.2f;
 
     float wind = 0.1f;
+
+    GLuint starsid;
+    bool starsinitialized = false;
+    void initializestars();
 
     uint32_t raintexid = 0;
 
@@ -56,6 +61,19 @@ namespace environment
     rgbcolor{1.0f, 0.2f, 0.2f}, //18
     rgbcolor{0.0f, 0.0f, 0.1f}, //21
     rgbcolor{0.0f, 0.0f, 0.1f}}; //24
+
+    float stars[9] =
+    {
+        1.0f,
+        1.0f,
+        0.3f,
+        0.0f,
+        0.0f,
+        0.0f,
+        0.3f,
+        1.0f,
+        1.0f,
+    };
 
 
     float getcloudfactor();
@@ -105,6 +123,121 @@ void environment::initialize()
 {
     raintexid = texturemanager::gettiletexturenumber("rain");
     resetenvironment();
+    if (!starsinitialized) initializestars();
+}
+
+void environment::bindstarstexture(int texid)
+{
+    glActiveTexture(GL_TEXTURE0+texid);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, starsid);
+}
+
+void environment::initializestars()
+{
+    glGenTextures(1, &starsid);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, starsid);
+
+    std::vector<uint8_t> stars[6];
+
+    for (int a = 0; a < 6; a++)
+    {
+        for (int x = 0; x < 512; x++)
+        {
+            for (int y = 0; y < 512; y++)
+            {
+                stars[a].push_back(0);
+            }
+        }
+    }
+
+    int ex, ey, p;
+
+    for (float a = 1; a < 1000; a++)
+    {
+        float ex = randfunc::noise(a * 6.49f, a * 2.11f, 0.013f);
+        float ey = randfunc::noise(a * 2.91f, a * 5.77f, 0.013f);
+        float ez = randfunc::noise(a * 2.121f, a * 1.31f, 0.013f);
+
+        glm::vec3 sv = glm::normalize(glm::vec3(ex, ey, ez));
+
+        glm::vec3 asv;
+        asv.x = std::fabs(sv.x);
+        asv.y = std::fabs(sv.y);
+        asv.z = std::fabs(sv.z);
+
+        p = -1;
+
+        glm::vec2 exey = glm::vec2(0);
+
+        if (asv.x > asv.y && asv.x > asv.z)
+        {
+            exey = glm::vec2(sv.z, sv.y);
+
+            if (sv.x > 0.0f)
+                p = 0;
+            else
+                p = 1;
+        }
+
+        if (asv.y > asv.x && asv.y > asv.z)
+        {
+            exey = glm::vec2(sv.x, sv.z);
+
+            if (sv.y > 0.0f)
+                p = 2;
+            else
+                p = 3;
+        }
+
+        if (asv.z > asv.x && asv.z > asv.y)
+        {
+            exey = glm::vec2(sv.x, sv.y);
+            if (sv.z > 0.0f)
+                p = 4;
+            else
+                p = 5;
+        }
+
+        exey = glm::normalize(exey);
+
+        ex = 256 - 256 * exey.x;
+        ey = 256 - 256 * exey.y;
+
+        float star = (randfunc::noise(234.0f + a * 3.331f, 182.0f + a * 4.97f, 0.023f) + 1.0f) / 2.0f;
+
+        if (p >= 0)
+        {
+            stars[p][ex + 512*ey] = star*255.0f;
+        }
+    }
+
+    stars[0][222 + 512*371] = 255;
+    stars[0][232 + 512*373] = 255;
+    stars[0][240 + 512*365] = 255;
+    stars[0][250 + 512*360] = 245;
+    stars[0][251 + 512*350] = 255;
+    stars[0][265 + 512*349] = 255;
+    stars[0][268 + 512*359] = 255;
+
+
+    //fill
+    for (int a = 0; a < 6; a++)
+    {
+        glTexImage2D(
+        GL_TEXTURE_CUBE_MAP_POSITIVE_X + a,
+        0, GL_RED, 512, 512, 0, GL_RED, GL_UNSIGNED_BYTE, &stars[a][0]
+        );
+    }
+
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+
+    starsinitialized = true;
 }
 
 void environment::toggletimemoving()
@@ -201,6 +334,18 @@ rgbcolor environment::getskycolor()
     return skycolors[ptone] * (1.0f - factor) + skycolors[pttwo] * (factor);
 }
 
+float environment::getstars()
+{
+    float curtime = getcurrenttime();
+
+    uint8_t ptone = (curtime / 3);
+    uint8_t pttwo = ptone + 1;
+
+    float factor = (curtime - (3.0f * ptone)) / 3.0f;
+
+    return stars[ptone] * (1.0f - factor) + stars[pttwo] * (factor);
+}
+
 rgbcolor environment::getfogcolor()
 {
     float curtime = getcurrenttime();
@@ -231,6 +376,7 @@ void environment::renderskybox()
     rgbcolor skycolor = getskycolor();
 
     texturemanager::bindcloudtexture(0);
+    bindstarstexture(1);
 
     //textureloader::bind2dtexture(0,0);
 
@@ -241,6 +387,10 @@ void environment::renderskybox()
     glUniform3f(shadercontroller::getuniformid("suncolor"), suncolor.x, suncolor.y, suncolor.z);
     glUniform3f(shadercontroller::getuniformid("fogcolor"), fogcolor.x, fogcolor.y, fogcolor.z);
     glUniform2f(shadercontroller::getuniformid("cloudcover"), getcloudcover(), cloudposition);
+    glUniform1f(shadercontroller::getuniformid("stars"), getstars());
+
+    glUniform1i(shadercontroller::getuniformid("cloudtexture"), 0);
+    glUniform1i(shadercontroller::getuniformid("starstexture"), 1);
 
     skybox::render();
 }

@@ -107,7 +107,7 @@ void scenegame::render()
 
     if (showinfobox)
     {
-        uielement::beginwindow("infobox", glm::vec2(1.0f), glm::vec2(190.0f, 220.0f));
+        uielement::beginwindow("infobox", glm::vec2(1.0f), glm::vec2(190.0f, 240.0f));
 
         wposition mcpos = maincharcontroller::getmaincharposition();
         std::stringstream infotext;
@@ -137,6 +137,7 @@ void scenegame::render()
             {
                 chunk::biomedata biome = c.getbiome(ctpos);
                 infotext << "temp: " << int(biome.temperature) << " humid: " << int(biome.humidity) << "\n";
+                infotext << "light: " << int(c.getsunlight(ctpos)) << "\n";
             }
         }
         infotext << "loaded: " << chunkcontroller::loadedchunksnum() << "\nrendered: " << chunkcontroller::getchunksrendered() << "\n";

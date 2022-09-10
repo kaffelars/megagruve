@@ -23,6 +23,7 @@ namespace chunkcontroller
 
     void meshwholechunk(chunk& c);
     void meshchunkpart(chunk& c, uint8_t cpart);
+    void meshchunkpart2(chunk& c, uint8_t cpart);
     void remeshchunk(chunk& c);
 
     void addremesh(chunkpos cpos, ctilepos ctpos);

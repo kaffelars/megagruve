@@ -18,6 +18,7 @@ class obj_child : public map_obj
         bool isindirectlyinteractable();
 
         bool passable();
+        uint8_t lightattenuation();
 
     protected:
 

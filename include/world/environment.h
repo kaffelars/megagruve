@@ -15,11 +15,13 @@ namespace environment
     rgbcolor getskycolor();
     rgbcolor getfogcolor();
     rgbcolor getsuncolor();
+    float getstars();
 
     void initialize();
     void resetenvironment();
 
     void sendrendererdata();
+    void bindstarstexture(int texid = 0);
 
     void changetime(float timetochange);
 

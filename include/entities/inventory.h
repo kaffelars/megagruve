@@ -30,8 +30,8 @@ class inventory
         invitem emptyinvitem;
         void setinvitem(int32_t position, invitem item);
 
-        bool additem(invitem itemtoadd);
-        bool additem(std::string itemid, uint32_t quantity);
+        invitem additem(invitem itemtoadd);
+        invitem additem(std::string itemid, uint32_t quantity);
 
         std::vector<invitem> invitems;
 

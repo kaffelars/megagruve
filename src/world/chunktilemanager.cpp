@@ -237,7 +237,7 @@ bool chunktilemanager::changectile(chunkpos cpos, ctilepos ctpos, tileid newtile
                 }
             }
 
-
+            chunklight::updatesunlight(c, ctpos, false);
 
             return true;
         }

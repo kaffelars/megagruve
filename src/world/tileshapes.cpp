@@ -96,6 +96,9 @@ void tiledata::initializetileshapes()
     t.uv[5].push_back(uvpos{1, 0});
     t.uv[5].push_back(uvpos{0, 0});
 
+    for (int a = 0; a < 6; a++)
+        t.hasside[a] = true;
+
     tileshapes.push_back(t);
 
     tileshape x;
@@ -143,6 +146,7 @@ void tiledata::initializetileshapes()
     for (int a =0; a < 24; a++)
     {
         x.normals.push_back(vnorm{0.0f, -1.0f, 0.0f});
+        x.slsides.push_back(static_cast<uint8_t>(tilesideid::ym));
     }
 
     for (int a = 0; a < 2; a++)
@@ -162,7 +166,7 @@ void tiledata::initializetileshapes()
         x.uv[6].push_back(uvpos{1, 1});
     }
 
-
+    x.hasside[6] = true;
     x.onlyanyways = true;
     x.hasanyways = true;
 
@@ -255,19 +259,58 @@ void tiledata::initializetileshapes()
     cactus.uv[6].push_back(uvpos{0, 0});
 
     for (int a = 0; a < 6; a++)
+    {
         cactus.normals.push_back(sidenormals[0]);
-    for (int a = 0; a < 6; a++)
-        cactus.normals.push_back(sidenormals[1]);
-    for (int a = 0; a < 6; a++)
-        cactus.normals.push_back(sidenormals[4]);
-    for (int a = 0; a < 6; a++)
-        cactus.normals.push_back(sidenormals[5]);
+        cactus.slsides.push_back(static_cast<uint8_t>(tilesideid::xm));
+    }
 
+    for (int a = 0; a < 6; a++)
+    {
+        cactus.slsides.push_back(static_cast<uint8_t>(tilesideid::xp));
+        cactus.normals.push_back(sidenormals[1]);
+    }
+
+    for (int a = 0; a < 6; a++)
+    {
+        cactus.normals.push_back(sidenormals[4]);
+        cactus.slsides.push_back(static_cast<uint8_t>(tilesideid::zm));
+    }
+
+    for (int a = 0; a < 6; a++)
+    {
+        cactus.normals.push_back(sidenormals[5]);
+        cactus.slsides.push_back(static_cast<uint8_t>(tilesideid::zp));
+    }
+
+    cactus.hasside[2] = true;
+    cactus.hasside[3] = true;
+    cactus.hasside[6] = true;
     cactus.hasanyways = true;
     cactus.onlyanyways = false;
 
     tileshapes.push_back(cactus);
+
+    //water (underside ym)
+
+    for (int a = 0; a < 6; a++)
+    {
+        t.vertexes[2].push_back(t.vertexes[3][a]);
+        t.uv[2].push_back(t.uv[3][a]);
+    }
+
+    tileshapes.push_back(t);
 }
+
+tileshape& tiledata::gettileshapedata(int id)
+{
+    return tileshapes[id];
+}
+
+const std::vector<tileshape>& tiledata::gettileshapesdata()
+{
+    return tileshapes;
+}
+
 
 void tiledata::addside(ctilepos cpos, tileid id, uint32_t bshape, uint8_t tileside, uint8_t sunlight[4], rgbcolor255 light[4], uint8_t glow, uint8_t ambocc[4], rgbcolor255 tint[4], chunkmesh& cmesh, bool overlay)
 {

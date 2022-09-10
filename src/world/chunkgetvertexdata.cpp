@@ -82,6 +82,27 @@ uint8_t chunkgetvertexdata::getambaround(chunk& c, ctilepos vertex, tiledata::ti
     return amb;
 }
 
+uint8_t chunkgetvertexdata::getambocc(chunk& c, ctilepos vertex)
+{
+    uint8_t ambocc = 0;
+
+    for (int yy = 0; yy < 2; yy++)
+    {
+        for (int xx = 0; xx < 2; xx++)
+        {
+            for (int zz = 0; zz < 2; zz++)
+            {
+                if (!tiledata::isambocc(c.gettile(vertex + ctilepos(-xx, -yy, -zz)))) ambocc += 15;
+            }
+        }
+    }
+
+    ambocc /= 4;
+    if (ambocc > 15) ambocc = 15;
+
+    return ambocc;
+}
+
 
 void chunkgetvertexdata::getbiometintvertexes(chunk& c, ctilepos ctpos, tiledata::tilesides ts, rgbcolor255 (&rgb)[4])
 {
@@ -96,6 +117,11 @@ void chunkgetvertexdata::getbiometintvertexes(chunk& c, ctilepos ctpos, tiledata
     {
         rgb[a] = getbiomearound(c, ctpos + ctilepos{around[a].x, 0, around[a].y});
     }
+}
+
+void chunkgetvertexdata::getbiometintvertex(chunk& c, ctilepos vertexpos, rgbcolor255& rgb)
+{
+    rgb = getbiomearound(c, vertexpos);
 }
 
 rgbcolor255 chunkgetvertexdata::getbiomearound(chunk& c, ctilepos ctpos)

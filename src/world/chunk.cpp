@@ -214,7 +214,17 @@ uint8_t chunk::getsunlight(ctilepos tpos)
 
 uint8_t chunk::getinterpolatedsunlight(float x, float y, float z, uint8_t direction)
 {
-    sunlight.getinterpolatedvalue(x,y,z,direction);
+    sunlight.getinterpolatedvalue(x+1,y,z+1,direction);
+}
+
+uint8_t chunk::getinterpolatedsunlight2(float x, float y, float z)
+{
+    sunlight.getinterpolatedvalue2(x+1,y,z+1);
+}
+
+uint8_t chunk::getsunlightcorner(uint8_t x, uint8_t y, uint8_t z)
+{
+    sunlight.getcorner(x+1,y,z+1);
 }
 
 void chunk::fillsunlayer(uint8_t layer, uint8_t value)

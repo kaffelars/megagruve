@@ -14,7 +14,7 @@ namespace tiledata
 
     enum blockshape
     {
-        SHAPE_BLOCK, SHAPE_X, SHAPE_CACTUS, SHAPE_STAIRS, SHAPE_SLAB, SHAPE_WATER, SHAPE_NONE, SHAPE_CUSTOM
+        SHAPE_BLOCK, SHAPE_X, SHAPE_CACTUS, SHAPE_WATER, SHAPE_STAIRS, SHAPE_SLAB, SHAPE_NONE, SHAPE_CUSTOM
     };
 
     enum tilesides
@@ -54,6 +54,8 @@ namespace tiledata
     //tileinfo& gettileinfo(uint32_t id);
     tiletype gettiletype(tileid tile);
     blockshape gettileshape(tileid tile);
+    tileshape& gettileshapedata(int id);
+    const std::vector<tileshape>& gettileshapesdata();
 
     bool isinitialized();
 

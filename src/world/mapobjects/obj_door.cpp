@@ -14,13 +14,13 @@ obj_door::~obj_door()
     //dtor
 }
 
-void obj_door::addmodel(ctilepos ctp, chunkmesh& cmesh)
+void obj_door::addmodel(ctilepos ctp, chunkmesh& cmesh, chunklightcontainer& sunlight)
 {
     //tiledata::addblock(ctp, 2, 0, 255, 255, notint, 0, 0, notint, cmesh);
     if (isopen)
-        map_obj_models::addmodel(cmesh, ctp, 6, forwardside);
+        map_obj_models::addmodel(cmesh, sunlight, ctp, 6, forwardside);
     else
-        map_obj_models::addmodel(cmesh, ctp, 5, forwardside);
+        map_obj_models::addmodel(cmesh, sunlight, ctp, 5, forwardside);
 }
 
 bool obj_door::isindirectlyinteractable()
@@ -37,4 +37,9 @@ void obj_door::interact(mainchar& interactor)
 bool obj_door::passable()
 {
     return isopen;
+}
+
+uint8_t obj_door::lightattenuation()
+{
+    return 15;
 }

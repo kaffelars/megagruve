@@ -14,9 +14,9 @@ obj_button::~obj_button()
     //dtor
 }
 
-void obj_button::addmodel(ctilepos ctp, chunkmesh& cmesh)
+void obj_button::addmodel(ctilepos ctp, chunkmesh& cmesh, chunklightcontainer& sunlight)
 {
-    map_obj_models::addmodel(cmesh, ctp, 7, forwardside);
+    map_obj_models::addmodel(cmesh, sunlight, ctp, 7, forwardside);
 }
 
 void obj_button::interact(mainchar& interactor)
@@ -27,4 +27,9 @@ void obj_button::interact(mainchar& interactor)
 bool obj_button::passable()
 {
     return true;
+}
+
+uint8_t obj_button::lightattenuation()
+{
+    return 0;
 }

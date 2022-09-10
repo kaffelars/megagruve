@@ -13,9 +13,9 @@ obj_ctable::~obj_ctable()
     //dtor
 }
 
-void obj_ctable::addmodel(ctilepos ctp, chunkmesh& cmesh)
+void obj_ctable::addmodel(ctilepos ctp, chunkmesh& cmesh, chunklightcontainer& sunlight)
 {
-    map_obj_models::addmodel(cmesh, ctp, 4, forwardside);
+    map_obj_models::addmodel(cmesh, sunlight, ctp, 4, forwardside);
 }
 
 void obj_ctable::interact(mainchar& interactor)
@@ -27,4 +27,9 @@ void obj_ctable::destroy()
 {
     //drop inv
     //husk å fixe remove map_obj fra chunk
+}
+
+uint8_t obj_ctable::lightattenuation()
+{
+    return 8;
 }

@@ -119,7 +119,7 @@ void maincharcontroller::renderselection()
         }
         else if (settings::getisetting(settings::SET_BBOX) && getselectionmode() == SEL_AIR)
         {
-            vpos += sideoffsets[static_cast<int>(tilesidehover)];
+            //vpos += sideoffsets[static_cast<int>(tilesidehover)];
             glUniform3f(shadercontroller::getuniformid("vpos"), vpos.x, vpos.y, vpos.z);
             glUniform3f(shadercontroller::getuniformid("rgb"), 0.8f, 0.8f, 1.0f);
             selection.render();
@@ -192,7 +192,7 @@ void maincharcontroller::initialize()
 
     for (int a = 0; a < 4; a++)
     {
-        tiledata::addblock(ctilepos(0,0,0), tiledata::gettileid("t_destroy"+std::to_string(a+1)), tiledata::SHAPE_BLOCK, 255, 128, rgbcolor255(0,0,0), 0, 0, rgbcolor255(255,255,255), destructorblock[a]);
+        tiledata::addblock(ctilepos(0,0,0), tiledata::gettileid("t_destroy"+std::to_string(a+1)), tiledata::SHAPE_BLOCK, 255, 15, rgbcolor255(0,0,0), 0, 0, rgbcolor255(127,127,127), destructorblock[a]);
         destructorblock[a].setvbos();
     }
 }
@@ -225,7 +225,15 @@ void maincharcontroller::movemainchartofloor() //used when starting new world
 
 wtilepos maincharcontroller::gettilehover()
 {
-    return tilehover;
+    wtilepos selpos = tilehover;
+
+    wposition vpos = wposition(selpos);// - mchar.geteyeposition();
+
+    if (getselectionmode() == SEL_AIR)
+    {
+        vpos += sideoffsets[static_cast<int>(tilesidehover)];
+    }
+    return vpos;
 }
 
 wtilepos maincharcontroller::gettilehoverentityposition()
@@ -327,17 +335,10 @@ void maincharcontroller::useselecteditem()
         {
             mchar.setitemusecooldown(mchar.actionbarselection, iteminfo.speed);
 
-            /*if (iteminfo.itemtype == itemmanager::I_BLOCK)
-            {
-                mchar.usecurrentlyselecteditem(false);
-                //tilehoverentity.resethealth(); //funker ikke fordi block blir updated på et senere tidspunkt
-            }*/
 
             if ((iteminfo.itemtype == itemtype::consumable || iteminfo.itemtype == itemtype::block || iteminfo.itemtype == itemtype::placeableobject || iteminfo.itemtype == itemtype::flag))
             {
                 mchar.usecurrentlyselecteditem(true);
-                //iitem.quantity -= 1;
-                //uiingame::updateactionbaritems(true); //litt krøkkete å ha denne her? ha heller en func i uiingame som detekterer action bar changes
             }
         }
     }
@@ -352,24 +353,12 @@ void maincharcontroller::update()
 
     mchar.lifeform::update();
 
-    /*glm::vec4 mdata = renderer::getmousedata();
-
-    tileinteract = chunkcoords::wpostowtilepos(wposition(mdata.x, mdata.y, mdata.z) + (getviewdir() / 10.0f));
-
-    if (getselectionmode() == SEL_BLOCK)
-        tilehover = chunkcoords::wpostowtilepos(wposition(mdata.x, mdata.y, mdata.z) + (getviewdir() / 10.0f)); //negativ viewdir hvis lufttile skal selectes (SEL_AIR)
-    else
-        tilehover = chunkcoords::wpostowtilepos(wposition(mdata.x, mdata.y, mdata.z) - (getviewdir() / 10.0f));*/
 
     itemtype i = getcurrentlyselecteditemtype();
 
     blocktracer::hitblock hit = blocktracer::traceblocks(mchar.geteyeposition(), mchar.getviewdir(), 6.0f, (i == itemtype::block || i == itemtype::placeableobject) ? true: false);
 
-    /*
-    chunkpos cpos {chunkpos{0,0}};
-        ctilepos ctpos {ctilepos{0,-1,0}};
-        tilesideid hitside {tilesideid::xm};
-    */
+
 
     if (chunkcoords::withinworld(hit.ctpos))
     {

@@ -25,6 +25,13 @@ namespace utils
         return packu2f(normal.x*255, normal.y*255, normal.z * 255);
     }
 
+    uint8_t pack4bitint(uint8_t fourbitone, uint8_t fourbittwo)
+    {
+        uint8_t returnval = fourbittwo;
+        returnval = (returnval << 4) + fourbitone;
+        return returnval;
+    }
+
     float packnormal(float x, float y, float z)
     {
         return packnormal(glm::vec3(x,y,z));

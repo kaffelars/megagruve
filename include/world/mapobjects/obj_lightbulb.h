@@ -10,8 +10,9 @@ class obj_lightbulb : public map_obj
         obj_lightbulb(ctilepos ctp, chunkpos cpo, uint8_t forw);
         virtual ~obj_lightbulb();
 
-        void addmodel(ctilepos ctp, chunkmesh& cmesh);
+        void addmodel(ctilepos ctp, chunkmesh& cmesh, chunklightcontainer& sunlight);
         bool passable();
+        uint8_t lightattenuation();
 
     protected:
 

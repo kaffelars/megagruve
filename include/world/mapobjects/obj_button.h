@@ -11,9 +11,10 @@ class obj_button : public map_obj
         obj_button(ctilepos ctp, chunkpos cpo, uint8_t forw);
         virtual ~obj_button();
 
-        void addmodel(ctilepos ctp, chunkmesh& cmesh);
+        void addmodel(ctilepos ctp, chunkmesh& cmesh, chunklightcontainer& sunlight);
 		void interact(mainchar& interactor);
 		bool passable();
+		uint8_t lightattenuation();
 
     protected:
 

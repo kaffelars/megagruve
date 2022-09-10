@@ -4,6 +4,7 @@
 #include "biomecontroller.h"
 #include "chunkcoords.h"
 #include "chunkgetvertexdata.h"
+#include "tileshape.h"
 
 namespace chunkcontroller
 {
@@ -15,7 +16,7 @@ void chunkcontroller::meshwholechunk(chunk& c)
     //std::cout << "meshin";
     for (int a = 0; a < chunkmeshynum; a++)
     {
-        meshchunkpart(c, a);
+        meshchunkpart2(c, a);
     }
 
     threadcounter--;
@@ -29,13 +30,123 @@ void chunkcontroller::remeshchunk(chunk& c)
     {
         if (c.getremesh(a))
         {
-            meshchunkpart(c, a);
+            meshchunkpart2(c, a);
         }
     }
 
     threadcounter--;
 
     c.settag(chunk::C_REMESHED);
+}
+
+void chunkcontroller::meshchunkpart2(chunk& c, uint8_t cpart)
+{
+    ytile starty = cpart * chunkmeshheight;
+    ytile endy = (cpart + 1) * chunkmeshheight;
+
+    rgbcolor255 tint = notint;
+    tileid neighbour;
+    uint8_t glow;
+    tiledata::blockshape tshape;
+    tileid tid;
+    uint8_t sunlight;
+    uint8_t ambocc;
+
+    uint32_t texid;
+    uint32_t overlayid;
+
+    vpos datavpos;
+    vnorm datanorm;
+    uvpos datauv;
+
+    const std::vector<tileshape>& tileshapes = tiledata::gettileshapesdata();
+
+
+    for (ytile y = starty; y < endy; y++)
+    {
+        for (htile z = 0; z < chunkwidth; z++)
+        {
+            for (htile x = 0; x < chunkwidth; x++)
+            {
+                tid = c.gettile(ctilepos{x,y,z});
+
+                if (tid == 255) //map_obj
+                {
+                    c.getmapobj(ctilepos{x,y,z})->addmodel(ctilepos{x,y,z}, c.cmesh[cpart][c.getinactivemesh(cpart)], c.sunlight);
+                }
+                else if (!tiledata::isempty(tid))
+                {
+                    tshape = tiledata::gettileshape(tid);
+                    glow = tiledata::gettileinfo(tid).glow;
+                    //tint = {notint,notint,notint,notint};
+
+                    for (int a = 0; a < 7; a++)
+                    {
+                        if (tileshapes[tshape].hasside[a])
+                        {
+                            if (a == 6 || (y + sideoffsets[a].y > 0 && y + sideoffsets[a].y < 255))
+                            {
+                                if (a < 6) neighbour = c.gettile(ctilepos{x,y,z} + sideoffsets[a]);
+
+                                if (a == 6 || tiledata::renderside(tid, neighbour, a))
+                                {
+                                    texid = tiledata::gettileinfo(tid).sidetextureids[a == 6 ? 0:a];
+                                    overlayid = tiledata::gettileinfo(tid).overlaytextureids[a == 6 ? 0:a];
+
+
+                                    while (texid)
+                                    {
+                                        for (int b = 0; b < tileshapes[tshape].vertexes[a].size(); b++)
+                                        {
+                                            datavpos = tileshapes[tshape].vertexes[a][b] + vpos{x,y,z};
+                                            datauv = tileshapes[tshape].uv[a][b];
+
+                                            if (a == 6)
+                                            {
+                                                datanorm = tileshapes[tshape].normals[b];
+                                            }
+                                            else
+                                            {
+                                                datanorm = sideoffsets[a];
+                                            }
+
+
+                                            if (tiledata::gettileinfo(tid).biometint && !overlayid)
+                                                chunkgetvertexdata::getbiometintvertex(c, ctilepos{datavpos.x,datavpos.y,datavpos.z}, tint);
+                                            else
+                                                tint = notint;
+
+                                            //sunlight = c.getsunlight(ctilepos{x,y,z});
+                                            //std::cout << int(x) << " " << int(y) << " " << int(z) << "\n";
+                                            //sunlight = c.getinterpolatedsunlight(datavpos.x+(datanorm.x/2.0f),datavpos.y+(datanorm.y/2.0f),datavpos.z+(datanorm.z/2.0f),a);
+                                            ctilepos sun = glm::ivec3(std::round(datavpos.x), std::round(datavpos.y), std::round(datavpos.z));
+                                            sunlight = c.getsunlightcorner(sun.x,sun.y,sun.z);
+                                            ambocc = chunkgetvertexdata::getambocc(c, sun);
+
+                                            if (tid == 1)
+                                            {
+                                                c.wmesh[cpart][c.getinactivemesh(cpart)].
+                                                addvertex(datavpos, datanorm, datauv, texid, sunlight, rgbcolor255{0,0,0}, glow, ambocc, tint);
+                                            }
+                                            else
+                                            {
+                                                c.cmesh[cpart][c.getinactivemesh(cpart)].
+                                                addvertex(datavpos, datanorm, datauv, texid, sunlight, rgbcolor255{0,0,0}, glow, ambocc, tint);
+                                            }
+                                        }
+
+                                        texid = overlayid;
+                                        overlayid = 0;
+                                    }
+
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 void chunkcontroller::meshchunkpart(chunk& c, uint8_t cpart)
@@ -59,7 +170,7 @@ void chunkcontroller::meshchunkpart(chunk& c, uint8_t cpart)
 
                 if (tid == 255) //map_obj
                 {
-                    c.getmapobj(ctilepos{x,y,z})->addmodel(ctilepos{x,y,z}, c.cmesh[cpart][c.getinactivemesh(cpart)]);
+                    c.getmapobj(ctilepos{x,y,z})->addmodel(ctilepos{x,y,z}, c.cmesh[cpart][c.getinactivemesh(cpart)], c.sunlight);
                 }
                 else if (!tiledata::isempty(tid))
                 {
@@ -118,7 +229,7 @@ void chunkcontroller::meshchunkpart(chunk& c, uint8_t cpart)
                                 {
                                     tiledata::addside(ctilepos{x,y,z}, tid, 0, a, sunlight, light, glow, ambocc, tint, c.wmesh[cpart][c.getinactivemesh(cpart)]);
                                     if (a == 2)
-                                        tiledata::addside(ctilepos{x,y-1,z}, tid, 0, 3, sunlight, light, glow, ambocc, tint, c.wmesh[cpart][c.getinactivemesh(cpart)]);
+                                        tiledata::addside(ctilepos{x,y-1,z}, tid, 0, 3, sunlight, light, glow, ambocc, tint, c.wmesh[cpart][c.getinactivemesh(cpart)]); //water underside
                                 }
                                 else
                                     tiledata::addside(ctilepos{x,y,z}, tid, 0, a, sunlight, light, glow, ambocc, tint, c.cmesh[cpart][c.getinactivemesh(cpart)]);

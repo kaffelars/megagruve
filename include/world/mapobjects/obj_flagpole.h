@@ -11,9 +11,10 @@ class obj_flagpole : public map_obj
         obj_flagpole(ctilepos ctp, chunkpos cpo, uint8_t forw);
         virtual ~obj_flagpole();
 
-        void addmodel(ctilepos ctp, chunkmesh& cmesh);
+        void addmodel(ctilepos ctp, chunkmesh& cmesh, chunklightcontainer& sunlight);
 		void interact(mainchar& interactor);
 		void destroy();
+		uint8_t lightattenuation();
 
 		int32_t flagtextureid {-1};
 		int32_t flagitemid {-1};

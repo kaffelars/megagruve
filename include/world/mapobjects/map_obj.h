@@ -3,18 +3,20 @@
 
 #include "mainchar.h"
 #include "chunkmesh.h"
+#include "chunklightcontainer.h"
 
 class map_obj
 {
     public:
         map_obj(ctilepos ctp, chunkpos cpo, uint8_t forw);
 		virtual ~map_obj() = default;
-		virtual void addmodel(ctilepos ctp, chunkmesh& cmesh);
+		virtual void addmodel(ctilepos ctp, chunkmesh& cmesh, chunklightcontainer& sunlight);
 		virtual void interact(mainchar& interactor);
 		virtual void destroy();
 		virtual bool passable();
 		void remeshchunk();
 		virtual bool isindirectlyinteractable();
+		virtual uint8_t lightattenuation();
 
 		ctilepos ctpos {ctilepos{0,0,0}};
 		chunkpos cpos {chunkpos{0,0}};

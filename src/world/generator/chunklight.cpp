@@ -35,7 +35,7 @@ void chunklight::generatesunlight(chunk& c) //initial full sunlight
         if (sunlightlayers == 4)
         {
             sunlightlayers = 0;
-            c.fillsunlayer(y/4, 255);
+            c.fillsunlayer(y/4, 15);
         }
     }
 
@@ -49,7 +49,7 @@ void chunklight::generatesunlight(chunk& c) //initial full sunlight
             {
                 for (htile x = -1; x < chunkwidth+1; x++)
                 {
-                    c.setsunlight(ctilepos(x,y,z), 255);
+                    c.setsunlight(ctilepos(x,y,z), 15);
                 }
             }
         }
@@ -82,9 +82,18 @@ void chunklight::updatesunlight(chunk& c, ctilepos ctpos, bool initial) //dette 
     while (true)
     {
         currentpos.y ++;
-        if (currentpos.y == chunkheight) break;
+        if (currentpos.y == chunkheight-1) break;
         tileid tid = c.gettile(currentpos);
-        uint8_t lightattenuation = tiledata::gettileinfo(tid).lightattenuation;
+        uint8_t lightattenuation = 0;
+        if (tid == 255)
+        {
+            lightattenuation = c.getmapobj(currentpos)->lightattenuation();
+        }
+        else
+        {
+            lightattenuation = tiledata::gettileinfo(tid).lightattenuation;
+        }
+
 
         sunlight -= lightattenuation;
         if (sunlight <0) sunlight=0;
@@ -93,7 +102,7 @@ void chunklight::updatesunlight(chunk& c, ctilepos ctpos, bool initial) //dette 
 
         if (!initial) c.setremeshy(currentpos.y); //avoid remesh on chunk gen
 
-        if (sunlight <= 0) break;
+        if (sunlight <= 0 && c.getsunlight(currentpos + ctilepos(0,1,0)) == 0) break;
     }
 
 }

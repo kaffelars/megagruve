@@ -61,10 +61,11 @@ namespace uiinventory
     bool updateinvitems = false;
     bool initialized = false;
 
-    inventory* extrainventory;
+    inventory* extrainventory = nullptr;
 
     inventorytype invtype;
 }
+
 
 void uiinventory::showinventory(inventorytype itype)
 {
@@ -349,7 +350,19 @@ void uiinventory::click(int8_t clicktype)
 
     if (selectedslot.selectedinvslot == &i)
     {
+        if (i.invslot >= 0 && invtype == inventorytype::chest)
+        {
+            if (i.inv == extrainventory) //move from chest to mainchar inv
+            {
+                inventorymanager::movealltoinv2(*(selectedslot.selectedinvslot->inv), selectedslot.selectedinvslot->invslot, maincharcontroller::getmcharinventory());
+            }
+            else
+            {
+                inventorymanager::movealltoinv2(*(selectedslot.selectedinvslot->inv), selectedslot.selectedinvslot->invslot, *extrainventory);
+            }
+        }
         setselection(noslot);
+        updateinvitems = true;
         return; //mover til samme slot
     }
 

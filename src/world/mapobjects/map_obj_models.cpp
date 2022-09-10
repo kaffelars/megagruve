@@ -594,8 +594,10 @@ void map_obj_models::initialize()
     obj_models.push_back(button); //lightbulb 8
 }
 
-void map_obj_models::addmodel(chunkmesh& cm, ctilepos ctpos, uint32_t modelid, uint8_t forwardside, int32_t texid)
+void map_obj_models::addmodel(chunkmesh& cm, chunklightcontainer& sunlight, ctilepos ctpos, uint32_t modelid, uint8_t forwardside, int32_t texid)
 {
+    uint8_t sl = 0;
+
     for (int i = 0; i < obj_models[modelid].vertexes.size(); i++)
     {
         int index = i;
@@ -613,9 +615,10 @@ void map_obj_models::addmodel(chunkmesh& cm, ctilepos ctpos, uint32_t modelid, u
         int32_t textureid = obj_models[modelid].texids[index];
         if (texid != -1) textureid = texid;
 
-        //std::cout << "hamberder " << texid << "\n";
+        ctilepos sun = ctilepos(std::round(vp.x), std::round(vp.y), std::round(vp.z));
+        sl = sunlight.getcorner(sun.x+1,sun.y,sun.z+1);
 
-        cm.addvertex(vp, n, obj_models[modelid].uv[index], textureid, 255, notint, obj_models[modelid].glow[index], 0.0f, notint);//sunlight[corner], light[corner], glow, ambocc[corner], notint);
+        cm.addvertex(vp, n, obj_models[modelid].uv[index], textureid, sl, notint, obj_models[modelid].glow[index], 15, notint);//sunlight[corner], light[corner], glow, ambocc[corner], notint);
     }
 }
 

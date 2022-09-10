@@ -81,6 +81,8 @@ class chunk
         void setsunlight(ctilepos tpos, uint8_t value);
         uint8_t getsunlight(ctilepos tpos);
         uint8_t getinterpolatedsunlight(float x, float y, float z, uint8_t direction);
+        uint8_t getinterpolatedsunlight2(float x, float y, float z);
+        uint8_t getsunlightcorner(uint8_t x, uint8_t y, uint8_t z);
         void fillsunlayer(uint8_t layer, uint8_t value);
         tlight getalllight(ctilepos tpos);
 
@@ -104,6 +106,7 @@ class chunk
         ctags gettag();
         bool safetodelete();
 
+        chunklightcontainer sunlight;
 
     protected:
 
@@ -124,7 +127,7 @@ class chunk
 
         bool remesh[chunkmeshynum];
 
-        chunklightcontainer sunlight;
+
         //chunklightcontainer tilelight;
 
 

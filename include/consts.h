@@ -20,7 +20,7 @@ constexpr int chunkmeshynum = chunkheight/chunkmeshheight;
 #include "enumclasses.h"
 #include "aliases.h"
 
-const glm::ivec3 sideoffsets[6] = {glm::ivec3(-1, 0 ,0), glm::ivec3(1, 0 ,0), glm::ivec3(0, -1 ,0), glm::ivec3(0, 1 ,0), glm::ivec3(0, 0 ,-1), glm::ivec3(0, 0 ,1)};
+const glm::ivec3 sideoffsets[7] = {glm::ivec3(-1, 0 ,0), glm::ivec3(1, 0 ,0), glm::ivec3(0, -1 ,0), glm::ivec3(0, 1 ,0), glm::ivec3(0, 0 ,-1), glm::ivec3(0, 0 ,1), glm::ivec3(0, 0 ,0)};
 const rgbcolor255 notint = rgbcolor255{127,127,127};
 const uint8_t sideflags[6] = {1,2,4,8,16,32};
 

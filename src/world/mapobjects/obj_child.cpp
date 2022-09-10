@@ -32,3 +32,8 @@ bool obj_child::passable()
 {
     return mother->passable();
 }
+
+uint8_t obj_child::lightattenuation()
+{
+    return mother->lightattenuation();
+}

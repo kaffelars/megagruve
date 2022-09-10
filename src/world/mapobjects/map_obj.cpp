@@ -8,7 +8,7 @@ map_obj::map_obj(ctilepos ctp, chunkpos cpo, uint8_t forw) : ctpos{ctp}, cpos{cp
 
 }
 
-void map_obj::addmodel(ctilepos ctp, chunkmesh& cmesh)
+void map_obj::addmodel(ctilepos ctp, chunkmesh& cmesh, chunklightcontainer& sunlight)
 {
 
 }
@@ -21,6 +21,11 @@ void map_obj::interact(mainchar& interactor)
 void map_obj::destroy()
 {
 
+}
+
+uint8_t map_obj::lightattenuation()
+{
+    return 0;
 }
 
 void map_obj::remeshchunk()

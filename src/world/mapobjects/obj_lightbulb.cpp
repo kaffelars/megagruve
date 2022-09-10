@@ -16,13 +16,18 @@ obj_lightbulb::~obj_lightbulb()
     //dtor
 }
 
-void obj_lightbulb::addmodel(ctilepos ctp, chunkmesh& cmesh)
+void obj_lightbulb::addmodel(ctilepos ctp, chunkmesh& cmesh, chunklightcontainer& sunlight)
 {
-    map_obj_models::addmodel(cmesh, ctp, 8, forwardside);
+    map_obj_models::addmodel(cmesh, sunlight, ctp, 8, forwardside);
 }
 
 
 bool obj_lightbulb::passable()
 {
     return true;
+}
+
+uint8_t obj_lightbulb::lightattenuation()
+{
+    return 0;
 }
