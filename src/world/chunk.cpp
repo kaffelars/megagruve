@@ -105,6 +105,16 @@ bool chunk::getremesh(int toremesh)
     return mesho;
 }
 
+void chunk::setremeshwholechunk()
+{
+    remeshmutex.lock();
+    for (int a = 0; a < chunkmeshynum; a++)
+    {
+        remesh[a] = true;
+    }
+    remeshmutex.unlock();
+}
+
 void chunk::setremesh(int toremesh, bool meshthis)
 {
     remeshmutex.lock();

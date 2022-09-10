@@ -9,6 +9,8 @@
 #include "timedfunctions.h"
 #include "newgenerator.h"
 
+#include "chunklightcontroller.h"
+
 scenegame::scenegame()
 {
 
@@ -51,6 +53,7 @@ void scenegame::setkeys()
     inputmanager::setkeyfunction(inputmanager::KEY_SELECT, [&](){maincharcontroller::useselecteditem();}, inputmanager::KE_HELD);
 
     inputmanager::setkeyfunction(inputmanager::KEY_INTERACT, [&](){maincharcontroller::interact();}, inputmanager::KE_CLICKED);
+    //inputmanager::setkeyfunction(inputmanager::KEY_INTERACT, [&](){chunklightcontroller::propagateallsunlight(chunkcontroller::getchunk(chunkcoords::wpostocpos(maincharcontroller::getmaincharposition())));}, inputmanager::KE_CLICKED);
 
     //inputmanager::setkeyfunction(inputmanager::KEY_INTERACT, [&](){newgenerator::printgenvalues(chunkcontroller::getchunk(chunkcoords::wpostocpos(maincharcontroller::getmaincharposition())));}, inputmanager::KE_CLICKED);
 
@@ -137,7 +140,7 @@ void scenegame::render()
             {
                 chunk::biomedata biome = c.getbiome(ctpos);
                 infotext << "temp: " << int(biome.temperature) << " humid: " << int(biome.humidity) << "\n";
-                infotext << "light: " << int(c.getsunlight(ctpos)) << "\n";
+                infotext << "light: " << int(c.getsunlight(chunkcoords::wpostoctilepos(selectedtile))) << "\n";
             }
         }
         infotext << "loaded: " << chunkcontroller::loadedchunksnum() << "\nrendered: " << chunkcontroller::getchunksrendered() << "\n";

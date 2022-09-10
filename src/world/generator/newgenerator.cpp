@@ -488,12 +488,6 @@ bool newgenerator::isacceptableforvillage(chunkpos cpos)
                 float terrain =  randfunc::terrain(0.5f, 0.5f, 231.0f, 1.0f, rx, 0, rz, 6);
                 float landheight = randfunc::terrain(0.5f, 0.5f, 711.1f, 1.0f, rx, 0, rz, 6);
 
-                /*int ory = 123 * 3;
-                int orx = x * 3 + cposoffset.x - 1;
-                int orz = z * 3 + cposoffset.y - 1;
-
-                float oceans = randfunc::noise(orx, ory, orz, 732.3f);*/
-
                 if (terrain < 0.0f && mountains < 0.0f && landheight > 0.0f && landheight < 0.35f)// && oceans < -0.1f)
                 {
                     return true;
@@ -507,22 +501,6 @@ bool newgenerator::isacceptableforvillage(chunkpos cpos)
             {
                 return false;
             }
-
-            /*tileh t[4] = {gettileheight(c, 0, 0), gettileheight(c, chunkwidth-1, 0), gettileheight(c, 0, chunkwidth-1), gettileheight(c, chunkwidth-1, chunkwidth-1)};
-
-            bool acceptable = true;
-
-            int tid_water = tiledata::gettileid("t_water");
-            int tid_ice = tiledata::gettileid("t_ice");
-
-            for (int a = 0; a < 4; a++)
-            {
-                if (t[a].tid == tid_water || t[a].tid == tid_ice) acceptable = false; //no watervillages!!
-                if (a < 3)
-                    if (!(t[a].y >= t[a+1].y - 1 && t[a].y <= t[a+1].y + 1)) acceptable = false; //no villages in (too) bumpy terrain
-            }
-
-            return acceptable;*/
         }
     }
 

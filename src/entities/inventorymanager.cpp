@@ -20,6 +20,56 @@ bool inventorymanager::movealltoinv2(inventory& inv1, int32_t invslot1, inventor
         return false;//nope
 }
 
+void inventorymanager::sortinv(inventory& inv)
+{
+    for (uint32_t a = 0; a < inv.getinvsize(); a++)
+    {
+        inventory::invitem i = inv.invitems[a];
+        inv.invitems[a].itemid = 0;
+        inv.invitems[a].quantity = 0;
+        inv.additem(i);
+    }
+}
+
+void inventorymanager::movewholeinv(inventory& invfrom, inventory& invto, int excludeupto)
+{
+    for (uint32_t a = excludeupto; a < invfrom.getinvsize(); a++)
+    {
+        inventory::invitem i = invfrom.invitems[a];
+        inventory::invitem r = invto.additem(i);
+        invfrom.invitems[a] = r;
+    }
+}
+
+void inventorymanager::sorttoinv(inventory& invfrom, inventory& invto, int excludeupto)
+{
+    std::vector<uint32_t> itemids;
+
+    for (inventory::invitem& i: invto.invitems)
+    {
+        if (i.quantity > 0)
+        {
+            if (std::find(itemids.begin(), itemids.end(), i.itemid) == itemids.end())
+            {
+                itemids.push_back(i.itemid);
+            }
+        }
+    }
+
+    for (uint32_t a = excludeupto; a < invfrom.getinvsize(); a++)
+    {
+        inventory::invitem i = invfrom.invitems[a];
+        if (i.quantity > 0)
+        {
+            if (std::find(itemids.begin(), itemids.end(), i.itemid) != itemids.end())
+            {
+                inventory::invitem r = invto.additem(i);
+                invfrom.invitems[a] = r;
+            }
+        }
+    }
+}
+
 bool inventorymanager::moveonlyone(inventory& inv1, int32_t invslot1, inventory& inv2, int32_t invslot2)
 {
     inventory::invitem i1 = inv1.getinvitem(invslot1);

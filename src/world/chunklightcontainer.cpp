@@ -250,6 +250,12 @@ void chunklightcontainer::deallocate(uint8_t layer)
     }
 }
 
+bool chunklightcontainer::filledlayer(uint8_t layer)
+{
+    if (lightlayers[layer].light == nullptr) return true;
+    return false;
+}
+
 void chunklightcontainer::filllayer(uint8_t layer, uint8_t value)
 {
     if (lightlayers[layer].light != nullptr)

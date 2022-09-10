@@ -2,10 +2,15 @@
 #include "chunklight.h"
 
 #include "tiledata.h"
+#include "chunkcoords.h"
 
 namespace chunklight
 {
-
+    struct slight
+    {
+        ctilepos pos;
+        uint8_t sunlight;
+    };
 }
 
 void chunklight::generatesunlight(chunk& c) //initial full sunlight
@@ -70,6 +75,8 @@ void chunklight::generatesunlight(chunk& c) //initial full sunlight
     {
         std::cout << "(chunklight::generatesunlight) block(s) detected on y=0?!?!\n";
     }
+
+    propagateallsunlight(c);
 }
 
 void chunklight::updatesunlight(chunk& c, ctilepos ctpos, bool initial) //dette funker bare av og til
@@ -84,18 +91,17 @@ void chunklight::updatesunlight(chunk& c, ctilepos ctpos, bool initial) //dette 
         currentpos.y ++;
         if (currentpos.y == chunkheight-1) break;
         tileid tid = c.gettile(currentpos);
-        uint8_t lightattenuation = 0;
+
         if (tid == 255)
         {
-            lightattenuation = c.getmapobj(currentpos)->lightattenuation();
+            sunlight -= c.getmapobj(currentpos)->lightattenuation();
         }
         else
         {
-            lightattenuation = tiledata::gettileinfo(tid).lightattenuation;
+            sunlight -= tiledata::gettileinfo(tid).lightattenuation;
         }
 
 
-        sunlight -= lightattenuation;
         if (sunlight <0) sunlight=0;
 
         c.setsunlight(currentpos, sunlight);
@@ -104,5 +110,88 @@ void chunklight::updatesunlight(chunk& c, ctilepos ctpos, bool initial) //dette 
 
         if (sunlight <= 0 && c.getsunlight(currentpos + ctilepos(0,1,0)) == 0) break;
     }
+}
 
+void chunklight::propagateallsunlight(chunk& c) //on chunk load
+{
+    bool propagated = true;
+    bool toggle = false;
+    int sl = 0;
+    int sls = 0;
+    uint8_t ctpsl = 0;
+    tileid tid;
+    ctilepos ctp;
+
+    std::vector<slight> prop[2];
+
+    for (int yy = 0; yy < chunkheight/4; yy++)
+    {
+        if (!c.sunlight.filledlayer(yy))
+        {
+            for (int y = yy*4; y < (yy*4)+4; y++)
+            {
+                for (int z = -1; z < chunkwidth+1; z++)
+                {
+                    for (int x = -1; x < chunkwidth+1; x++)
+                    {
+                        sl = c.getsunlight(ctilepos(x,y,z));
+                        if (sl > 0)
+                        {
+                            prop[0].push_back(slight{ctilepos(x,y,z), sl});
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    while (propagated)
+    {
+
+        std::vector<slight>& topropagate = prop[toggle];
+        std::vector<slight>& propagateinto = prop[!toggle];
+
+        propagateinto.clear();
+        propagated = false;
+
+        for (slight& s : topropagate)
+        {
+            sl = s.sunlight - 2;
+            if (sl > 0)
+            {
+                for (int a = 0; a < 6; a++)
+                {
+                    ctp = s.pos + sideoffsets[a];
+                    if (chunkcoords::withinextendedchunkbounds(ctp))
+                    {
+                        ctpsl = c.getsunlight(ctp);
+                        if (ctpsl < 15)
+                        {
+                            sls = sl;
+                            tid = c.gettile(ctp);
+                            if (tid == 255)
+                            {
+                                sls -= c.getmapobj(ctp)->lightattenuation();
+                            }
+                            else
+                            {
+                                sls -= tiledata::gettileinfo(tid).lightattenuation;
+                            }
+
+                            if (sls > ctpsl)
+                            {
+                                c.setsunlight(ctp, sls);
+                                propagateinto.push_back(slight{ctp, sls});
+                                propagated = true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        toggle = !toggle;
+    }
+
+    c.setremeshwholechunk();
 }

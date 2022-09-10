@@ -57,6 +57,7 @@ namespace uiinventory
     void renderstatbox();
     void renderequipmentlabels();
     void renderiteminfobox();
+    void renderbuttons();
 
     bool updateinvitems = false;
     bool initialized = false;
@@ -262,6 +263,45 @@ void uiinventory::renderinventory()
     renderstatbox();
     renderequipmentlabels();
     renderiteminfobox();
+    renderbuttons();
+}
+
+void uiinventory::renderbuttons()
+{
+    float xpos = positionvalues.startbar - positionvalues.iconsize / 2;
+    float xpos2 = 9.0f * positionvalues.gridbordersize + positionvalues.startbar + positionvalues.iconsize / 2;
+    float ypos = settings::getscreeny() - 5 * positionvalues.gridbordersize - positionvalues.gridbordersize * 4.0f;
+
+    uielement::beginwindow("buttonbox", glm::ivec2(xpos, ypos), glm::vec2(xpos2-xpos, 40.0f));
+    if (uielement::button("sort inv", glm::vec2(5,5), glm::vec2(100, 30)))
+    {
+        inventorymanager::sortinv(maincharcontroller::getmcharinventory());
+        updateinvitems = true;
+    }
+    if (invtype == inventorytype::chest)
+    {
+        if (uielement::button("sort chest", glm::vec2(110,5), glm::vec2(100, 30)))
+        {
+            inventorymanager::sortinv(*extrainventory);
+            updateinvitems = true;
+        }
+        if (uielement::button("loot chest", glm::vec2(215,5), glm::vec2(100, 30)))
+        {
+            inventorymanager::movewholeinv(*extrainventory, maincharcontroller::getmcharinventory());
+            updateinvitems = true;
+        }
+        if (uielement::button("move all to chest", glm::vec2(320,5), glm::vec2(150, 30)))
+        {
+            inventorymanager::movewholeinv(maincharcontroller::getmcharinventory(), *extrainventory, 10);
+            updateinvitems = true;
+        }
+        if (uielement::button("sort to chest", glm::vec2(480,5), glm::vec2(150, 30)))
+        {
+            inventorymanager::sorttoinv(maincharcontroller::getmcharinventory(), *extrainventory, 10);
+            updateinvitems = true;
+        }
+    }
+    uielement::endwindow();
 }
 
 void uiinventory::renderstatbox()

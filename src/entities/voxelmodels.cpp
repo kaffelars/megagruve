@@ -567,7 +567,7 @@ void voxelmodels::initialize()
         }
     }
 
-    int bal = 0;
+    int bal = 1;
 
     for (int x = -hs-bal; x <= hs+1+bal; x++)
     {

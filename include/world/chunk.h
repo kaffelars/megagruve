@@ -53,6 +53,7 @@ class chunk
         void setremeshedvbos();
         void setremesh(int toremesh, bool meshthis = true);
         void setremeshy(ytile ycoord);
+        void setremeshwholechunk();
         bool getremesh(int toremesh);
         bool needsremesh();
 

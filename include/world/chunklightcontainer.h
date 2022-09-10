@@ -22,6 +22,7 @@ class chunklightcontainer
         uint8_t getinterpolatedvalue2(float x, float y, float z);
         void getinterpolatedvalues(float x, float y, float z, uint8_t direction, uint8_t (&sunlight)[4]);
         uint8_t getcorner(uint8_t x, uint8_t y, uint8_t z);
+        bool filledlayer(uint8_t layer);
 
     protected:
 
