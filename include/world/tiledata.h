@@ -70,6 +70,7 @@ namespace tiledata
     bool needssupport(tileid tile);
     bool ispassable(tileid tile);
     bool isoverbuildable(tileid tile);
+    bool iswater(tileid tile);
 
     void initialize();
     void finalizetileinfos(std::vector<tileinfo>& data);

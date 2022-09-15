@@ -115,11 +115,11 @@ void newgenerator::generateworld(chunk& c, std::vector<float>& land, chunkpos cp
         for (int x = -1; x <= 1; x++)
         {
             cavernx[index] = randfunc::noise(c.cpos.x+x, c.cpos.y+z, 3.3f) * 6.0f + 16.0f;
-            cavernyx[index] = randfunc::noise(c.cpos.x+x, (c.cpos.y+z)* 119.5f, 5.3f) * 87.0f + 155.0f;
+            cavernyx[index] = randfunc::noise(c.cpos.x+x, (c.cpos.y+z)* 119.5f, 5.3f) * 32.0f + 165.0f;
             cavsizex[index] = (randfunc::noise(c.cpos.x+x, (c.cpos.y+z) * 137.41f, 19.7f)) * 8.0f;
 
             cavernz[index] = randfunc::noise(c.cpos.x+x, c.cpos.y+z, 3.3f) * 6.0f + 16.0f;
-            cavernyz[index] = randfunc::noise((c.cpos.x+x) * 76.3f, c.cpos.y+z, 5.3f) * 87.0f + 155.0f;
+            cavernyz[index] = randfunc::noise((c.cpos.x+x) * 76.3f, c.cpos.y+z, 5.3f) * 32.0f + 165.0f;
             cavsizez[index] = (randfunc::noise((c.cpos.x+x) * 109.3f, c.cpos.y+z, 19.7f)) * 8.0f;
 
             index++;
@@ -361,11 +361,11 @@ void newgenerator::generateworld(chunk& c, std::vector<float>& land, chunkpos cp
                         tid = 0;
                 }
 
-
-                /*if (z > 16-csiz && z < 16+csiz && x > 16- csiz && x < 16+ csiz && y > caverny[4] - csiz*2 && y < caverny[4] + csiz*2)
-                {
+                //more caverns
+                float cavos = (randfunc::noise(rx+321, ry*2, rz-311, 121.37f) + 1.0f)/4.0f;
+                cavos += (randfunc::noise(rx+655, ry-312, rz+611, 33.19f) + 1.0f)/4.0f;
+                if (tid > 1 && ry > 150 && cavos > 1.3f - lh)
                     tid = 0;
-                }*/
 
 
                 if (tid == tid_rock) //ore veins
@@ -383,6 +383,7 @@ void newgenerator::generateworld(chunk& c, std::vector<float>& land, chunkpos cp
                         if (diamondore > 0.94f) tid = tid_diamondore;
                     }
                 }
+
 
                 if (y == 255) tid = tid_bedrock; //bedrock at complete bottom of world
 
@@ -704,8 +705,8 @@ void newgenerator::decorate(chunk& c)
         if (nbvillage[0] && nbvillage[1] && nbvillage[2] && nbvillage[3])
         {
             float centos = randfunc::noise(c.cpos.x*3+131, c.cpos.y*3+139, 0.1f);
-            if (centos > 0.5f) villagepattern = 1;
-            else if (centos > 0.4f) villagepattern = 4;
+            if (centos > 0.4f) villagepattern = 1;
+            else if (centos > 0.3f) villagepattern = 4;
         }
 
         if (nbvillages == 1)
@@ -983,6 +984,7 @@ void newgenerator::decorate(chunk& c)
     }
     else
     {
+        //not village
         for (int a = 0; a < numtrees; a++) //tree positions
         {
             glm::ivec3 tp;

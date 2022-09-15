@@ -26,6 +26,8 @@ void chunkwatermanager::updateactivewatertiles()
 {
     //std::cout << "\nactive water tiles: " << activewatertiles.size() << "\n";
     std::vector<activewatertile> redotiles;
+    int tid_waterflow = tiledata::gettileid("t_waterflow1");
+    int tid_water = tiledata::gettileid("t_water");
 
     for (activewatertile& a : activewatertiles)
     {
@@ -34,17 +36,39 @@ void chunkwatermanager::updateactivewatertiles()
         {
             //if (chunkcoords::withinchunkbounds(a.ctpos))
             //{
-                for (int i = 0; i < 6; i++)
+                int waterlevel = c.gettile(a.ctpos);
+                int newwaterlevel;
+                if (waterlevel == tid_water) newwaterlevel = tid_waterflow;
+                else newwaterlevel = waterlevel + 1;
+                if (newwaterlevel > tid_waterflow + 5) newwaterlevel = 0;
+
+                bool downflow = false;
+
+                if (chunkcoords::withinextendedchunkbounds(a.ctpos + sideoffsets[3]))
                 {
-                    if (i != 2) //vann kan ikke gå oppover
+                    tileid tid = c.gettile(a.ctpos + sideoffsets[3]);
+                    if (tiledata::isempty(tid) || tiledata::iswater(tid))
                     {
-                        if (chunkcoords::withinextendedchunkbounds(a.ctpos + sideoffsets[i]))
+                        chunktilemanager::breakageinfo b;
+                        chunktilemanager::addctiletochange(a.cpos, a.ctpos + sideoffsets[3], tid_water, 0, b);
+                        downflow = true;
+                    }
+                }
+
+                if (!downflow)
+                {
+                    for (int i = 0; i < 6; i++)
+                    {
+                        if (i != 2 && i != 3)
                         {
-                            tileid tid = c.gettile(a.ctpos + sideoffsets[i]);
-                            if (tiledata::isempty(tid))
+                            if (chunkcoords::withinextendedchunkbounds(a.ctpos + sideoffsets[i]))
                             {
-                                chunktilemanager::breakageinfo b;
-                                chunktilemanager::addctiletochange(a.cpos, a.ctpos + sideoffsets[i], 1, 0, b);
+                                tileid tid = c.gettile(a.ctpos + sideoffsets[i]);
+                                if (tiledata::isempty(tid) && newwaterlevel != 0)
+                                {
+                                    chunktilemanager::breakageinfo b;
+                                    chunktilemanager::addctiletochange(a.cpos, a.ctpos + sideoffsets[i], newwaterlevel, 0, b);
+                                }
                             }
                         }
                     }

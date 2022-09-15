@@ -18,7 +18,7 @@ Features:
 * biomes
 * simplex noise based random world generation (now with changeable seed)
 * villages (some with loot)
-* water with "physics" (watch out)
+* water with "physics" (will no longer flood the entire world)
 * glowing blocks
 * particles
 * fall damage

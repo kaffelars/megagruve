@@ -93,6 +93,7 @@ uint8_t chunkgetvertexdata::getambocc(chunk& c, ctilepos vertex)
             for (int zz = 0; zz < 2; zz++)
             {
                 if (!tiledata::isambocc(c.gettile(vertex + ctilepos(-xx, -yy, -zz)))) ambocc += 15;
+                if (ambocc >= 60) return 15;
             }
         }
     }

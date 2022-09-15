@@ -373,10 +373,15 @@ void voxelmodels::initialize()
         well.addpoint(ctilepos(0, y, -1), stoneid);
         well.addpoint(ctilepos(1, y, -1), stoneid);
 
-        well.addpoint(ctilepos(0, y, 0), 0);
+        well.addpoint(ctilepos(0, y, 0), y < 10?0:1);
+        well.addpoint(ctilepos(1, y, 0), y < 10?0:1);
+        well.addpoint(ctilepos(0, y, 1), y < 10?0:1);
+        well.addpoint(ctilepos(1, y, 1), y < 10?0:1);
+
+        /*well.addpoint(ctilepos(0, y, 0), 0);
         well.addpoint(ctilepos(1, y, 0), 0);
         well.addpoint(ctilepos(0, y, 1), 0);
-        well.addpoint(ctilepos(1, y, 1), 0);
+        well.addpoint(ctilepos(1, y, 1), 0);*/
     }
 
     well.centerbottomtile = ctilepos(0, 1, 0);
@@ -623,6 +628,7 @@ void voxelmodels::initialize()
     wpath.centerbottomtile = ctilepos(0,0,0);
 
     addvoxelmodel(wpath, "vox_wpath");
+
 
     randfunc::setseed(seed);
 }

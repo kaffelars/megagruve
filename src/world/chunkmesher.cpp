@@ -123,7 +123,7 @@ void chunkcontroller::meshchunkpart2(chunk& c, uint8_t cpart)
                                             sunlight = c.getsunlightcorner(sun.x,sun.y,sun.z);
                                             ambocc = chunkgetvertexdata::getambocc(c, sun);
 
-                                            if (tid == 1)
+                                            if (tiledata::iswater(tid))
                                             {
                                                 c.wmesh[cpart][c.getinactivemesh(cpart)].
                                                 addvertex(datavpos, datanorm, datauv, texid, sunlight, rgbcolor255{0,0,0}, glow, ambocc, tint);

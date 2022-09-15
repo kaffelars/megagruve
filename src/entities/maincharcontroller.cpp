@@ -409,9 +409,9 @@ bool maincharcontroller::isunderwater()
 bool maincharcontroller::isinwater()
 {
     wposition mcpos = mchar.geteyeposition();
-    mcpos.y += 1.2f;//ikkje bra
+    mcpos.y += 1.5f;//ikkje bra
     tileid tid = chunkcontroller::gettileid(mcpos);
-    if (tiledata::gettileinfo(tid).ttype == tiledata::T_WATER) return true;
+    if (tiledata::iswater(tid)) return true;
     else return false;
 }
 

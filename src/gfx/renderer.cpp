@@ -132,7 +132,6 @@ void renderer::rendergame()
     glStencilFunc(GL_ALWAYS, 1, 0xFF);
     glStencilOp(GL_REPLACE, GL_KEEP, GL_REPLACE);
 
-
     //water
     shadercontroller::activateshader(shadercontroller::SH_WATER);
     glUniformMatrix4fv(shadercontroller::getuniformid("pv"), 1, GL_FALSE, &(camera::getpvmatrix()[0][0]));

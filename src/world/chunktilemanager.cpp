@@ -245,7 +245,7 @@ bool chunktilemanager::changectile(chunkpos cpos, ctilepos ctpos, tileid newtile
         {
             if (oldtile == newtileid) return true; //ingenting å endre
 
-            if (newtileid == 1)// && chunkcoords::withinchunkbounds(ctpos)) //water
+            if (tiledata::iswater(newtileid))// && chunkcoords::withinchunkbounds(ctpos)) //water
             {
                 chunkwatermanager::addactivewatertile(cpos, ctpos);
                 //std::cout << "hey";
