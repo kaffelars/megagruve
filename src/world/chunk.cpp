@@ -12,6 +12,7 @@ chunk::chunk(dimensions dims, chunkpos pos)
     std::fill_n(activecmesh, chunkmeshynum, false);
     std::fill_n(remesh, chunkmeshynum, false);
     sunlight.initialize();
+    tilelight.initialize();
 }
 
 chunk::~chunk()
@@ -185,9 +186,9 @@ bool chunk::tryinteractobj(ctilepos ctpos, mainchar& mchar)
     return false;
 }
 
-void chunk::addlight()
+void chunk::addtilelight(ctilepos ctpos, uint8_t lightstrength)
 {
-    //tilelight.push_back(tlight{0,0});
+    lightpoints.addpoint(ctpos, lightstrength);
 }
 
 uint32_t chunk::get2dcoord(chtilepos thpos)
@@ -212,14 +213,22 @@ uint32_t chunk::gettilecoord(ctilepos tpos)
 
 void chunk::setsunlight(ctilepos tpos, uint8_t value)
 {
-    //tilelight[gettilecoord(tpos)].sunlight = value / 16;
     sunlight.setvalue(tpos+ctilepos(1,0,1), value);
 }
 
 uint8_t chunk::getsunlight(ctilepos tpos)
 {
-    //return tilelight[gettilecoord(tpos)].sunlight
     return sunlight.getvalue(tpos+ctilepos(1,0,1));
+}
+
+void chunk::settilelight(ctilepos tpos, uint8_t value)
+{
+    tilelight.setvalue(tpos+ctilepos(1,0,1), value);
+}
+
+uint8_t chunk::gettilelight(ctilepos tpos)
+{
+    return tilelight.getvalue(tpos+ctilepos(1,0,1));
 }
 
 uint8_t chunk::getinterpolatedsunlight(float x, float y, float z, uint8_t direction)
@@ -237,14 +246,24 @@ uint8_t chunk::getsunlightcorner(uint8_t x, uint8_t y, uint8_t z)
     sunlight.getcorner(x+1,y,z+1);
 }
 
+uint8_t chunk::gettilelightcorner(uint8_t x, uint8_t y, uint8_t z)
+{
+    tilelight.getcorner(x+1,y,z+1);
+}
+
 void chunk::fillsunlayer(uint8_t layer, uint8_t value)
 {
     sunlight.filllayer(layer, value);
 }
 
+void chunk::filltilelightlayer(uint8_t layer, uint8_t value)
+{
+    tilelight.filllayer(layer, value);
+}
+
 chunk::tlight chunk::getalllight(ctilepos tpos)
 {
-    return tlight{sunlight.getvalue(tpos+ctilepos(1,0,1)), 0};//tilelight[gettilecoord(tpos)];
+    return tlight{sunlight.getvalue(tpos+ctilepos(1,0,1)), tilelight.getvalue(tpos+ctilepos(1,0,1))};//tilelight[gettilecoord(tpos)];
 }
 
 void chunk::setallvbos()
@@ -322,13 +341,17 @@ tileid chunk::gettile(ctilepos tpos)
 
 void chunk::settile(ctilepos tpos, tileid value)
 {
+    if (tiledata::isglow(value))
+    {
+        addtilelight(tpos, tiledata::getglow(value));
+    }
     tileids[gettilecoord(tpos)] = value;
 }
 
 void chunk::trysettile(ctilepos tpos, tileid value)
 {
     if (chunkcoords::withinextendedchunkbounds(tpos))
-        tileids[gettilecoord(tpos)] = value;
+        settile(tpos, value);
 }
 
 

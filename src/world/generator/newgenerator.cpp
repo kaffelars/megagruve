@@ -387,7 +387,14 @@ void newgenerator::generateworld(chunk& c, std::vector<float>& land, chunkpos cp
 
                 if (y == 255) tid = tid_bedrock; //bedrock at complete bottom of world
 
-                if (tid == 0 && y > 230) tid = tid_lava; //lava at bottom of world
+                if (tid == 0 && y > 235)
+                {
+                    float lava = randfunc::noise(rx-432, ry + 453, rz-1321, 31.9f);
+                    if (y < 238 && lava > 0.6f)
+                        tid = tid_lava; //lava at bottom of world
+                    else
+                        tid = tid_rock;
+                }
 
                 c.settile(ctilepos{x,y,z}, tid);
             }
@@ -694,6 +701,7 @@ void newgenerator::decorate(chunk& c)
         uint32_t vbtower = chunkdecorator::getvoxelmodelid("vox_big_tower");
         uint32_t vpath = chunkdecorator::getvoxelmodelid("vox_path");
         uint32_t vwpath = chunkdecorator::getvoxelmodelid("vox_wpath");
+        uint32_t vlamp = chunkdecorator::getvoxelmodelid("vox_lamp");
 
         bool activepath[4] = {nbvillage[0], nbvillage[1], nbvillage[2], nbvillage[3]};
 
@@ -890,6 +898,12 @@ void newgenerator::decorate(chunk& c)
                     }
                 }
             }
+
+            if (villagepattern == 0)
+            {
+                tileh tt = gettileheight(c, halfchunkwidth - 2, halfchunkwidth - 2);
+                modelstoadd.push_back(modeltoadd{vlamp, ctilepos(halfchunkwidth - 2,tt.y, halfchunkwidth - 2), 0});
+            }
         }
 
         if (villagepattern == 1 || villagepattern == 4)
@@ -943,6 +957,8 @@ void newgenerator::decorate(chunk& c)
             c.trysettile(ctilepos(10, tt.y, 20), tid_hay);
             c.trysettile(ctilepos(10, tt.y, 21), tid_hay);
             c.trysettile(ctilepos(12, tt.y, 19), tid_hay);
+
+            modelstoadd.push_back(modeltoadd{vlamp, ctilepos(halfchunkwidth,tt.y, halfchunkwidth), 0});
 
         }
 

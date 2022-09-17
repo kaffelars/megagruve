@@ -6,6 +6,8 @@ namespace tiledata
 {
     std::vector<tileinfo> tileinfolist;
     bool initialized = false;
+    tileid firstwaterflowtile;
+    tileid watertile;
 }
 
 const std::vector<tiledata::tileinfo>& tiledata::gettileinfolist()
@@ -24,7 +26,7 @@ void tiledata::initialize()
     tileinfolist.emplace_back(tileinfo{.name="t_air", .fullname="Air block", .ttype = T_EMPTY, .defaultshape = SHAPE_NONE, .lightattenuation = 0,                   .hardness = 0,  .glow = 0, .needssupport = false, .overbuildable = true, .passable = true, .biometint = false, .breaktexture = "", .sidetextures = {"debug"}});
     tileinfolist.emplace_back(tileinfo{.name="t_water", .fullname="Water source block", .ttype = T_WATER, .defaultshape = SHAPE_WATER, .lightattenuation = 2,             .hardness = 0,  .glow = 0, .needssupport = false, .overbuildable = true, .passable = true, .biometint = false, .breaktexture = "water", .sidetextures = {"water_side","water_side","water","water","water_side","water_side"}});
     tileinfolist.emplace_back(tileinfo{.name="t_dirt", .fullname="Dirt block", .ttype = T_SOLID, .defaultshape = SHAPE_BLOCK, .lightattenuation = 15,              .hardness = 20, .glow = 0, .needssupport = false, .overbuildable = false, .passable = false, .biometint = false, .breaktexture = "dirt", .sidetextures = {"dirt"}});
-    tileinfolist.emplace_back(tileinfo{.name="t_lava", .fullname="Lava block", .ttype = T_LAVA, .defaultshape = SHAPE_BLOCK, .lightattenuation = 0,                 .hardness = 0,  .glow = 255,.needssupport = false,.overbuildable = true,  .passable = true, .biometint = false, .breaktexture = "lava", .sidetextures = {"lava"}});
+    tileinfolist.emplace_back(tileinfo{.name="t_lava", .fullname="Lava block", .ttype = T_LAVA, .defaultshape = SHAPE_BLOCK, .lightattenuation = 0,                 .hardness = 0,  .glow = 15,.needssupport = false,.overbuildable = true,  .passable = true, .biometint = false, .breaktexture = "lava", .sidetextures = {"lava"}});
     tileinfolist.emplace_back(tileinfo{.name="t_grass", .fullname="Grass block", .ttype = T_SOLID, .defaultshape = SHAPE_BLOCK, .lightattenuation = 15,            .hardness = 20, .glow = 0, .needssupport = false, .overbuildable = false, .passable = false, .biometint = true, .breaktexture = "dirt", .sidetextures = {"dirt", "dirt", "grass", "dirt", "dirt", "dirt"}, .overlaytextures = {"grass_side_overlay", "grass_side_overlay", "", "", "grass_side_overlay", "grass_side_overlay"}});
     tileinfolist.emplace_back(tileinfo{.name="t_grass2", .fullname="Grass block 2", .ttype = T_SOLID, .defaultshape = SHAPE_BLOCK, .lightattenuation = 15,         .hardness = 20, .glow = 0, .needssupport = false, .overbuildable = false, .passable = false, .biometint = true, .breaktexture = "dirt", .sidetextures = {"dirt", "dirt", "grass2", "dirt", "dirt", "dirt"}, .overlaytextures = {"grass_side_overlay", "grass_side_overlay", "", "", "grass_side_overlay", "grass_side_overlay"}});
     tileinfolist.emplace_back(tileinfo{.name="t_mossydirt", .fullname="Mossy dirt block", .ttype = T_SOLID, .defaultshape = SHAPE_BLOCK, .lightattenuation = 15,   .hardness = 20, .glow = 0, .needssupport = false, .overbuildable = false, .passable = false, .biometint = true, .breaktexture = "dirt", .sidetextures = {"dirt"}, .overlaytextures = {"leaves", "leaves", "leaves", "leaves", "leaves", "leaves"}});
@@ -59,7 +61,7 @@ void tiledata::initialize()
     tileinfolist.emplace_back(tileinfo{.name="t_flower1", .fullname="Yellow flower", .ttype = T_OBJECT, .defaultshape = SHAPE_X, .lightattenuation = 0,             .hardness = 1,  .glow = 0, .needssupport = true,  .overbuildable = true, .passable = true, .biometint = false, .breaktexture = "green", .sidetextures = {"flower1"}});
     tileinfolist.emplace_back(tileinfo{.name="t_flower2", .fullname="Red flower", .ttype = T_OBJECT, .defaultshape = SHAPE_X, .lightattenuation = 0,                .hardness = 1,  .glow = 0, .needssupport = true,  .overbuildable = true, .passable = true, .biometint = false, .breaktexture = "green", .sidetextures = {"flower2"}});
     tileinfolist.emplace_back(tileinfo{.name="t_flower3", .fullname="White flower", .ttype = T_OBJECT, .defaultshape = SHAPE_X, .lightattenuation = 0,              .hardness = 1,  .glow = 0, .needssupport = true,  .overbuildable = true, .passable = true, .biometint = false, .breaktexture = "green", .sidetextures = {"flower3"}});
-    tileinfolist.emplace_back(tileinfo{.name="t_glowstone", .fullname="Glowstone", .ttype = T_SOLID, .defaultshape = SHAPE_BLOCK, .lightattenuation = 15,          .hardness = 15, .glow = 255, .needssupport = false,.overbuildable = false,  .passable = false, .biometint = false, .breaktexture = "green", .sidetextures = {"glowstone"}});
+    tileinfolist.emplace_back(tileinfo{.name="t_glowstone", .fullname="Glowstone", .ttype = T_SOLID, .defaultshape = SHAPE_BLOCK, .lightattenuation = 15,          .hardness = 15, .glow = 15, .needssupport = false,.overbuildable = false,  .passable = false, .biometint = false, .breaktexture = "green", .sidetextures = {"glowstone"}});
     tileinfolist.emplace_back(tileinfo{.name="t_bedrock", .fullname="Bedrock block", .ttype = T_SOLID, .defaultshape = SHAPE_BLOCK, .lightattenuation = 15,        .hardness = 255, .glow = 0, .needssupport = false,.overbuildable = false,  .passable = false, .biometint = false, .breaktexture = "bedrock", .sidetextures = {"bedrock"}});
 
     tileinfolist.emplace_back(tileinfo{.name="t_waterflow1", .fullname="Full water flow block", .ttype = T_WATER, .defaultshape = SHAPE_WATER, .lightattenuation = 2,             .hardness = 0,  .glow = 0, .needssupport = false, .overbuildable = true, .passable = true, .biometint = false, .breaktexture = "water", .sidetextures = {"water_side","water_side","water","water","water_side","water_side"}});
@@ -75,6 +77,9 @@ void tiledata::initialize()
     tileinfolist.emplace_back(tileinfo{.name="t_destroy4", .fullname="cracks", .ttype = T_SOLID, .defaultshape = SHAPE_BLOCK, .lightattenuation = 0,              .hardness = 1, .glow = 0, .needssupport = false, .overbuildable = true, .passable = true, .biometint = false, .breaktexture = "", .sidetextures = {"destroy4"}});
 
     finalizetileinfos(tileinfolist);
+
+    firstwaterflowtile = gettileid("t_waterflow1");
+    watertile = gettileid("t_water");
 
     initializetileshapes();
 
@@ -202,6 +207,36 @@ bool tiledata::istransparent(tileid tile)
 bool tiledata::iswater(tileid tile)
 {
     return (gettileinfo(tile).ttype == T_WATER);
+}
+
+bool tiledata::isflowingwater(tileid tile)
+{
+    return (tile > watertile && gettileinfo(tile).ttype == T_WATER);
+}
+
+float tiledata::getwaterheight(tileid tile)
+{
+    if (iswater(tile))
+    {
+        if (tile != watertile)
+        {
+            return (0.15f * (1 + tile - firstwaterflowtile));
+        }
+
+        return 0.1f;
+    }
+
+    return 1.0f;
+}
+
+bool tiledata::isglow(tileid tile)
+{
+    return (gettileinfo(tile).glow > 0); //check for 255 is in gettileinfo
+}
+
+uint8_t tiledata::getglow(tileid tile)
+{
+    return gettileinfo(tile).glow;
 }
 
 bool tiledata::isambocc(tileid tile)

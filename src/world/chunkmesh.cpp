@@ -12,12 +12,12 @@ chunkmesh::~chunkmesh()
     //dtor
 }
 
-void chunkmesh::addvertex(vpos pos, vnorm norm, uvpos uv, textureid tid, uint8_t sunlight, rgbcolor255 light, uint8_t glow, uint8_t ambocc, rgbcolor255 tint)
+void chunkmesh::addvertex(vpos pos, vnorm norm, uvpos uv, textureid tid, uint8_t sunlight, uint8_t light, uint8_t glow, uint8_t ambocc, rgbcolor255 tint)
 {
     float uvtex = utils::packu2f(uv.x*255.0f, uv.y*255.0f, tid);
     float packednorm = utils::packnormal(norm.x, norm.y, norm.z);
-    float packedlight = utils::packu2f(light.x, light.y, light.z);
-    float packeddiv = utils::packu2f(sunlight, ambocc, glow);
+    float packedlight = utils::packu2f(sunlight, light, 0);
+    float packeddiv = utils::packu2f(ambocc, glow, 0);
     float packedtint = utils::packu2f(tint.x, tint.y, tint.z);
 
     vertexes[0].push_back(pos.x);
@@ -48,14 +48,14 @@ bool chunkmesh::setvbos()
         glBindVertexArray(vao[0]);
 
         //1
-        for (int a = 0; a < 2; a++)
-        {
-            glBindBuffer(GL_ARRAY_BUFFER, vbo[a]);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo[0]);
+        glBufferData(GL_ARRAY_BUFFER, vertexes[0].size() * sizeof(GLfloat), &vertexes[0][0], GL_STATIC_DRAW);
+        glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, 0);
 
-            glBufferData(GL_ARRAY_BUFFER, vertexes[a].size() * sizeof(GLfloat), &vertexes[a][0], GL_STATIC_DRAW);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo[1]);
+        glBufferData(GL_ARRAY_BUFFER, vertexes[1].size() * sizeof(GLfloat), &vertexes[1][0], GL_STATIC_DRAW);
+        glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 0, 0);
 
-            glVertexAttribPointer(a, 4, GL_FLOAT, GL_FALSE, 0, 0);
-        }
 
         for (int a = 0; a < 2; a++)
         {

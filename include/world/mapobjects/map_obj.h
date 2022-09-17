@@ -10,13 +10,14 @@ class map_obj
     public:
         map_obj(ctilepos ctp, chunkpos cpo, uint8_t forw);
 		virtual ~map_obj() = default;
-		virtual void addmodel(ctilepos ctp, chunkmesh& cmesh, chunklightcontainer& sunlight);
-		virtual void interact(mainchar& interactor);
-		virtual void destroy();
-		virtual bool passable();
-		void remeshchunk();
-		virtual bool isindirectlyinteractable();
-		virtual uint8_t lightattenuation();
+		virtual void addmodel(ctilepos ctp, chunkmesh& cmesh, chunklightcontainer& sunlight, chunklightcontainer& tilelight); //adds model to chunk mesh
+		virtual void interact(mainchar& interactor);//when interacting (default right mouse button)
+		virtual void destroy(); //when destroyed
+		virtual void create();//when placed
+		virtual bool passable(); //is passable?
+		void remeshchunk();//orders chunk to remesh
+		virtual bool isindirectlyinteractable(); //can be interacted with through e.g. buttons?
+		virtual uint8_t lightattenuation(); //attenuates light?
 
 		ctilepos ctpos {ctilepos{0,0,0}};
 		chunkpos cpos {chunkpos{0,0}};

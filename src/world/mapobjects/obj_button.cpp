@@ -14,9 +14,9 @@ obj_button::~obj_button()
     //dtor
 }
 
-void obj_button::addmodel(ctilepos ctp, chunkmesh& cmesh, chunklightcontainer& sunlight)
+void obj_button::addmodel(ctilepos ctp, chunkmesh& cmesh, chunklightcontainer& sunlight, chunklightcontainer& tilelight)
 {
-    map_obj_models::addmodel(cmesh, sunlight, ctp, 7, forwardside);
+    map_obj_models::addmodel(cmesh, sunlight, tilelight, ctp, 7, forwardside);
 }
 
 void obj_button::interact(mainchar& interactor)

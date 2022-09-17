@@ -11,7 +11,7 @@ class obj_door : public map_obj
         obj_door(ctilepos ctp, chunkpos cpo, uint8_t forw);
         virtual ~obj_door();
 
-        void addmodel(ctilepos ctp, chunkmesh& cmesh, chunklightcontainer& sunlight);
+        void addmodel(ctilepos ctp, chunkmesh& cmesh, chunklightcontainer& sunlight, chunklightcontainer& tilelight);
 		void interact(mainchar& interactor);
 		bool passable();
 		bool isindirectlyinteractable();

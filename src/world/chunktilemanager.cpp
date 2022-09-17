@@ -173,6 +173,13 @@ void chunktilemanager::changetiles()
     }
 }
 
+void chunktilemanager::addtilelight(ctilepos ctp, chunkpos cpo, uint8_t lightstrength)
+{
+    if (!chunkcontroller::chunkexists(cpo)) return;
+    chunk& c = chunkcontroller::getchunk(cpo);
+    c.addtilelight(ctp, lightstrength);
+}
+
 bool chunktilemanager::changectile(wtilepos wtile, tileid newtileid, uint8_t extrainfo, breakageinfo breakage, uint8_t forwardside)
 {
     chunkpos cpos = chunkcoords::wpostocpos(wtile);
@@ -304,7 +311,7 @@ bool chunktilemanager::changectile(chunkpos cpos, ctilepos ctpos, tileid newtile
                 {
                     for (int a = 0; a < 6; a++)
                     {
-                        if (c.gettile(ctpos + sideoffsets[a]) == 1)
+                        if (tiledata::iswater(c.gettile(ctpos + sideoffsets[a])))
                         {
                             chunkwatermanager::addactivewatertile(cpos, ctpos + sideoffsets[a]);
                         }

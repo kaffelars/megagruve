@@ -184,6 +184,7 @@ void voxelmodels::initialize()
     tileid windowid = tiledata::gettileid("t_window");
 
     uint32_t odoor = map_obj_manager::getmapobjid("o_door");
+    uint32_t olightbulb = map_obj_manager::getmapobjid("o_lightbulb");
     uint32_t ochest = map_obj_manager::getmapobjid("o_chest");
 
     int hs = 4;
@@ -247,6 +248,7 @@ void voxelmodels::initialize()
     }
 
     hut.addmapobject(ctilepos(-hs, 2, 0), odoor, 0, 0);
+    hut.addmapobject(ctilepos(0, 0, 0), olightbulb, 3, 0);
 
     hut.centerbottomtile = ctilepos(0, 3, 0);
 
@@ -331,6 +333,7 @@ void voxelmodels::initialize()
     shut.centerbottomtile = ctilepos(0, 3, 0);
 
     shut.addmapobject(ctilepos(-hs, 2, 0), odoor, 0, 0);
+    shut.addmapobject(ctilepos(0, 0, 0), olightbulb, 3, 0);
 
     addvoxelmodel(shut, "vox_small_hut");
 
@@ -387,6 +390,18 @@ void voxelmodels::initialize()
     well.centerbottomtile = ctilepos(0, 1, 0);
 
     addvoxelmodel(well, "vox_well");
+
+    voxelmodel lamp;
+
+    tileid glowid = tiledata::gettileid("t_glowstone");
+
+    for (int a = 0; a < 5; a++)
+        lamp.addpoint(ctilepos(0, 1 + a, 0), plankid);
+
+    lamp.addpoint(ctilepos(0,0,0), glowid);
+    lamp.centerbottomtile = ctilepos(0,1,0);
+
+    addvoxelmodel(lamp, "vox_lamp");
 
     voxelmodel flowerbed;
 

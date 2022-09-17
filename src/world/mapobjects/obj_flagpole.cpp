@@ -16,13 +16,13 @@ obj_flagpole::obj_flagpole(ctilepos ctp, chunkpos cpo, uint8_t forw) : map_obj(c
     hasmodel = true;
 }
 
-void obj_flagpole::addmodel(ctilepos ctp, chunkmesh& cmesh, chunklightcontainer& sunlight)
+void obj_flagpole::addmodel(ctilepos ctp, chunkmesh& cmesh, chunklightcontainer& sunlight, chunklightcontainer& tilelight)
 {
     //tiledata::addblock(ctp, 2, 0, 255, 255, notint, 0, 0, notint, cmesh);
-    map_obj_models::addmodel(cmesh, sunlight, ctp, 2, forwardside);
+    map_obj_models::addmodel(cmesh, sunlight, tilelight, ctp, 2, forwardside);
 
     if (flagtextureid >= 0)
-        map_obj_models::addmodel(cmesh, sunlight, ctp, 3, forwardside, flagtextureid);
+        map_obj_models::addmodel(cmesh, sunlight, tilelight, ctp, 3, forwardside, flagtextureid);
 }
 
 void obj_flagpole::interact(mainchar& interactor)

@@ -50,12 +50,16 @@ void chunkcontroller::meshchunkpart2(chunk& c, uint8_t cpart)
     tiledata::blockshape tshape;
     tileid tid;
     uint8_t sunlight;
+    uint8_t tilelight;
     uint8_t ambocc;
 
     uint32_t texid;
     uint32_t overlayid;
 
+    float corners[4];
+
     vpos datavpos;
+    vpos vertexpos;
     vnorm datanorm;
     uvpos datauv;
 
@@ -72,13 +76,40 @@ void chunkcontroller::meshchunkpart2(chunk& c, uint8_t cpart)
 
                 if (tid == 255) //map_obj
                 {
-                    c.getmapobj(ctilepos{x,y,z})->addmodel(ctilepos{x,y,z}, c.cmesh[cpart][c.getinactivemesh(cpart)], c.sunlight);
+                    c.getmapobj(ctilepos{x,y,z})->addmodel(ctilepos{x,y,z}, c.cmesh[cpart][c.getinactivemesh(cpart)], c.sunlight, c.tilelight);
                 }
                 else if (!tiledata::isempty(tid))
                 {
                     tshape = tiledata::gettileshape(tid);
                     glow = tiledata::gettileinfo(tid).glow;
                     //tint = {notint,notint,notint,notint};
+
+                    if (tiledata::iswater(tid) && y > 0) //water
+                    {
+                        if (tiledata::isflowingwater(tid))
+                        {
+                            chunkgetvertexdata::setwatercornersheight(c, ctilepos(x,y,z), corners);
+                        }
+                        else
+                        {
+                            if (tiledata::iswater(c.gettile(ctilepos(x,y-1,z))))
+                            {
+                                corners[0] = 0.0f;
+                                corners[1] = 0.0f;
+                                corners[2] = 0.0f;
+                                corners[3] = 0.0f;
+                            }
+                            else
+                            {
+                                corners[0] = 0.1f;
+                                corners[1] = 0.1f;
+                                corners[2] = 0.1f;
+                                corners[3] = 0.1f;
+                            }
+                        }
+
+                    }
+                    //water end
 
                     for (int a = 0; a < 7; a++)
                     {
@@ -98,7 +129,8 @@ void chunkcontroller::meshchunkpart2(chunk& c, uint8_t cpart)
                                     {
                                         for (int b = 0; b < tileshapes[tshape].vertexes[a].size(); b++)
                                         {
-                                            datavpos = tileshapes[tshape].vertexes[a][b] + vpos{x,y,z};
+                                            vertexpos = tileshapes[tshape].vertexes[a][b];
+                                            datavpos = vertexpos + vpos{x,y,z};
                                             datauv = tileshapes[tshape].uv[a][b];
 
                                             if (a == 6)
@@ -119,19 +151,29 @@ void chunkcontroller::meshchunkpart2(chunk& c, uint8_t cpart)
                                             //sunlight = c.getsunlight(ctilepos{x,y,z});
                                             //std::cout << int(x) << " " << int(y) << " " << int(z) << "\n";
                                             //sunlight = c.getinterpolatedsunlight(datavpos.x+(datanorm.x/2.0f),datavpos.y+(datanorm.y/2.0f),datavpos.z+(datanorm.z/2.0f),a);
-                                            ctilepos sun = glm::ivec3(std::round(datavpos.x), std::round(datavpos.y), std::round(datavpos.z));
-                                            sunlight = c.getsunlightcorner(sun.x,sun.y,sun.z);
-                                            ambocc = chunkgetvertexdata::getambocc(c, sun);
+                                            ctilepos corner = glm::ivec3(std::round(datavpos.x), std::round(datavpos.y), std::round(datavpos.z));
+                                            sunlight = c.getsunlightcorner(corner.x,corner.y,corner.z);
+                                            tilelight = c.gettilelightcorner(corner.x,corner.y,corner.z);
+                                            ambocc = chunkgetvertexdata::getambocc(c, corner);
 
                                             if (tiledata::iswater(tid))
                                             {
+                                                if (vertexpos.y < 0.5f)
+                                                {
+                                                    if (vertexpos.x < 0.5f && vertexpos.z < 0.5f) vertexpos.y = corners[0];
+                                                    if (vertexpos.x > 0.5f && vertexpos.z < 0.5f) vertexpos.y = corners[1];
+                                                    if (vertexpos.x < 0.5f && vertexpos.z > 0.5f) vertexpos.y = corners[2];
+                                                    if (vertexpos.x > 0.5f && vertexpos.z > 0.5f) vertexpos.y = corners[3];
+                                                }
+
+                                                vertexpos += vpos{x,y,z};
                                                 c.wmesh[cpart][c.getinactivemesh(cpart)].
-                                                addvertex(datavpos, datanorm, datauv, texid, sunlight, rgbcolor255{0,0,0}, glow, ambocc, tint);
+                                                addvertex(vertexpos, datanorm, datauv, texid, sunlight, tilelight, glow, ambocc, tint);
                                             }
                                             else
                                             {
                                                 c.cmesh[cpart][c.getinactivemesh(cpart)].
-                                                addvertex(datavpos, datanorm, datauv, texid, sunlight, rgbcolor255{0,0,0}, glow, ambocc, tint);
+                                                addvertex(datavpos, datanorm, datauv, texid, sunlight, tilelight, glow, ambocc, tint);
                                             }
                                         }
 
@@ -149,7 +191,7 @@ void chunkcontroller::meshchunkpart2(chunk& c, uint8_t cpart)
     }
 }
 
-void chunkcontroller::meshchunkpart(chunk& c, uint8_t cpart)
+/*void chunkcontroller::meshchunkpart(chunk& c, uint8_t cpart)
 {
     //dimensions dims = c.cdims;
 
@@ -265,7 +307,7 @@ void chunkcontroller::meshchunkpart(chunk& c, uint8_t cpart)
             }
         }
     }
-}
+}*/
 
 
 

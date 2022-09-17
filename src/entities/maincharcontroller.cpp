@@ -192,7 +192,7 @@ void maincharcontroller::initialize()
 
     for (int a = 0; a < 4; a++)
     {
-        tiledata::addblock(ctilepos(0,0,0), tiledata::gettileid("t_destroy"+std::to_string(a+1)), tiledata::SHAPE_BLOCK, 255, 15, rgbcolor255(0,0,0), 0, 0, rgbcolor255(127,127,127), destructorblock[a]);
+        tiledata::addblock(ctilepos(0,0,0), tiledata::gettileid("t_destroy"+std::to_string(a+1)), tiledata::SHAPE_BLOCK, 255, 15, 0, 0, 0, rgbcolor255(127,127,127), destructorblock[a]);
         destructorblock[a].setvbos();
     }
 }

@@ -7,7 +7,7 @@
 namespace map_obj_models
 {
     void initialize();
-    void addmodel(chunkmesh& cm, chunklightcontainer& sunlight, ctilepos ctpos, uint32_t modelid, uint8_t forwardside, int32_t texid = -1);
+    void addmodel(chunkmesh& cm, chunklightcontainer& sunlight, chunklightcontainer& tilelight, ctilepos ctpos, uint32_t modelid, uint8_t forwardside, int32_t texid = -1);
 
 };
 

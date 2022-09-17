@@ -12,7 +12,7 @@ class obj_chest : public map_obj
         obj_chest(ctilepos ctp, chunkpos cpo, uint8_t forw, uint8_t chestsize);
         virtual ~obj_chest();
 
-        void addmodel(ctilepos ctp, chunkmesh& cmesh, chunklightcontainer& sunlight);
+        void addmodel(ctilepos ctp, chunkmesh& cmesh, chunklightcontainer& sunlight, chunklightcontainer& tilelight);
 		void interact(mainchar& interactor);
 		void destroy();
 		void trycloselid();

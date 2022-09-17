@@ -43,7 +43,7 @@ void chunkgenerator::generatechunk(chunk& c)
 
     decorate(c);
 
-    chunklight::generatesunlight(c);
+    chunklight::generatelight(c);
 
     finalizechunk(c);
 }
@@ -85,9 +85,6 @@ void chunkgenerator::initializechunk(chunk& c)
     //biomes
     for (int32_t a = 0; a < (chunkwidth+2)*(chunkwidth+2); a++) //hvorfor +1??
         c.addbiome();
-
-    for (int a = 0; a < (chunkwidth+2) * (chunkwidth+2) * chunkheight; a++)
-        c.addlight();
 
     for (int a = 0; a < (chunkwidth+2) * (chunkwidth+2) * chunkheight; a++)
         c.addtile(0);

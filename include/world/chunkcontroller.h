@@ -22,7 +22,7 @@ namespace chunkcontroller
     //void addvoxelmodel(chunk& c, ctilepos ctpos, uint32_t voxelmodelid, bool cgenerator);
 
     void meshwholechunk(chunk& c);
-    void meshchunkpart(chunk& c, uint8_t cpart);
+    //void meshchunkpart(chunk& c, uint8_t cpart);
     void meshchunkpart2(chunk& c, uint8_t cpart);
     void remeshchunk(chunk& c);
 

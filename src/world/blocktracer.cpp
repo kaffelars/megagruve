@@ -79,7 +79,7 @@ blocktracer::hitblock blocktracer::traceblocks(wposition startposition, directio
 
             oldwtpos = curwtpos;
             tileid curtid = curchunk->gettile(chunkcoords::wtilepostoctilepos(curwtpos));
-            if (curtid > 1)
+            if (curtid != 0 && !tiledata::iswater(curtid))
             {
                 if (!(ignoreoverbuildables && tiledata::isoverbuildable(curtid)))
                 {

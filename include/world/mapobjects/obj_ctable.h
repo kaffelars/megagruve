@@ -10,7 +10,7 @@ class obj_ctable : public map_obj
         obj_ctable(ctilepos ctp, chunkpos cpo, uint8_t forw);
         virtual ~obj_ctable();
 
-        void addmodel(ctilepos ctp, chunkmesh& cmesh, chunklightcontainer& sunlight);
+        void addmodel(ctilepos ctp, chunkmesh& cmesh, chunklightcontainer& sunlight, chunklightcontainer& tilelight);
 		void interact(mainchar& interactor);
 		void destroy();
 		uint8_t lightattenuation();

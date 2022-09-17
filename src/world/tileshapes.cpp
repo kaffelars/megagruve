@@ -312,7 +312,7 @@ const std::vector<tileshape>& tiledata::gettileshapesdata()
 }
 
 
-void tiledata::addside(ctilepos cpos, tileid id, uint32_t bshape, uint8_t tileside, uint8_t sunlight[4], rgbcolor255 light[4], uint8_t glow, uint8_t ambocc[4], rgbcolor255 tint[4], chunkmesh& cmesh, bool overlay)
+/*void tiledata::addside(ctilepos cpos, tileid id, uint32_t bshape, uint8_t tileside, uint8_t sunlight[4], rgbcolor255 light[4], uint8_t glow, uint8_t ambocc[4], rgbcolor255 tint[4], chunkmesh& cmesh, bool overlay)
 {
     int index = 0;
     uint32_t texid;
@@ -352,9 +352,9 @@ void tiledata::addside(ctilepos cpos, tileid id, uint32_t bshape, uint8_t tilesi
     {
         addside(cpos, id, bshape, tileside, sunlight, light, glow, ambocc, tint, cmesh, true); //adding overlay on top
     }
-}
+}*/
 
-void tiledata::addblock(ctilepos cpos, tileid id, uint32_t bshape, uint8_t tilesides, uint8_t sunlight, rgbcolor255 light, uint8_t glow, uint8_t ambocc, rgbcolor255 tint, chunkmesh& cmesh)
+void tiledata::addblock(ctilepos cpos, tileid id, uint32_t bshape, uint8_t tilesides, uint8_t sunlight, uint8_t light, uint8_t glow, uint8_t ambocc, rgbcolor255 tint, chunkmesh& cmesh)
 {
     if (!tileshapes[bshape].onlyanyways)
     {

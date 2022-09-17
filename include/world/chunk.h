@@ -7,6 +7,7 @@
 #include "map_obj.h"
 #include "mainchar.h"
 #include "chunklightcontainer.h"
+#include "chunklightpoints.h"
 
 class chunk
 {
@@ -78,7 +79,8 @@ class chunk
         void addbiome();
 
         //light
-        void addlight();
+        void addtilelight(ctilepos ctpos, uint8_t lightstrength);
+        chunklightpoints lightpoints;
         void setsunlight(ctilepos tpos, uint8_t value);
         uint8_t getsunlight(ctilepos tpos);
         uint8_t getinterpolatedsunlight(float x, float y, float z, uint8_t direction);
@@ -86,6 +88,12 @@ class chunk
         uint8_t getsunlightcorner(uint8_t x, uint8_t y, uint8_t z);
         void fillsunlayer(uint8_t layer, uint8_t value);
         tlight getalllight(ctilepos tpos);
+        uint8_t gettilelightcorner(uint8_t x, uint8_t y, uint8_t z);
+        void filltilelightlayer(uint8_t layer, uint8_t value);
+        void settilelight(ctilepos tpos, uint8_t value);
+        uint8_t gettilelight(ctilepos tpos);
+        chunklightcontainer sunlight;
+        chunklightcontainer tilelight;
 
         void render();
         void renderwater();
@@ -107,7 +115,6 @@ class chunk
         ctags gettag();
         bool safetodelete();
 
-        chunklightcontainer sunlight;
 
     protected:
 

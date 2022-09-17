@@ -8,6 +8,8 @@ namespace chunkgetvertexdata
 {
     uint8_t getambaround(chunk& c, ctilepos vertex, tiledata::tilesides ts);
     rgbcolor255 getbiomearound(chunk& c, ctilepos ctpos);
+
+    uint8_t cornerindexes[4][4] = {{0,1,3,4},{1,2,4,5},{4,5,7,8},{5,6,8,9}};
 }
 
 void chunkgetvertexdata::setambocc(chunk& c, ctilepos tilepos, tiledata::tilesides ts, uint8_t (&ambocc)[4])
@@ -102,6 +104,68 @@ uint8_t chunkgetvertexdata::getambocc(chunk& c, ctilepos vertex)
     if (ambocc > 15) ambocc = 15;
 
     return ambocc;
+}
+
+void chunkgetvertexdata::setwatercornersheight(chunk& c, ctilepos middletile, float (&corners)[4])
+{
+    for (int a = 0; a < 4; a++)
+    {
+        corners[a] = 1.0f;
+    }
+
+    if (middletile.y < 1) return;
+
+    float mid = tiledata::getwaterheight(c.gettile(middletile));
+
+    for (int z = 0; z <= 2; z++)
+    {
+        for (int x = 0; x <= 2; x++)
+        {
+            tileid tid = c.gettile(middletile + ctilepos(x-1,0,z-1));
+            float tw = tiledata::getwaterheight(tid);
+
+            if (tiledata::iswater(c.gettile(middletile + ctilepos(x-1,-1,z-1)))) tw = 0.0f;
+
+            //cornor[x + (z * 3)] = tw;//(tw == 0 ? mid : tw);
+
+            if (x <=1 && z <= 1)
+            {
+                if (tw < corners[0]) corners[0] = tw;
+            }
+            if (x > 0 && z <= 1)
+            {
+                if (tw < corners[1]) corners[1] = tw;
+            }
+            if (x <= 1 && z > 0)
+            {
+                if (tw < corners[2]) corners[2] = tw;
+            }
+            if (x > 0 && z > 0)
+            {
+                if (tw < corners[3]) corners[3] = tw;
+            }
+        }
+    }
+
+    /*for (int a = 0; a < 4; a++)
+    {
+        corners[a] = 1.0f;
+        for (int i = 0; i < 4; i++)
+        {
+            if (cornor[cornerindexes[a][i]] < 1.0f && cornor[cornerindexes[a][i]] < corners[a]) corners[a] = cornor[cornerindexes[a][i]];
+        }
+    }*/
+    /*corners[0] = (cornor[0] + cornor[1] + cornor[3] + cornor[4]) / 4.0f; //topleft
+    corners[1] = (cornor[1] + cornor[2] + cornor[4] + cornor[5]) / 4.0f; //topright
+    corners[2] = (cornor[4] + cornor[5] + cornor[7] + cornor[8]) / 4.0f; //bottomleft
+    corners[3] = (cornor[5] + cornor[6] + cornor[8] + cornor[9]) / 4.0f; //bottomright
+    */
+
+    /*for (int a = 0; a < 4; a++)
+    {
+        if (corners[a] > (mid + 0.15f)) corners[a] = mid + 0.15f;
+        if (corners[a] < (mid - 0.15f)) corners[a] = mid - 0.15f;
+    }*/
 }
 
 

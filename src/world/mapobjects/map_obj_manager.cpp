@@ -109,6 +109,8 @@ void map_obj_manager::addmapobj(chunk& c, ctilepos ctpos, uint8_t mapobjid, uint
 
     objecttoadd->mapobjid = mapobjid;
 
+    objecttoadd->create();
+
     c.chunk_objs.emplace(c.get3dcoord(ctpos), objecttoadd);
 
     for (ctilepos& ct : mapobjchildren[mapobjid])

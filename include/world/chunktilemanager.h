@@ -17,6 +17,7 @@ namespace chunktilemanager
     void breaktile(wtilepos wtile);
     void breaktilewithinfo(wtilepos wtile, breakageinfo b);
     void explodetiles(wtilepos wtile, int32_t explosionpower);
+    void addtilelight(ctilepos ctp, chunkpos cpo, uint8_t lightstrength);
     bool changectile(chunkpos cpos, ctilepos ctpos, tileid newtileid, uint8_t extrainfo, breakageinfo breakage, uint8_t forwardside = 0, bool updateneighbour = true);
     bool changectile(wtilepos wtile, tileid newtileid, uint8_t extrainfo, breakageinfo breakage, uint8_t forwardside = 0);
     void changetiles();

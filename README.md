@@ -19,9 +19,9 @@ Features:
 * simplex noise based random world generation (now with changeable seed)
 * villages (some with loot)
 * water with "physics" (will no longer flood the entire world)
-* glowing blocks
+* glowing blocks and lights
 * particles
-* fall damage
+* fall damage (careful when flying)
 * day/night cycle
 * clouds and rain
 * many interesting items
@@ -32,7 +32,7 @@ Features:
 * random crashes
 
 Missing features:
-* proper light propagation
+* proper cross chunk light propagation
 * saving worlds
 * crafting
 * optimizations

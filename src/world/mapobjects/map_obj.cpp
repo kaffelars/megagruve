@@ -8,7 +8,7 @@ map_obj::map_obj(ctilepos ctp, chunkpos cpo, uint8_t forw) : ctpos{ctp}, cpos{cp
 
 }
 
-void map_obj::addmodel(ctilepos ctp, chunkmesh& cmesh, chunklightcontainer& sunlight)
+void map_obj::addmodel(ctilepos ctp, chunkmesh& cmesh, chunklightcontainer& sunlight, chunklightcontainer& tilelight)
 {
 
 }
@@ -19,6 +19,11 @@ void map_obj::interact(mainchar& interactor)
 }
 
 void map_obj::destroy()
+{
+
+}
+
+void map_obj::create()
 {
 
 }

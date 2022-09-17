@@ -13,9 +13,9 @@ obj_ctable::~obj_ctable()
     //dtor
 }
 
-void obj_ctable::addmodel(ctilepos ctp, chunkmesh& cmesh, chunklightcontainer& sunlight)
+void obj_ctable::addmodel(ctilepos ctp, chunkmesh& cmesh, chunklightcontainer& sunlight, chunklightcontainer& tilelight)
 {
-    map_obj_models::addmodel(cmesh, sunlight, ctp, 4, forwardside);
+    map_obj_models::addmodel(cmesh, sunlight, tilelight, ctp, 4, forwardside);
 }
 
 void obj_ctable::interact(mainchar& interactor)

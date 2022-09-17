@@ -318,6 +318,10 @@ void chunkcontroller::renderchunk(chunkpos cpos)
             if (ctag == chunk::C_READY)
             {
                 chunktilemanager::checkoutsidetiles(c);
+                if (c.lightpoints.requestspropagation())
+                {
+                    chunklight::propagatetilelights(c);
+                }
             }
             chunksrendered++;
             c.render();

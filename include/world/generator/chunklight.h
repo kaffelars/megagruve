@@ -5,9 +5,11 @@
 
 namespace chunklight
 {
-    void generatesunlight(chunk& c);
+    void generatelight(chunk& c);
     void updatesunlight(chunk& c, ctilepos ctpos, bool initial);
     void propagateallsunlight(chunk& c);
+    void propagatelight(chunk& c, ctilepos ctpos);
+    void propagatetilelights(chunk& c);
 };
 
 #endif // CHUNKLIGHT_H
